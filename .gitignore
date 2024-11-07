@@ -128,3 +128,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+frontend/.env.example
+frontend/.gitignore
+frontend/eslint.config.js
+frontend/index.html
+frontend/package-lock.json
+frontend/package.json
+frontend/public/
+frontend/src/
+frontend/vite.config.js
+
+.gitignore

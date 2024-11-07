@@ -10,6 +10,7 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import { cargarCategoriasPredeterminadas } from "./services/categoria.service.js"; 
 
 async function setupServer() {
   try {
@@ -72,6 +73,7 @@ async function setupServer() {
 async function setupAPI() {
   try {
     await connectDB();
+    await cargarCategoriasPredeterminadas();
     await setupServer();
     await createUsers();
   } catch (error) {
