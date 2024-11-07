@@ -2,7 +2,6 @@
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import indexRoutes from "./routes/index.routes.js";
 import session from "express-session";
 import passport from "passport";
 import express, { json, urlencoded } from "express";
@@ -10,6 +9,9 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
+import { inicializarCortesBase } from "./scripts/initCortes.js"; 
+import indexRoutes from "./routes/index.routes.js";
+import animalRoutes from "./routes/animal.routes.js"; 
 
 async function setupServer() {
   try {
@@ -21,24 +23,23 @@ async function setupServer() {
       cors({
         credentials: true,
         origin: true,
-      }),
+      })
     );
 
     app.use(
       urlencoded({
         extended: true,
         limit: "1mb",
-      }),
+      })
     );
 
     app.use(
       json({
         limit: "1mb",
-      }),
+      })
     );
 
     app.use(cookieParser());
-
     app.use(morgan("dev"));
 
     app.use(
@@ -51,7 +52,7 @@ async function setupServer() {
           httpOnly: true,
           sameSite: "strict",
         },
-      }),
+      })
     );
 
     app.use(passport.initialize());
@@ -59,7 +60,9 @@ async function setupServer() {
 
     passportJwtSetup();
 
-    app.use("/api", indexRoutes);
+    // Rutas
+    app.use("/api", indexRoutes); // Rutas principales
+    app.use("/api/animal", animalRoutes); // Rutas de animales y cortes
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
@@ -71,9 +74,10 @@ async function setupServer() {
 
 async function setupAPI() {
   try {
-    await connectDB();
-    await setupServer();
-    await createUsers();
+    await connectDB();                // Conectar a la base de datos
+    await inicializarCortesBase();    // Inicializar lista de cortes base
+    await setupServer();              // Configurar el servidor
+    await createUsers();              // Crear usuarios iniciales si es necesario
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
   }
@@ -82,5 +86,5 @@ async function setupAPI() {
 setupAPI()
   .then(() => console.log("=> API Iniciada exitosamente"))
   .catch((error) =>
-    console.log("Error en index.js -> setupAPI(), el error es: ", error),
+    console.log("Error en index.js -> setupAPI(), el error es: ", error)
   );
