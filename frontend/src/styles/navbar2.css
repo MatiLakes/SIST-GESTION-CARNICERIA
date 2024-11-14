@@ -1,0 +1,115 @@
+/* Estilo general de la navbar2 (barra lateral) */
+.navbar2 {
+    position: fixed;
+    top: 9vh; /* Deja espacio para la barra superior */
+    left: 0;
+    width: 250px; /* Ancho de la barra lateral */
+    height: 91vh; /* Ajusta la altura para que no se superponga con la barra superior */
+    background-color: none; /* Fondo semitransparente */
+    backdrop-filter: blur(10px); /* Aplica el efecto de desenfoque al fondo */
+    border-radius: 8px 0 0 8px; /* Bordes redondeados */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Sombra suave para un diseño limpio */
+    z-index: 999; /* Se asegura de que esté debajo de la barra superior */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    transition: width 0.3s ease; /* Transición suave para el cambio de tamaño */
+}
+
+/* Para ocultar la barra lateral completamente */
+.navbar2.oculta {
+    width: 80px; /* Deja visible solo un pequeño borde */
+    padding-top: 20px; /* Para que el botón se alinee correctamente */
+}
+
+/* Lista de los elementos de la navbar2 */
+.navbar2 ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.navbar2 li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 60px; /* Altura de cada elemento */
+    padding: 10px;
+    position: relative;
+}
+
+/* Estilo de los enlaces dentro de la barra lateral */
+.navbar2 a {
+    color: #333; /* Color oscuro para el texto */
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    width: 100%;
+    text-align: center;
+    transition: color 0.3s ease;
+    border-radius: 5px;
+    padding: 10px;
+    backdrop-filter: blur(5px); /* Agrega un ligero desenfoque al fondo del enlace */
+}
+
+.navbar2 a:hover,
+.navbar2 .active {
+    color: #006edf; /* Cambiar el color de texto al pasar el ratón */
+}
+
+.toggle-btn {
+    background-color: none; /* Sin fondo en el botón */
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    margin-top: 20px;
+    border-radius: 5px;
+    backdrop-filter: blur(5px); /* Efecto de desenfoque en el fondo del botón */
+}
+
+.toggle-btn:hover {
+    transform: scale(1.05); /* Efecto de aumento suave */
+}
+
+/* Estilos para los iconos dentro del botón toggle */
+.toggle-icon {
+    font-size: 1.5rem; /* Ajusta el tamaño del icono */
+    transition: transform 0.3s ease; /* Transición suave para el icono */
+}
+
+/* Elimina el efecto hover de la flecha o íconos en la barra lateral */
+.navbar2 a:hover,
+.navbar2 .toggle-icon:hover {
+    background-color: none; /* Sin cambio de fondo */
+    color: inherit; /* Mantiene el color por defecto */
+    transform: none; /* No agrandar el icono */
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 768px) {
+    .navbar2 ul {
+        display: none;
+    }
+
+    .navbar2.activado ul {
+        display: flex;
+        background-color: rgba(255, 255, 255, 0.9); /* Fondo ligeramente translúcido para la versión móvil */
+        flex-direction: column;
+    }
+
+    .navbar2.activado ul li {
+        height: 50px;
+        width: 100%;
+    }
+
+    .navbar2.activado ul li a {
+        color: #333;
+        font-weight: bold;
+        font-size: 0.9em;
+    }
+}
