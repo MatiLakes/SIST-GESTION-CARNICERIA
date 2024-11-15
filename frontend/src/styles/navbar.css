@@ -1,0 +1,112 @@
+body {
+    font-family: 'Poppins', sans-serif; /* Aplicamos la fuente Poppins a todo el cuerpo */
+}
+
+.navbar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between; /* Coloca el logo a la izquierda y los elementos a la derecha */
+    align-items: center;
+    background-color: #e2a555f5; /* Color de la navbar */
+    height: 9vh;
+    z-index: 1000;
+    padding: 0 20px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-goval {
+    height: 150px; /* Ajusta el tamaño según lo necesario */
+    width: auto;
+}
+
+.nav-menu ul {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.user-welcome {
+    font-size: 1em;  /* Tamaño más pequeño para el nombre */
+    margin-bottom: 0px;
+}
+
+.user-role {
+    font-size: 0.9em;
+    color: white;
+    margin-top: 5px;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    position: absolute;
+    top: 25px;
+    right: 20px;
+    z-index: 1001;
+}
+
+.hamburger .bar {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 4px 0;
+}
+
+@media (max-width: 768px) {
+    .nav-menu ul {
+        display: none;
+        flex-direction: column;
+        background-color: #003366;
+        position: absolute;
+        top: 9vh;
+        left: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-menu.activado ul {
+        display: flex;
+        background-color: #eef7ff;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-menu.activado ul li {
+        padding: 0;
+        width: 100%;
+        height: 60px;
+    }
+
+    .user-info {
+        display: block;
+        text-align: center;
+        padding: 10px 0;
+    }
+}
