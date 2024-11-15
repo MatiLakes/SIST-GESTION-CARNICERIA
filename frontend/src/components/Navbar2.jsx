@@ -9,7 +9,7 @@ const Navbar2 = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
-    const userRole = user?.rol;
+    const userRole = user?.rol; // Obtener el rol del usuario
     const [menuOpen, setMenuOpen] = useState(false);
 
     const logoutSubmit = () => {
@@ -51,29 +51,17 @@ const Navbar2 = () => {
             {menuOpen && (
                 <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
                     <ul>
-                        <li>
-                            <NavLink 
-                                to="/home" 
-                                onClick={() => { 
-                                    setMenuOpen(false); 
-                                    addActiveClass();
-                                }} 
-                                activeClassName="active"
-                            >
-                                Inicio
-                            </NavLink>
-                        </li>
                         {userRole === 'administrador' && (
                             <li>
                                 <NavLink 
-                                    to="/users" 
+                                    to="/home" 
                                     onClick={() => { 
                                         setMenuOpen(false); 
                                         addActiveClass();
                                     }} 
                                     activeClassName="active"
                                 >
-                                    Usuarios
+                                    Inicio
                                 </NavLink>
                             </li>
                         )}
@@ -86,7 +74,7 @@ const Navbar2 = () => {
                                 }} 
                                 activeClassName="active"
                             >
-                                Cerrar sesión
+                                Logout
                             </NavLink>
                         </li>
                     </ul>
@@ -94,9 +82,9 @@ const Navbar2 = () => {
             )}
 
             {/* Botón para alternar la visibilidad del menú */}
-            <button className="toggle-btn" onClick={toggleMenu}>
+            <button className="flechamenu" onClick={toggleMenu}>
                 {menuOpen ? <HiArrowSmLeft className="toggle-icon" /> : <HiArrowSmRight className="toggle-icon" />}
-        </button>
+            </button>
         </nav>
     );
 };

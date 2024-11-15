@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
 body {
     font-family: 'Poppins', sans-serif; /* Aplicamos la fuente Poppins a todo el cuerpo */
 }
@@ -10,46 +8,54 @@ body {
     top: 0;
     left: 0;
     display: flex;
-    justify-content: flex-end; /* Alineamos al final de la barra */
+    justify-content: space-between; /* Coloca el logo a la izquierda y los elementos a la derecha */
     align-items: center;
-    background-color: #f58b00; /* Color de la navbar */
+    background-color: #e2a555f5; /* Color de la navbar */
     height: 9vh;
     z-index: 1000;
     padding: 0 20px;
-    box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
-    font-family: 'Poppins', sans-serif; /* Usamos Poppins en la navbar */
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-goval {
+    height: 150px; /* Ajusta el tamaño según lo necesario */
+    width: auto;
 }
 
 .nav-menu ul {
     display: flex;
-    justify-content: flex-end;  /* Alinea los elementos a la derecha */
+    justify-content: flex-end;
     align-items: center;
     margin: 0;
     padding: 0;
     list-style: none;
-    width: 70%;  /* Asegura que los elementos se ajusten correctamente */
-    max-width: calc(100% - 20px); /* Restamos 40px (20px de padding en cada lado) para evitar desbordamiento */
 }
 
 .user-info {
     display: flex;
-    flex-direction: column;  /* Apilamos el nombre y el rol */
-    align-items: flex-end;  /* Alineamos el texto a la derecha */
+    flex-direction: column;
+    align-items: flex-end;
     color: white;
     font-size: 1.1em;
     font-weight: bold;
-    margin-right: -50px; /* Añadimos margen a la derecha para evitar que se salga */
+    margin-right: 20px;
 }
 
 .user-welcome {
     font-size: 1em;  /* Tamaño más pequeño para el nombre */
-    margin-bottom: 0px;  /* Sin espacio entre el nombre y el rol */
+    margin-bottom: 0px;
 }
 
 .user-role {
-    font-size: 0.9em;  /* Tamaño más pequeño para el rol */
-    color: #cce7ff;  /* Un color más claro para el rol */
-    margin-top: 5px; /* Espacio entre el nombre y el rol */
+    font-size: 0.9em;
+    color: white;
+    margin-top: 5px;
 }
 
 .hamburger {
