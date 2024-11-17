@@ -9,9 +9,7 @@ import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
-import { inicializarCortesBase } from "./scripts/initCortes.js"; 
 import indexRoutes from "./routes/index.routes.js";
-import animalRoutes from "./routes/animal.routes.js"; 
 
 async function setupServer() {
   try {
@@ -19,6 +17,7 @@ async function setupServer() {
 
     app.disable("x-powered-by");
 
+    // Middlewares
     app.use(
       cors({
         credentials: true,
@@ -58,12 +57,12 @@ async function setupServer() {
     app.use(passport.initialize());
     app.use(passport.session());
 
+    // Configuración de Passport
     passportJwtSetup();
 
     // Rutas
-    app.use("/api", indexRoutes); // Rutas principales
-    app.use("/api/animal", animalRoutes); // Rutas de animales y cortes
-
+    app.use("/api", indexRoutes);            
+    // Iniciar el servidor
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
     });
@@ -75,7 +74,6 @@ async function setupServer() {
 async function setupAPI() {
   try {
     await connectDB();                // Conectar a la base de datos
-    await inicializarCortesBase();    // Inicializar lista de cortes base
     await setupServer();              // Configurar el servidor
     await createUsers();              // Crear usuarios iniciales si es necesario
   } catch (error) {

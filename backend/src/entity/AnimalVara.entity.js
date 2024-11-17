@@ -1,37 +1,32 @@
 "use strict";
 import { EntitySchema } from "typeorm";
-import AnimalCorte from "./AnimalCortes.entity.js";
 
 const AnimalVaraSchema = new EntitySchema({
   name: "AnimalVara",
-  tableName: "animal_varas",
+  tableName: "animal_vara",
   columns: {
     id: {
       type: "int",
       primary: true,
       generated: true,
-    },
-    numeroVara: {
-      type: "int",
-      nullable: false,
       unique: true,
     },
     fechaLlegada: {
       type: "date",
-      default: () => "CURRENT_DATE",
       nullable: false,
+      default: () => "CURRENT_DATE",
     },
     temperaturaLlegada: {
       type: "double precision",
       nullable: false,
     },
-    nombreRecibidor: {
+    recibidoPor: {
       type: "varchar",
-      length: 50,
+      length: 100,
       nullable: false,
     },
-    precioTotal: {
-      type: "int", // Precio total en CLP
+    precioTotalVara: {
+      type: "int",
       nullable: false,
     },
   },
@@ -39,25 +34,22 @@ const AnimalVaraSchema = new EntitySchema({
     tipoAnimal: {
       type: "many-to-one",
       target: "AnimalCorte",
-      joinColumn: { name: "tipoAnimalId" },
-      cascade: true,
-      nullable: false,
+      joinColumn: {
+        name: "tipoAnimalNombreLista", 
+        referencedColumnName: "nombreLista",
+      },
     },
   },
   checks: [
     {
-      expression: `"fechaLlegada" <= CURRENT_DATE`, // La fecha de llegada no puede ser futura
-      name: "fecha_llegada_no_futuro",
+      expression: `"temperaturaLlegada" >= -50 AND "temperaturaLlegada" <= 50`,
+      name: "temperatura_llegada_rango",
     },
     {
-      expression: `"precioTotal" >= 0`, // El precio total no puede ser negativo
-      name: "precio_total_no_negativo",
-    },
-    {
-      expression: `"temperaturaLlegada" >= -30 AND "temperaturaLlegada" <= 50`, // Rango aceptable para temperatura
-      name: "temperatura_rango",
+      expression: `"fechaLlegada" <= CURRENT_DATE`,
+      name: "fecha_llegada_valida",
     },
   ],
 });
 
-export default AnimalVaraSchema;
+export default AnimalVaraSchema ;
