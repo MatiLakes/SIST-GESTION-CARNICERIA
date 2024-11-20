@@ -1,14 +1,109 @@
+/* Contenedor principal de la tabla */
+.table-container {
+    background-color: #f4f4f9;
+    padding: 20px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+/* Estilos para la tabla */
+.table-container .tabulator {
+    border: none;
+}
+
+/* Estilo de los encabezados de las columnas */
 .table-container .tabulator .tabulator-col {
-    background-color: #003366;
-    color: #fff;
+    background-color: #003366; /* Azul oscuro */
+    color: #ffffff; /* Blanco para contraste */
+    font-weight: bold;
+    border-right: 1px solid #ffffff;
 }
+
+/* Última columna sin borde derecho */
+.table-container .tabulator .tabulator-col:last-child {
+    border-right: none;
+}
+
+/* Estilo de las celdas */
+.table-container .tabulator .tabulator-cell {
+    background-color: #ffffff; /* Blanco */
+    color: #333333; /* Gris oscuro para el texto */
+    border-bottom: 1px solid #d1d5db;
+    padding: 8px;
+}
+
+/* Resaltar fila al pasar el cursor */
+.table-container .tabulator .tabulator-row:hover {
+    background-color: #eaf1f8; /* Azul claro */
+}
+
+/* Estilo del pie de la tabla */
+.table-container .tabulator-footer {
+    background-color: #ffffff;
+    border-top: 2px solid #003366;
+    padding: 10px 0;
+}
+
+/* Botones de paginación */
 .tabulator .tabulator-footer .tabulator-page {
-    background-color: #fff;
-    color: black;
+    background-color: #ffffff;
+    color: #003366;
     border: 1px solid #003366;
-    padding: 4px 8px;
+    padding: 6px 12px;
+    margin: 0 2px;
     border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
 }
+
+/* Botón de paginación activo */
 .tabulator .tabulator-footer .tabulator-page.active {
-    color: #E4332C;
+    background-color: #003366;
+    color: #ffffff;
+}
+
+/* Estilo de botones deshabilitados */
+.tabulator .tabulator-footer .tabulator-page.disabled {
+    background-color: #e0e0e0;
+    color: #a1a1a1;
+    cursor: not-allowed;
+}
+
+/* Títulos de las tablas */
+.title-table {
+    color: #003366;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+/* Botones de acciones */
+.filter-actions button {
+    background-color: #003366;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    margin-right: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Botones de acciones deshabilitados */
+.filter-actions button:disabled {
+    background-color: #e0e0e0;
+    color: #a1a1a1;
+    cursor: not-allowed;
+}
+
+/* Input de búsqueda */
+.filter-actions input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 14px;
+    width: 200px;
 }

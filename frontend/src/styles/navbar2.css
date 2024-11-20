@@ -3,7 +3,7 @@
     position: fixed;
     top: 9vh; /* Deja espacio para la barra superior */
     left: 0;
-    width: 250px; /* Ancho de la barra lateral */
+    width: 320px; /* Ancho reducido para acercar los botones */
     height: 91vh; /* Ajusta la altura para que no se superponga con la barra superior */
     background-color: #000000; /* Fondo semitransparente */
     backdrop-filter: blur(10px); /* Aplica el efecto de desenfoque al fondo */
@@ -13,14 +13,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 20px;
+    padding-top: 10px; /* Espacio reducido en la parte superior */
     transition: width 0.3s ease; /* Transición suave para el cambio de tamaño */
 }
 
 /* Para ocultar la barra lateral completamente */
 .navbar2.oculta {
     width: 80px; /* Deja visible solo un pequeño borde */
-    padding-top: 20px; /* Para que el botón se alinee correctamente */
+    padding-top: 10px; /* Ajusta el espacio superior */
+}
+
+/* Asegurarnos de que no se oculte cuando el menú está activado */
+.navbar2.activo {
+    width: 320px; /* Deja la barra lateral abierta */
 }
 
 /* Lista de los elementos de la navbar2 */
@@ -30,116 +35,89 @@
     padding: 0;
     margin: 0;
     width: 100%;
+    gap: 5px; /* Reduce el espacio entre los botones */
 }
 
 .navbar2 li {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start; /* Alinea los botones hacia la izquierda */
     align-items: center;
     width: 100%;
-    height: 60px; /* Altura de cada elemento */
-    padding: 10px;
+    height: 50px; /* Altura reducida */
+    padding: 5px; /* Reduce el padding interno */
     position: relative;
+    border-radius: 8px; /* Bordes redondeados */
+    animation: aparecer 0.5s ease forwards; /* Aplica la animación */
+    opacity: 0; /* Oculto por defecto para la animación */
 }
 
 /* Estilo de los enlaces dentro de la barra lateral */
 .navbar2 a {
-    position: relative; /* Necesario para ubicar el pseudo-elemento */
-    color: #f6f6f7; /* Color blanco */
-    text-decoration: none; /* Elimina el subrayado por defecto */
+    color: #f6f6f7; /* Blanco */
+    text-decoration: none; /* Sin subrayado */
+    font-weight: 600; /* Un poco más de peso en la fuente */
+    padding-left: 20px; /* Espacio para separarlo del borde izquierdo */
+    transition: color 0.3s ease, transform 0.3s ease; /* Transición suave */
 }
 
-.navbar2 a::after {
-    content: ""; /* Genera un pseudo-elemento vacío */
-    position: absolute;
-    left: 0;
-    bottom: 0; /* Ubicación en la parte inferior */
-    width: 0; /* Inicia con ancho cero */
-    height: 2px; /* Grosor del subrayado */
-    background-color: white; /* Color blanco */
-    transition: width 0.3s ease-in-out; /* Transición suave */
+/* Efecto hover en los botones */
+.navbar2 ul li:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo suave cuando pasas el mouse */
+    transform: scale(1.02); /* Aumenta ligeramente el tamaño al hacer hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra suave */
 }
 
-.navbar2 a:hover::after {
-    width: 100%; /* Al pasar el mouse, el subrayado ocupa todo el ancho */
+/* Efecto hover en los enlaces */
+.navbar2 a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    color: #ffffff;
+    transform: translateX(5px); /* Mueve el texto un poco hacia la derecha */
 }
-
-
 
 /* Estilo general del botón toggle */
 .toggle-btn {
-    color: #f6f6f7; /* Color blanco para el texto */
-    border: none; /* Sin borde */
+    color: #f6f6f7;
+    border: none;
     padding: 10px 15px;
     font-size: 1rem;
-    margin-top: 20px;
-    border-radius: 8px; /* Bordes redondeados */
+    margin-top: 10px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #333; /* Fondo oscuro */
+    transition: background-color 0.3s ease; /* Transición suave en fondo */
 }
 
-/* Estilos para los iconos dentro del botón toggle */
-.toggle-icon {
-    font-size: 1.5rem;
-    color: #f6f6f7; /* Icono blanco */
-    transition: none; /* Sin transición */
-    box-shadow: none; /* Sin sombra en el icono */
+.toggle-btn:hover {
+    background-color: #555; /* Fondo más claro al hacer hover */
 }
 
-/* Rotación del ícono cuando el menú está abierto */
-.toggle-btn.open .toggle-icon {
-    transform: rotate(180deg); /* Rotación del icono cuando el menú está abierto */
+/* Animación de aparición para los botones */
+@keyframes aparecer {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px); /* Empieza desplazado a la izquierda */
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0); /* Termina en su posición normal */
+    }
 }
 
-/* Elimina el efecto hover de los iconos en la barra lateral */
-/* Subrayado blanco al pasar el mouse sobre los enlaces */
-.navbar2 a:hover {
-    text-decoration: underline; /* Agrega el subrayado */
-    text-decoration-color: white; /* Asegura que el subrayado sea blanco */
-    text-underline-offset: 4px; /* Ajusta la distancia del subrayado al texto */
+/* Retrasos para los botones */
+.navbar2 li:nth-child(1) {
+    animation-delay: 0s;
 }
-.navbar2 .toggle-icon:hover {
-    background-color: none; /* Sin cambio de fondo */
-    color: #f6f6f7; /* Mantener color blanco */
-    transform: none; /* No agrandar el icono */
+.navbar2 li:nth-child(2) {
+    animation-delay: 0.3s;
 }
-
-/* Estilo del botón de la flecha */
-.flechamenu {
-    background-color: transparent; /* Fondo transparente */
-    color: #f6f6f7; /* Color blanco para el texto */
-    border: none; /* Sin borde */
-    cursor: pointer;
-    padding: 10px 15px;
-    font-size: 1rem;
-    margin-top: 20px;
-    border-radius: 8px; /* Bordes redondeados */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: none; /* Sin transición */
+.navbar2 li:nth-child(3) {
+    animation-delay: 0.6s;
 }
-
-/* Efecto hover para el botón flechamenu */
-.flechamenu:hover {
-    background-color: transparent; /* Fondo sin cambio */
-    color: #f6f6f7; /* Mantener color blanco en el texto */
-    border-color: transparent; /* Sin cambio en el borde */
-    transform: none; /* Sin cambio en la transformación */
-    
-}
-
-/* Estilos para los iconos dentro del botón flechamenu */
-.flechamenu .toggle-icon {
-    font-size: 1.5rem;
-    color: #f6f6f7; /* Icono blanco */
-    transition: none; /* Sin transición */
-}
-
-/* Rotación del ícono cuando el menú está abierto */
-.flechamenu.open .toggle-icon {
-    transform: rotate(180deg); /* Rotación del icono cuando el menú está abierto */
+.navbar2 li:nth-child(4) {
+    animation-delay: 0.9s;
 }
 
 /* Estilos para pantallas pequeñas */
@@ -150,18 +128,91 @@
 
     .navbar2.activado ul {
         display: flex;
-        background-color: rgba(255, 255, 255, 0.9); /* Fondo ligeramente translúcido para la versión móvil */
+        background-color: rgba(255, 255, 255, 0.9); /* Fondo translúcido */
         flex-direction: column;
     }
 
     .navbar2.activado ul li {
-        height: 50px;
-        width: 100%;
+        height: 40px; /* Ajusta la altura para pantallas pequeñas */
+        padding: 5px;
     }
+}
 
-    .navbar2.activado ul li a {
-        color: #f6f6f7; /* Mantener el color blanco en la versión móvil */
-        font-weight: bold;
-        font-size: 0.9em;
+/* Ajuste del submenú */
+.nav-submenu {
+    font-size: 14px;
+    padding-left: 30px; /* Sangría para los elementos del submenú */
+}
+
+/* Efectos para el botón flechamenu */
+.flechamenu {
+    background-color: transparent;
+    color: #f6f6f7;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    font-size: 1rem;
+    margin-top: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Efecto hover para el botón flechamenu */
+.flechamenu:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo suave */
+    transform: scale(1.2); /* Aumenta el tamaño ligeramente */
+}
+
+.flechamenu .toggle-icon {
+    font-size: 1.5rem;
+    color: #f6f6f7;
+    transition: transform 0.3s ease;
+}
+
+/* Rotación del ícono cuando el menú está abierto */
+.flechamenu.open .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Ajuste de los íconos */
+.nav-icon {
+    font-size: 1.2rem; /* Ajusta el tamaño del ícono */
+    color: currentColor; /* Hereda el color del enlace */
+    margin-right: 15px; /* Ajusta el espacio a la derecha del ícono */
+}
+
+.icon-large {
+    font-size: 18px;
+    padding-left: 10px;  /* Espacio dentro del contenedor */
+    padding-right: 8px;
+}
+
+/* Ajustes para el contenido principal */
+.main-container {
+    display: flex;
+    
+    flex-direction: column;
+    margin-left: 320px; /* Añade espacio para la barra lateral */
+    width: calc(100% - 320px); /* Ajusta el ancho del contenedor principal */
+    padding: 20px; /* Añade un poco de espacio alrededor del contenido */
+    box-sizing: border-box; /* Incluye el padding en el cálculo del ancho */
+    transition: margin-left 0.3s ease, width 0.3s ease; /* Transición suave al ajustar */
+    z-index: 1; /* Asegúrate de que el contenido esté por encima de la barra lateral */
+}
+
+/* Cuando la navbar2 está contraída, ajusta el margen del contenido */
+.navbar2.oculta ~ .main-container {
+    margin-left: 80px; /* Ajusta el margen cuando la barra está contraída */
+    width: calc(100% - 80px); /* Ajusta el ancho del contenedor principal */
+}
+
+/* Asegurarse de que el contenido se ajuste bien en pantallas pequeñas */
+@media (max-width: 768px) {
+    .main-container {
+        margin-left: 0; /* Elimina el margen en pantallas pequeñas */
+        width: 100%; /* El contenedor ocupa todo el ancho */
     }
 }

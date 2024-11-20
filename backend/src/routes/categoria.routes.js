@@ -17,9 +17,9 @@ router.use(authenticateJwt).use(isAdmin);
 
 router
   .post("/crear", crearCategoria)                
-  .get("/", obtenerCategorias)              
+  .get("/obtener", obtenerCategorias)              
   .get("/:id", obtenerCategoria)             
-  .patch("/:id", actualizarCategoria)       
-  .delete("/:id", eliminarCategoria);        
+  .put("/actualizar/:id", actualizarCategoria)       
+  .delete("/eliminar/:id", eliminarCategoria);        
 
 export default router;
