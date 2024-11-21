@@ -1,11 +1,11 @@
 "use strict";
 import {
   createAnimalVaraService,
-  updateAnimalVaraService,
   deleteAnimalVaraService,
   getAllAnimalVarasService,
+  getVaraByIdService,
   getVarasByFechaService,
-  getVaraByIdService
+  updateAnimalVaraService
 } from "../services/animalVara.service.js";
 import { getAllAnimalCortesService } from "../services/animalCorte.service.js";
 import { animalVaraValidation } from "../validations/animalVara.validation.js";

@@ -2,7 +2,6 @@
 import AnimalVara from "../entity/AnimalVara.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
-// Ingresar una nueva vara
 export async function createAnimalVaraService(data) {
   try {
     const animalVaraRepository = AppDataSource.getRepository(AnimalVara);
@@ -13,7 +12,7 @@ export async function createAnimalVaraService(data) {
       temperaturaLlegada: data.temperaturaLlegada,
       recibidoPor: data.recibidoPor,
       precioTotalVara: data.precioTotalVara,
-      tipoAnimal: data.tipoAnimal, // Este debe ser un objeto AnimalCorte ya validado
+      tipoAnimal: data.tipoAnimal, 
     });
 
     const varaGuardada = await animalVaraRepository.save(nuevaVara);
@@ -77,10 +76,9 @@ export async function getVarasByFechaService(fecha) {
   try {
     const animalVaraRepository = AppDataSource.getRepository(AnimalVara);
 
-    // Buscar varas por fecha de llegada
     const varas = await animalVaraRepository.find({
       where: { fechaLlegada: fecha },
-      relations: ["tipoAnimal"], // Incluye la relación con el tipo de animal si es necesario
+      relations: ["tipoAnimal"], 
     });
 
     return [varas, null];
@@ -94,10 +92,9 @@ export async function getVaraByIdService(id) {
   try {
     const animalVaraRepository = AppDataSource.getRepository(AnimalVara);
 
-    // Buscar la vara por ID
     const vara = await animalVaraRepository.findOne({
       where: { id },
-      relations: ["tipoAnimal"], // Incluye la relación con el tipo de animal si es necesario
+      relations: ["tipoAnimal"], 
     });
 
     if (!vara) return [null, "La vara especificada no existe."];

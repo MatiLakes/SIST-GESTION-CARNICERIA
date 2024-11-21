@@ -1,10 +1,10 @@
 "use strict";
 import {
   createAnimalCorteService,
-  updateAnimalCorteService,
   deleteAnimalCorteService,
   getAllAnimalCortesService,
-  getAnimalCorteByIdService
+  getAnimalCorteByIdService,
+  updateAnimalCorteService
 } from "../services/animalCorte.service.js";
 import { animalCortesValidation } from "../validations/animalCortes.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";

@@ -42,14 +42,14 @@ const AnimalVaraSchema = new EntitySchema({
   },
   checks: [
     {
-      expression: `"temperaturaLlegada" >= -50 AND "temperaturaLlegada" <= 50`,
+      expression: "\"temperaturaLlegada\" >= -50 AND \"temperaturaLlegada\" <= 50",
       name: "temperatura_llegada_rango",
     },
     {
-      expression: `"fechaLlegada" <= CURRENT_DATE`,
+      expression: "\"fechaLlegada\" <= CURRENT_DATE",
       name: "fecha_llegada_valida",
     },
   ],
 });
 
-export default AnimalVaraSchema ;
+export default AnimalVaraSchema;

@@ -2,11 +2,11 @@
 import { Router } from "express";
 import {
   createAnimalVara,
-  updateAnimalVara,
   deleteAnimalVara,
   getAllAnimalVaras,
-  getVarasByFecha,
   getVaraById,
+  getVarasByFecha,
+  updateAnimalVara
 } from "../controllers/animalVara.controller.js";
 
 const router = Router();

@@ -2,10 +2,10 @@
 import { Router } from "express";
 import {
   createAnimalCorte,
-  updateAnimalCorte,
   deleteAnimalCorte,
   getAllAnimalCortes,
-  getAnimalCorteById
+  getAnimalCorteById,
+  updateAnimalCorte
 } from "../controllers/animalCorte.controller.js";
 
 const router = Router();

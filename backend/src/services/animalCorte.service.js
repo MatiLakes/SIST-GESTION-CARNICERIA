@@ -2,16 +2,13 @@
 import AnimalCorte from "../entity/AnimalCortes.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
-// Crear un nuevo AnimalCorte
 export async function createAnimalCorteService(data) {
     try {
       const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
-  
-      // Verificar si ya existe una lista con el mismo nombre
+
       const existing = await animalCorteRepository.findOneBy({ nombreLista: data.nombreLista });
       if (existing) return [null, "Ya existe un tipo de animal con este nombre de lista."];
   
-      // Crear un nuevo registro asignando explícitamente todos los campos
       const nuevoAnimalCorte = animalCorteRepository.create({
         nombreLista: data.nombreLista,
         abastero: data.abastero,
@@ -86,7 +83,6 @@ export async function createAnimalCorteService(data) {
         precioMalaya: data.precioMalaya,
       });
   
-      // Guardar en la base de datos
       const animalCorteGuardado = await animalCorteRepository.save(nuevoAnimalCorte);
       return [animalCorteGuardado, null];
     } catch (error) {
@@ -95,7 +91,6 @@ export async function createAnimalCorteService(data) {
     }
   }
 
-// Editar un AnimalCorte existente
 export async function updateAnimalCorteService(id, data) {
   try {
     const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
@@ -103,7 +98,6 @@ export async function updateAnimalCorteService(id, data) {
     const animalCorte = await animalCorteRepository.findOneBy({ id });
     if (!animalCorte) return [null, "AnimalCorte no encontrado."];
 
-    // Actualizar cantidades y precios
     Object.keys(data).forEach((key) => {
       if (data[key] !== undefined) animalCorte[key] = data[key];
     });
@@ -116,7 +110,6 @@ export async function updateAnimalCorteService(id, data) {
   }
 }
 
-// Eliminar un AnimalCorte
 export async function deleteAnimalCorteService(id) {
   try {
     const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
@@ -147,10 +140,8 @@ export async function getAllAnimalCortesService() {
     try {
       const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
   
-      // Buscar el AnimalCorte por su ID
       const animalCorte = await animalCorteRepository.findOneBy({ id });
   
-      // Verificar si existe
       if (!animalCorte) return [null, "AnimalCorte no encontrado."];
   
       return [animalCorte, null];
