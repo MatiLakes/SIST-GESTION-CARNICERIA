@@ -46,8 +46,73 @@ Antes de empezar, asegúrate de tener lo siguiente instalado:
 
 Sigue estos pasos para configurar tu entorno:
 
-### 1. Clona el repositorio
-```bash
-https://github.com/MatiLakes/SIST-GESTION-CARNICERIA.git
-cd SIST-GESTION-CARNICERIA
+1. **Clona el repositorio**:
 
+    ```bash
+    git clone https://github.com/MatiLakes/SIST-GESTION-CARNICERIA.git
+    cd SIST-GESTION-CARNICERIA
+    ```
+
+2. **Instala las dependencias del backend**:
+
+    ```bash
+    cd backend
+    npm install
+    ```
+
+3. **Instala las dependencias del frontend**:
+
+    ```bash
+    cd ../frontend
+    npm install
+    ```
+
+4. **Configura las variables de entorno para el backend**:
+    Asegúrate de tener **pgAdmin** instalado y funcionando. Crea una base de datos en PostgreSQL antes de continuar. Aquí tienes un resumen de cómo hacerlo:
+
+### Crear la base de datos en pgAdmin:
+
+1. Abre **pgAdmin**.
+2. Conéctate a tu servidor PostgreSQL.
+3. Haz clic derecho en **Databases** y selecciona **Create > Database**.
+4. Ingresa un nombre para tu base de datos (por ejemplo: `carniceria_db`) y haz clic en **Save**.
+5. Una vez creada la base de datos, configura el archivo .env en la carpeta backend con las siguientes variables:
+
+    Primero creamos el archivo env de la siguiente manera:
+
+    ```bash
+    cd ../backend
+    cd config
+    touch .env
+    ```
+    
+    Ingresamos lo siguiente
+
+    ```bash
+    HOST=localhost
+    PORT=3050
+    DATABASE=el_nombre_de_tu_bd
+    DB_USERNAME=el_username_de_tu_bd
+    PASSWORD=la_contraseña_de_tu_bd
+    ACCESS_TOKEN_SECRET= tu_clave_segura
+    cookieKey=llave_de_la_cookie
+    ```
+5. **Inicia el backend**: 
+
+    ```bash
+    cd backend
+    npm run start
+    ```
+6. **Inicia el frontend**:
+
+Abre otra terminal
+
+    ```bash
+    cd frontend
+    npm run dev
+    ```
+
+7. **Prueba el entorno: Verifica que**:
+
+ -El backend esté corriendo en http://localhost:3050/api.
+- El frontend esté disponible en http://localhost:3000.
