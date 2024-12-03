@@ -1,39 +1,23 @@
-import { useState } from 'react';
-import { createCategoria } from '@services/categoria.service'; // Asegúrate de que la ruta sea correcta
+import { createCategoria } from '@services/categoria.service.js'; // Asegúrate de que este servicio esté correcto
 
-export function useCreateCategoria() {
-    const [loading, setLoading] = useState(false);  // Para manejar el estado de carga
-    const [error, setError] = useState(null);       // Para manejar posibles errores
-    const [success, setSuccess] = useState(null);   // Para manejar mensajes de éxito
-
-    // Función que se encargará de crear la nueva categoría
-    const createNewCategoria = async (categoria) => {
-        setLoading(true);  // Habilitar estado de carga
-        setError(null);    // Limpiar cualquier error anterior
-        setSuccess(null);  // Limpiar cualquier mensaje de éxito anterior
-
+const useCreateCategoria = (fetchCategorias) => {
+    const handleCreate = async (categoriaData) => {
         try {
-            // Llamada al servicio que hace la petición para crear la categoría
-            const response = await createCategoria(categoria);
-
-            // Verificar si la respuesta fue exitosa (código 201)
-            if (response && response.status === 201) {
-                setSuccess("Categoría creada con éxito");  // Mensaje de éxito
+            const newCategoria = await createCategoria(categoriaData);
+            if (newCategoria) {
+                // Si la categoría se crea correctamente, obtenemos nuevamente las categorías
+                fetchCategorias(); // Vuelve a obtener las categorías para reflejar la nueva
             } else {
-                setError("No se pudo crear la categoría.");  // Mensaje de error si no fue exitosa
+                throw new Error('No se pudo crear la categoría');
             }
         } catch (error) {
-            // Manejo de errores si algo falla en la petición
-            if (error.response && error.response.data) {
-                setError(error.response.data.message || "Error al crear la categoría");
-            } else {
-                setError("Error al crear la categoría");  // Error genérico
-            }
-        } finally {
-            setLoading(false);  // Deshabilitar el estado de carga
+            // Manejo del error, puedes mostrar el error en consola o manejarlo de otra manera
+            const errorMessage = error.response?.data?.message || 'No se pudo crear la categoría';
+            console.error(errorMessage); // Mostramos el error en la consola
         }
     };
 
-    // Retornar la función y los estados para ser utilizados en el componente
-    return { createNewCategoria, loading, error, success };
-}
+    return { handleCreate }; // Se exporta 'handleCreate'
+};
+
+export { useCreateCategoria };

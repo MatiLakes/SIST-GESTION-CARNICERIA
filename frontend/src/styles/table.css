@@ -1,109 +1,45 @@
-/* Contenedor principal de la tabla */
-.table-container {
-    background-color: #f4f4f9;
-    padding: 20px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-}
-
-/* Estilos para la tabla */
+/* Asegura que la tabla ocupe más espacio */
 .table-container .tabulator {
-    border: none;
+    width: 100%; /* Asegura que la tabla ocupe todo el ancho disponible */
+    height: 100vh; /* Asegura que la tabla ocupe toda la altura de la pantalla */
+    font-size: 16px; /* Aumenta el tamaño de la fuente */
+    overflow: hidden; /* Oculta el desbordamiento de la tabla */
 }
 
-/* Estilo de los encabezados de las columnas */
+/* Contenedor que permite el desplazamiento de la tabla */
+.table-container .tabulator .tabulator-table-holder {
+    height: calc(100vh - 50px); /* Deja espacio para el encabezado o pie de página si es necesario */
+    overflow-y: auto; /* Permite el desplazamiento vertical cuando haya más filas que espacio disponible */
+    display: block; /* Asegura que el contenedor sea un bloque para habilitar el scroll */
+}
+
+/* Estilo para las columnas */
 .table-container .tabulator .tabulator-col {
-    background-color: #003366; /* Azul oscuro */
-    color: #ffffff; /* Blanco para contraste */
-    font-weight: bold;
-    border-right: 1px solid #ffffff;
+    background-color: #003366; /* Color de fondo de las columnas */
+    color: #fff; /* Color del texto en las columnas */
+    font-size: 18px; /* Aumenta el tamaño de la fuente de las celdas */
+    padding: 12px; /* Aumenta el espaciado dentro de las celdas */
 }
 
-/* Última columna sin borde derecho */
-.table-container .tabulator .tabulator-col:last-child {
-    border-right: none;
+/* Asegura que la tabla ocupe un mayor espacio */
+.tabulator .tabulator-table {
+    width: 100%;
+    table-layout: fixed; /* Asegura que las columnas se distribuyan uniformemente */
+    border-collapse: collapse; /* Evita que las celdas tengan espacios entre ellas */
 }
 
-/* Estilo de las celdas */
-.table-container .tabulator .tabulator-cell {
-    background-color: #ffffff; /* Blanco */
-    color: #333333; /* Gris oscuro para el texto */
-    border-bottom: 1px solid #d1d5db;
-    padding: 8px;
-}
-
-/* Resaltar fila al pasar el cursor */
-.table-container .tabulator .tabulator-row:hover {
-    background-color: #eaf1f8; /* Azul claro */
-}
-
-/* Estilo del pie de la tabla */
-.table-container .tabulator-footer {
-    background-color: #ffffff;
-    border-top: 2px solid #003366;
-    padding: 10px 0;
-}
-
-/* Botones de paginación */
+/* Estilos para el pie de página de la tabla */
 .tabulator .tabulator-footer .tabulator-page {
-    background-color: #ffffff;
-    color: #003366;
-    border: 1px solid #003366;
-    padding: 6px 12px;
-    margin: 0 2px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
+    background-color: #fff; /* Fondo blanco para la paginación */
+    color: black; /* Color del texto */
+    border: 1px solid #003366; /* Borde del pie de página */
+    padding: 8px 16px; /* Espaciado más grande para los botones de la paginación */
+    border-radius: 4px; /* Bordes redondeados */
+    font-size: 18px; /* Aumenta el tamaño de la fuente en el pie de página */
 }
 
-/* Botón de paginación activo */
+/* Estilo para la página activa en el pie de página */
 .tabulator .tabulator-footer .tabulator-page.active {
-    background-color: #003366;
-    color: #ffffff;
-}
-
-/* Estilo de botones deshabilitados */
-.tabulator .tabulator-footer .tabulator-page.disabled {
-    background-color: #e0e0e0;
-    color: #a1a1a1;
-    cursor: not-allowed;
-}
-
-/* Títulos de las tablas */
-.title-table {
-    color: #003366;
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 16px;
-    text-transform: uppercase;
-}
-
-/* Botones de acciones */
-.filter-actions button {
-    background-color: #003366;
-    color: #ffffff;
-    border: none;
-    padding: 8px 12px;
-    margin-right: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-/* Botones de acciones deshabilitados */
-.filter-actions button:disabled {
-    background-color: #e0e0e0;
-    color: #a1a1a1;
-    cursor: not-allowed;
-}
-
-/* Input de búsqueda */
-.filter-actions input {
-    padding: 8px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    margin-right: 8px;
-    font-size: 14px;
-    width: 200px;
+    color: #E4332C; /* Resalta la página activa con un color rojo */
+    font-weight: bold; /* Hace la fuente de la página activa más destacada */
 }

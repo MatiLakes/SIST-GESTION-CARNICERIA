@@ -36,7 +36,13 @@ export async function createCategoria(categoria) {
 export async function updateCategoria(id, categoria) {
     try {
         const response = await axios.put(`/categoria/actualizar/${id}`, categoria); // Cambiado a PUT
-        return response.data; // Retorna la respuesta completa del backend
+        
+        // Verificar el código de estado HTTP
+        if (response.status === 200) {
+            return response.data; // Retorna la respuesta completa del backend si el status es 200
+        } else {
+            throw new Error(`Error al actualizar la categoría: Código de estado ${response.status}`);
+        }
     } catch (error) {
         console.error("Error al actualizar la categoría:", error.response?.data || error.message);
         throw error; // Lanza el error para que sea manejado por el hook

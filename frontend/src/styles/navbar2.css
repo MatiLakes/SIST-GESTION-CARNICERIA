@@ -193,7 +193,6 @@
 /* Ajustes para el contenido principal */
 .main-container {
     display: flex;
-    
     flex-direction: column;
     margin-left: 320px; /* Añade espacio para la barra lateral */
     width: calc(100% - 320px); /* Ajusta el ancho del contenedor principal */
@@ -216,3 +215,4 @@
         width: 100%; /* El contenedor ocupa todo el ancho */
     }
 }
+

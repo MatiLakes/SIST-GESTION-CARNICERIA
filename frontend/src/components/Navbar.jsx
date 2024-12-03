@@ -16,6 +16,7 @@ const Navbar = () => {
     };
 
     return (
+        
         <nav className="navbar">
             {/* Agregamos el logo aquí */}
             <div className="logo-container">

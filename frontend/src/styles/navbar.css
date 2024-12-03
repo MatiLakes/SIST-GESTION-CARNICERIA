@@ -1,5 +1,9 @@
-body {
+.body-navbar {
     font-family: 'Poppins', sans-serif; /* Aplicamos la fuente Poppins a todo el cuerpo */
+    margin: 0;
+    padding-top: 9vh; /* Asegura que el contenido no se superponga a la navbar */
+    box-sizing: border-box; /* Evita que el padding cause desbordamientos */
+    
     
 }
 
@@ -19,6 +23,7 @@ body {
     font-family: 'Poppins', sans-serif;
     backdrop-filter: blur(50px); /* Efecto de desenfoque en el fondo */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave para el brillo */
+    
 }
 
 .navbar::before {
@@ -125,6 +130,8 @@ body {
         padding: 10px 0;
     }
 }
+
+
 
 
 
