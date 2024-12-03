@@ -1,102 +1,146 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { logout } from '@services/auth.service.js';
-import '@styles/navbar2.css'; // Asegúrate de que los estilos sean correctos para navbar2
+import { logout } from "@services/auth.service.js";
+import Swal from "sweetalert2";
+import "@styles/navbar2.css";
 import { useState } from "react";
-import { HiArrowSmLeft } from "react-icons/hi";
-import { HiArrowSmRight } from "react-icons/hi";
+import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
+import { FaHouse } from "react-icons/fa6";
+import { ImExit } from "react-icons/im"; 
+import { FaTruck } from "react-icons/fa";
+import { FaRegArrowAltCircleDown } from "react-icons/fa";
+import { FaRegArrowAltCircleUp } from "react-icons/fa";
 
 const Navbar2 = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
+    const user = JSON.parse(sessionStorage.getItem("usuario")) || "";
     const userRole = user?.rol;
     const [menuOpen, setMenuOpen] = useState(false);
+    const [subMenuOpen, setSubMenuOpen] = useState(false);
 
     const logoutSubmit = () => {
         try {
             logout();
-            navigate('/auth');
+            navigate("/auth");
         } catch (error) {
-            console.error('Error al cerrar sesión:', error);
+            console.error("Error al cerrar sesión:", error);
         }
     };
 
-    // Alterna el estado del menú y limpia las clases activas si se abre
-    const toggleMenu = () => {
-        // Limpia las clases 'active' cuando se cambia el estado del menú
-        if (menuOpen) {
-            removeActiveClass();
-        }
-        setMenuOpen(!menuOpen);
-    };
-
-    // Elimina la clase 'active' de todos los enlaces
-    const removeActiveClass = () => {
-        const activeLinks = document.querySelectorAll('.navbar2 .nav-menu ul li a.active');
-        activeLinks.forEach(link => link.classList.remove('active'));
-    };
-
-    // Agrega la clase 'active' al enlace correspondiente
-    const addActiveClass = () => {
-        const links = document.querySelectorAll('.navbar2 .nav-menu ul li a');
-        links.forEach(link => {
-            if (link.getAttribute('href') === location.pathname) {
-                link.classList.add('active');
+    const handleLogoutClick = () => {
+        Swal.fire({
+            title: "¿Seguro que quieres salir?",
+            text: "Tu sesión será cerrada.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, salir",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                logoutSubmit();
             }
         });
     };
 
+    const toggleMenu = () => {
+        setMenuOpen((prevMenuOpen) => {
+            const newMenuOpen = !prevMenuOpen;
+            // Si la barra lateral se cierra, también cerramos el submenú
+            if (!newMenuOpen) {
+                setSubMenuOpen(false);
+            }
+            return newMenuOpen;
+        });
+    };
+
+    const toggleSubMenu = () => {
+        setSubMenuOpen((prevSubMenuOpen) => !prevSubMenuOpen);
+    };
+
     return (
-        <nav className={`navbar2 ${menuOpen ? 'activado' : 'oculta'}`}>
+        <nav className={`navbar2 ${menuOpen ? "activado" : "oculta"}`}>
+            <button className="flechamenu" onClick={toggleMenu}>
+                {menuOpen ? <HiArrowSmLeft className="toggle-icon" /> : <HiArrowSmRight className="toggle-icon" />}
+            </button>
+
             {menuOpen && (
-                <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
+                <div className={`nav-menu ${menuOpen ? "activado" : ""}`}>
                     <ul>
-                        <li>
-                            <NavLink 
-                                to="/home" 
-                                onClick={() => { 
-                                    setMenuOpen(false); 
-                                    addActiveClass();
-                                }} 
-                                activeClassName="active"
-                            >
-                                Inicio
-                            </NavLink>
-                        </li>
-                        {userRole === 'administrador' && (
-                            <li>
-                                <NavLink 
-                                    to="/users" 
-                                    onClick={() => { 
-                                        setMenuOpen(false); 
-                                        addActiveClass();
-                                    }} 
-                                    activeClassName="active"
-                                >
-                                    Usuarios
-                                </NavLink>
-                            </li>
+                        {userRole === "administrador" && (
+                            <>
+                                <li>
+                                    <NavLink
+                                        to="/home"
+                                        onClick={() => {
+                                            setSubMenuOpen(false); // Cierra el submenú
+                                        }}
+                                        className={location.pathname === "/home" ? "active" : ""}
+                                    >
+                                        <FaHouse className="nav-icon" />
+                                        <span>Inicio</span>
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink
+                                        to="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            toggleSubMenu(); // Solo alterna el submenú
+                                        }}
+                                        className={subMenuOpen ? "active" : ""}
+                                    >
+                                        <FaTruck className="nav-icon" />
+                                        <span>Gestión de Proveedores</span>
+                                        {/* Icono que cambia según el estado del submenú */}
+                                        {subMenuOpen ? <FaRegArrowAltCircleUp className="icon-large" /> : <FaRegArrowAltCircleDown className="icon-large" />}
+                                    </NavLink>
+                                </li>
+                                {subMenuOpen && (
+                                    <div className={`nav-submenu ${subMenuOpen ? "activado" : "oculta"}`}>
+                                        <ul>
+                                            <li>
+                                                <NavLink
+                                                    to="/proveedores/categoria"
+                                                    onClick={() => setSubMenuOpen(false)} // Cierra el submenú
+                                                    className={location.pathname === "/proveedores/categoria" ? "active" : ""}
+                                                >
+                                                    - Categoría
+                                                </NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink
+                                                    to="/gestion-proveedores/proveedor"
+                                                    onClick={() => setSubMenuOpen(false)} // Cierra el submenú
+                                                    className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}
+                                                >
+                                                    - Proveedor
+                                                </NavLink>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </>
                         )}
-                        <li>
-                            <NavLink 
-                                to="/auth" 
-                                onClick={() => { 
-                                    logoutSubmit(); 
-                                    setMenuOpen(false); 
-                                }} 
-                                activeClassName="active"
+                        <li className="logout-item">
+                            <NavLink
+                                to="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleLogoutClick();
+                                    setMenuOpen(false); // Cierra el menú
+                                    setSubMenuOpen(false); // Cierra el submenú
+                                }}
+                                className={`logout-link ${location.pathname === "/auth" ? "active" : ""}`}
                             >
-                                Cerrar sesión
+                                <ImExit className="nav-icon" />
+                                <span>Logout</span>
                             </NavLink>
                         </li>
                     </ul>
                 </div>
             )}
-
-            {/* Botón para alternar la visibilidad del menú */}
-            <button className="toggle-btn" onClick={toggleMenu}>
-                {menuOpen ? <HiArrowSmLeft className="toggle-icon" /> : <HiArrowSmRight className="toggle-icon" />}
-        </button>
         </nav>
     );
 };

@@ -1,0 +1,80 @@
+/* Tabla general */
+.material-table {
+  width: calc(100% - 320px); /* Resta el ancho de la navbar2 */
+  margin-left: 320px; /* Alinea la tabla después de la barra lateral */
+  padding: 20px; /* Espaciado interno */
+  box-sizing: border-box; /* Incluye el padding en el cálculo del ancho */
+  height: 100vh; /* Usa toda la altura de la ventana */
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+  overflow-x: auto; /* Añade desplazamiento horizontal si es necesario */
+  background-color: rgba(236, 233, 233, 0.3); /* Fondo translúcido */
+  backdrop-filter: blur(10px); /* Efecto de desenfoque */
+  border-radius: 8px; /* Bordes redondeados */
+  border-spacing: 0; /* Elimina el espaciado entre las celdas */
+
+}
+
+/* Cuando la navbar2 está contraída, ajusta el margen y el ancho de la tabla */
+.navbar2.oculta ~ .material-table {
+  margin-left: 80px; /* Ajusta el margen cuando la barra está contraída */
+  width: calc(100% - 80px); /* Ajusta el ancho de la tabla cuando la barra está contraída */
+}
+
+/* Estilo de las celdas de la tabla */
+.material-table .MuiTableCell-root {
+  background-color: rgba(255, 255, 255, 0.6); /* Fondo translúcido para las celdas */
+  color: #333; /* Color de texto oscuro para mejor contraste */
+  border-left: none; /* Elimina el borde izquierdo */
+  border-right: none; /* Elimina el borde derecho */
+  border-top: none; /* Elimina el borde superior */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Línea horizontal inferior */
+  padding: 16px; /* Ajusta el padding si es necesario */
+  transition: none !important; /* Elimina cualquier transición */
+}
+
+/* Estilo del encabezado de la tabla */
+.material-table .MuiTableHead-root {
+  background-color: #000000; /* Fondo sólido oscuro para el encabezado */
+  color: #ffffff; /* Color blanco para el texto */  
+}
+
+/* Estilo para las celdas del encabezado (ID, Nombre, Acciones) */
+.material-table .MuiTableHead-root .MuiTableCell-root {
+  background-color: #333; /* Fondo sólido para las celdas del encabezado */
+  color: #fff; /* Texto blanco */
+  font-weight: bold; /* Negrita para mayor visibilidad */
+  border-left: none; /* Elimina el borde izquierdo */
+  border-right: none; /* Elimina el borde derecho */
+  border-top: none; /* Elimina el borde superior */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Línea horizontal inferior */
+  padding: 16px; /* Ajusta el padding en las celdas del encabezado */
+}
+
+/* Eliminar el efecto hover en las filas de la tabla */
+.material-table .MuiTableRow-root:hover {
+  background-color: transparent; /* Sin cambio de fondo al pasar el mouse */
+}
+
+
+
+/* Asegura que el fondo del contenedor de la tabla sea translúcido */
+.material-table .MuiPaper-root {
+  background-color: transparent; /* Fondo transparente para el contenedor */
+  border-radius: 8px; /* Bordes redondeados */
+}
+
+/* Ajuste adicional para las celdas de la última columna */
+.material-table .MuiTableCell-root:last-child {
+  padding-right: 130px !important; /* Ajusta el espacio hacia la derecha */
+}
+
+/* Estilo personalizado para centrar el título */
+.table-title-formulario {
+  position: fixed;
+  font-size: 30px; /* Puedes ajustar el tamaño de la fuente */
+  color:  black;
+  margin: 0 auto; /* Centrado automático */
+  width: 90%; /* Aseguramos que ocupe el 100% del ancho */
+  margin-top: 100;
+}
+

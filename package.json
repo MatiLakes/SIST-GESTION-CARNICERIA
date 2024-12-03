@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@mui/icons-material": "^6.1.8",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
+    "material-table": "^1.63.0"
+  }
+}

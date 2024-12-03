@@ -10,6 +10,7 @@ import { connectDB } from "./config/configDb.js";
 import { createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 import indexRoutes from "./routes/index.routes.js";
+import { cargarCategoriasPredeterminadas } from "./services/categoria.service.js";
 
 async function setupServer() {
   try {
@@ -61,7 +62,8 @@ async function setupServer() {
     passportJwtSetup();
 
     // Rutas
-    app.use("/api", indexRoutes);            
+    app.use("/api", indexRoutes);
+
     // Iniciar el servidor
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
@@ -73,9 +75,10 @@ async function setupServer() {
 
 async function setupAPI() {
   try {
-    await connectDB();                // Conectar a la base de datos
-    await setupServer();              // Configurar el servidor
-    await createUsers();              // Crear usuarios iniciales si es necesario
+    await connectDB();                         // Conectar a la base de datos
+    await cargarCategoriasPredeterminadas();  // Cargar categorías predeterminadas
+    await setupServer();                       // Configurar el servidor
+    await createUsers();                       // Crear usuarios iniciales si es necesario
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
   }
