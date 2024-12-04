@@ -11,7 +11,6 @@ import CategoriaRRoutes from "./categoria.routes.js";
 const router = Router();
 
 router
-<<<<<<< HEAD
   .use("/auth", authRoutes)
   .use("/user", userRoutes) 
   .use("/animal-corte", animalCorteRoutes) 
