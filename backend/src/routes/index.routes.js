@@ -14,7 +14,7 @@ router
   .use("/auth", authRoutes)
   .use("/user", userRoutes) 
   .use("/animal-corte", animalCorteRoutes) 
-  .use("/animal-vara", animalVaraRoutes); 
+  .use("/animal-vara", animalVaraRoutes) 
   .use("/proveedor", proveedorRoutes)
   .use("/categoria", CategoriaRRoutes)
 
