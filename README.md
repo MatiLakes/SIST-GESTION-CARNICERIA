@@ -33,86 +33,147 @@ Este sistema proporciona una solución integral para la administración moderna 
 
 ## Requisitos previos
 
-Antes de empezar, asegúrate de tener lo siguiente instalado:
+Antes de empezar, asegúrate de cumplir con los siguientes requisitos:
 
-- **Node.js** (v16 o superior)
-- **PostgreSQL** (v13 o superior)
-- **pgAdmin** (para gestionar bases de datos visualmente)
-- **Git** (para clonar el repositorio)
+1. **Git**:
+   - Git es una herramienta para controlar versiones de tu código.
+   - Si no tienes Git instalado, descárgalo desde [git-scm.com](https://git-scm.com/) e instálalo siguiendo las instrucciones.
+   - Una vez instalado, verifica la instalación ejecutando:
+
+     ```bash
+     git --version
+     ```
+
+     Debería mostrar la versión de Git instalada.
+
+2. **Node.js**:
+   - Necesitas Node.js para ejecutar el backend y frontend.
+   - Descárgalo desde [nodejs.org](https://nodejs.org/) e instala la versión LTS recomendada.
+   - Verifica la instalación ejecutando:
+
+     ```bash
+     node --version
+     npm --version
+     ```
+
+     Esto mostrará las versiones de Node.js y npm (Node Package Manager).
+
+3. **PostgreSQL y pgAdmin**:
+   - PostgreSQL es el sistema de gestión de bases de datos utilizado por el proyecto.
+   - Descárgalo desde [postgresql.org](https://www.postgresql.org/) e instala pgAdmin como herramienta visual para gestionar bases de datos.
+   - Durante la instalación, configura un nombre de usuario y contraseña para PostgreSQL. Recuerda estos datos, ya que los necesitarás más adelante.
+
+4. **Un editor de texto**:
+   - Se recomienda instalar [Visual Studio Code](https://code.visualstudio.com/), un editor de código liviano y muy funcional.
 
 ---
 
 ## Instalación
 
-Sigue estos pasos para configurar tu entorno:
+Sigue estos pasos detallados para configurar tu entorno y ejecutar el sistema:
 
 1. **Clona el repositorio**:
+   - Abre una terminal o consola de comandos.
+   - Ejecuta lo siguiente:
 
-    ```bash
-    git clone https://github.com/MatiLakes/SIST-GESTION-CARNICERIA.git
-    cd SIST-GESTION-CARNICERIA
-    ```
+     ```bash
+     git clone https://github.com/MatiLakes/SIST-GESTION-CARNICERIA.git
+     cd SIST-GESTION-CARNICERIA
+     ```
+
+   Esto descargará el proyecto y te moverá a la carpeta del mismo.
 
 2. **Instala las dependencias del backend**:
+   - Cambia al directorio del backend:
 
-    ```bash
-    cd backend
-    npm install
-    ```
+     ```bash
+     cd backend
+     ```
+
+   - Instala las dependencias necesarias:
+
+     ```bash
+     npm install
+     ```
 
 3. **Instala las dependencias del frontend**:
+   - Regresa al directorio raíz y luego al directorio del frontend:
 
-    ```bash
-    cd ../frontend
-    npm install
-    ```
+     ```bash
+     cd ../frontend
+     npm install
+     ```
 
 4. **Configura las variables de entorno para el backend**:
-    Asegúrate de tener **pgAdmin** instalado y funcionando. Crea una base de datos en PostgreSQL antes de continuar. Aquí tienes un resumen de cómo hacerlo:
+   - Asegúrate de tener pgAdmin abierto y conectado a tu servidor PostgreSQL.
+   - Crea una base de datos para el proyecto siguiendo estos pasos:
 
-### Crear la base de datos en pgAdmin:
+     1. Abre **pgAdmin**.
+     2. Conéctate a tu servidor PostgreSQL.
+     3. Haz clic derecho en **Databases** y selecciona **Create > Database**.
+     4. Ingresa un nombre para la base de datos (por ejemplo: `carniceria_db`) y haz clic en **Save**.
 
-1. Abre **pgAdmin**.
-2. Conéctate a tu servidor PostgreSQL.
-3. Haz clic derecho en **Databases** y selecciona **Create > Database**.
-4. Ingresa un nombre para tu base de datos (por ejemplo: `carniceria_db`) y haz clic en **Save**.
-5. Una vez creada la base de datos, configura el archivo .env en la carpeta backend con las siguientes variables:
+   - Configura las variables de entorno creando un archivo `.env`:
 
-    Primero creamos el archivo env de la siguiente manera:
+     ```bash
+     cd ../backend/config
+     touch .env
+     ```
 
-    ```bash
-    cd ../backend
-    cd config
-    touch .env
-    ```
-    
-    Ingresamos lo siguiente
+   - Abre el archivo `.env` en un editor de texto y copia lo siguiente, ajustando los valores según tu configuración:
 
-    ```bash
-    HOST=localhost
-    PORT=3050
-    DATABASE=el_nombre_de_tu_bd
-    DB_USERNAME=el_username_de_tu_bd
-    PASSWORD=la_contraseña_de_tu_bd
-    ACCESS_TOKEN_SECRET= tu_clave_segura
-    cookieKey=llave_de_la_cookie
-    ```
-5. **Inicia el backend**: 
+     ```env
+     HOST=localhost
+     PORT=3050
+     DATABASE=carniceria_db
+     DB_USERNAME=tu_usuario_postgres
+     PASSWORD=tu_contraseña_postgres
+     ACCESS_TOKEN_SECRET=tu_clave_segura
+     cookieKey=tu_llave_cookie
+     ```
 
-    ```bash
-    cd backend
-    npm run start
-    ```
+5. **Inicia el backend**:
+   - Vuelve al directorio del backend:
+
+     ```bash
+     cd ../backend
+     ```
+
+   - Ejecuta el servidor:
+
+     ```bash
+     npm run start
+     ```
+
+   - Asegúrate de que el backend esté corriendo correctamente. Debería estar disponible en:
+
+     ```
+     http://localhost:3050/api
+     ```
+
 6. **Inicia el frontend**:
+   - Abre una nueva terminal.
+   - Ve al directorio del frontend:
 
-Abre otra terminal
+     ```bash
+     cd frontend
+     ```
 
-    ```bash
-    cd frontend
-    npm run dev
-    ```
+   - Ejecuta el servidor del frontend:
 
-7. **Prueba el entorno: Verifica que**:
+     ```bash
+     npm run dev
+     ```
 
- -El backend esté corriendo en http://localhost:3050/api.
-- El frontend esté disponible en http://localhost:3000.
+   - El frontend debería estar disponible en:
+
+     ```
+     http://localhost:3000
+     ```
+
+7. **Verifica que el sistema esté funcionando**:
+   - Abre un navegador y visita las URLs del backend y frontend para verificar que ambos estén activos.
+
+---
+
+
