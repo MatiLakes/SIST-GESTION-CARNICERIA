@@ -1,0 +1,36 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3050:3050"  # Mapea el puerto 3050 del contenedor al host
+    depends_on:
+      - db           # Asegura que el servicio 'db' esté levantado antes que el backend
+    environment:
+      - HOST=db
+      - PORT=3050
+      - DATABASE=carniceria
+      - DB_USERNAME=alvaro
+      - PASSWORD=rdr123
+      - ACCESS_TOKEN_SECRET=hola123
+      - cookieKey=Llave de la cookie
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: alvaro
+      POSTGRES_PASSWORD: rdr123
+      POSTGRES_DB: carniceria
+    ports:
+      - "5432:5432"  # Mapea el puerto 5432 del contenedor al host
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

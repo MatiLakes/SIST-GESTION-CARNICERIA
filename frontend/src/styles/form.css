@@ -6,7 +6,7 @@ body, .container, .form, input, select, textarea, button, p {
 
 .container {
     height: 100vh;
-    background: url('fondoLogin1.jpg') no-repeat center center/cover, 
+    background: url('../images//fondoLogin1.jpg') no-repeat center center/cover, 
                 linear-gradient(90deg, #a0a3a7, #000408); /* Agrega la imagen de fondo */
     display: flex;
     justify-content: center;

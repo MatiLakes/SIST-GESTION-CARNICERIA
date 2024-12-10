@@ -1,55 +1,81 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-
-body {
+.body-navbar {
     font-family: 'Poppins', sans-serif; /* Aplicamos la fuente Poppins a todo el cuerpo */
+    margin: 0;
+    padding-top: 9vh; /* Asegura que el contenido no se superponga a la navbar */
+    box-sizing: border-box; /* Evita que el padding cause desbordamientos */
+    
+    
 }
 
 .navbar {
-    position: fixed;
-    width: 100%;
+    position: fixed; /* Fija la navbar en la parte superior */
     top: 0;
     left: 0;
+    width: 100%; /* Asegura que ocupe todo el ancho de la pantalla */
+    height: 9vh; /* Ajusta la altura según tus necesidades */
     display: flex;
-    justify-content: flex-end; /* Alineamos al final de la barra */
+    justify-content: space-between; /* Coloca el logo a la izquierda y los elementos a la derecha */
     align-items: center;
-    background-color: #f58b00; /* Color de la navbar */
-    height: 9vh;
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco transparente */
     z-index: 1000;
     padding: 0 20px;
-    box-sizing: border-box; /* Asegura que el padding no afecte el tamaño total */
-    font-family: 'Poppins', sans-serif; /* Usamos Poppins en la navbar */
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    backdrop-filter: blur(50px); /* Efecto de desenfoque en el fondo */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave para el brillo */
+    
+}
+
+.navbar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); /* Patrón de ruido granulado */
+    pointer-events: none; /* Evita que el granulado interfiera con la interacción del usuario */
+    opacity: 0.5; /* Controla la intensidad del granulado */
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo-goval {
+    height: 150px; /* Ajusta el tamaño según lo necesario */
+    width: auto;
 }
 
 .nav-menu ul {
     display: flex;
-    justify-content: flex-end;  /* Alinea los elementos a la derecha */
+    justify-content: flex-end;
     align-items: center;
     margin: 0;
     padding: 0;
     list-style: none;
-    width: 70%;  /* Asegura que los elementos se ajusten correctamente */
-    max-width: calc(100% - 20px); /* Restamos 40px (20px de padding en cada lado) para evitar desbordamiento */
 }
 
 .user-info {
     display: flex;
-    flex-direction: column;  /* Apilamos el nombre y el rol */
-    align-items: flex-end;  /* Alineamos el texto a la derecha */
-    color: white;
+    flex-direction: column;
+    align-items: flex-end;
+    color: black; /* Cambiado a negro */
     font-size: 1.1em;
     font-weight: bold;
-    margin-right: -50px; /* Añadimos margen a la derecha para evitar que se salga */
+    margin-right: 20px;
 }
 
 .user-welcome {
-    font-size: 1em;  /* Tamaño más pequeño para el nombre */
-    margin-bottom: 0px;  /* Sin espacio entre el nombre y el rol */
+    font-size: 1em; /* Tamaño más pequeño para el nombre */
+    margin-bottom: 0px;
 }
 
 .user-role {
-    font-size: 0.9em;  /* Tamaño más pequeño para el rol */
-    color: #cce7ff;  /* Un color más claro para el rol */
-    margin-top: 5px; /* Espacio entre el nombre y el rol */
+    font-size: 0.9em;
+    color: black; /* Cambiado a negro */
+    margin-top: 5px;
 }
 
 .hamburger {
@@ -75,7 +101,7 @@ body {
         flex-direction: column;
         background-color: #003366;
         position: absolute;
-        top: 9vh;
+        top: 9vh; /* Deja espacio para la navbar */
         left: 0;
         width: 100%;
         text-align: center;
@@ -104,3 +130,8 @@ body {
         padding: 10px 0;
     }
 }
+
+
+
+
+
