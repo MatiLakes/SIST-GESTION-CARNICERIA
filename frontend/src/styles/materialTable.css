@@ -11,7 +11,6 @@
   backdrop-filter: blur(10px); /* Efecto de desenfoque */
   border-radius: 8px; /* Bordes redondeados */
   border-spacing: 0; /* Elimina el espaciado entre las celdas */
-
 }
 
 /* Cuando la navbar2 está contraída, ajusta el margen y el ancho de la tabla */
@@ -40,7 +39,7 @@
 
 /* Estilo para las celdas del encabezado (ID, Nombre, Acciones) */
 .material-table .MuiTableHead-root .MuiTableCell-root {
-  background-color: #333; /* Fondo sólido para las celdas del encabezado */
+  background-color: #333; /* Fondo sólido para el encabezado */
   color: #fff; /* Texto blanco */
   font-weight: bold; /* Negrita para mayor visibilidad */
   border-left: none; /* Elimina el borde izquierdo */
@@ -54,8 +53,6 @@
 .material-table .MuiTableRow-root:hover {
   background-color: transparent; /* Sin cambio de fondo al pasar el mouse */
 }
-
-
 
 /* Asegura que el fondo del contenedor de la tabla sea translúcido */
 .material-table .MuiPaper-root {
@@ -78,3 +75,117 @@
   margin-top: 100;
 }
 
+/* Estilo del botón "Crear Categoría" */
+.crear-categoria-button {
+  margin-left: 0; /* Ajusta el valor a lo que necesites */
+  background-color: #4CAF50; /* Fondo verde */
+  color: white; /* Texto blanco */
+  padding: 8px 0px; /* Espaciado interno */
+  font-size: 16px; /* Tamaño de la fuente */
+  border-radius: 8px; /* Bordes redondeados */
+  display: flex;
+  align-items: center; /* Alinea el texto y el ícono */
+  justify-content: center; /* Centra el contenido */
+  cursor: pointer; /* Cambia el cursor al pasar el mouse */
+  border: none; /* Elimina cualquier borde por defecto */
+  outline: none; /* Elimina el borde de foco */
+  box-shadow: none; /* Elimina cualquier sombra */
+  transition: background-color 0.3s ease; /* Transición suave */
+  top: -20px; /* Mueve el botón 20px hacia arriba */
+  position: relative;
+  left: -40px; /* Ajusta este valor para moverlo más a la izquierda */
+}
+
+button.crear-categoria-button:hover {
+  background-color: #4CAF50 !important; /* Mantener el mismo color de fondo */
+  box-shadow: none !important; /* Eliminar cualquier sombra */
+  color: white !important; /* Mantener el texto blanco */
+  outline: none !important; /* Eliminar el borde de foco */
+  pointer-events: none !important; /* Desactiva la interacción en hover */
+  transform: none !important; /* Elimina cualquier transformación */
+}
+
+/* Eliminar cualquier sombra o borde cuando se hace foco */
+.crear-categoria-button:focus {
+  outline: none !important; /* Eliminar el borde de foco */
+  box-shadow: none !important; /* Eliminar cualquier sombra */
+}
+
+
+.crear-categoria-button svg {
+  margin-right: 8px; /* Espaciado entre el ícono y el texto */
+  font-size: 20px; /* Ajusta el tamaño del ícono */
+}
+
+/* Estilo para el tooltip siempre abajo con más espacio y fondo oscuro y transparente */
+button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro con opacidad */
+  color: rgba(252, 250, 250, 0.945); /* Texto blanco con opacidad (ajusta el valor de opacidad entre 0 y 1) */
+  padding: 5px 10px; /* Ajuste de padding */
+  border-radius: 4px; /* Bordes redondeados */
+  font-size: 10px; /* Tamaño de fuente */
+  font-family: 'Arial';
+  top: calc(100% + 10px); /* Da más espacio entre el botón y el tooltip */
+  left: 50%; /* Centra el tooltip horizontalmente */
+  transform: translateX(-50%); /* Ajusta la posición para centrarlo */
+  white-space: nowrap; /* Evita el ajuste de línea */
+  z-index: 10; /* Asegura que el tooltip esté encima de otros elementos */
+}
+
+/* Eliminar sombra predeterminada de los íconos en la tabla */
+.material-table .MuiSvgIcon-root {
+  box-shadow: none !important; /* Elimina cualquier sombra */
+  outline: none !important; /* Elimina cualquier borde de enfoque */
+}
+
+/* Eliminar sombra de los íconos en las acciones de la tabla */
+.material-table .MuiTableCell-root .MuiSvgIcon-root {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Eliminar el efecto hover sobre los botones dentro de la tabla */
+.material-table .MuiTableCell-root button:hover {
+  background-color: transparent !important; /* Sin cambio de fondo al pasar el mouse */
+  box-shadow: none !important; /* Elimina cualquier sombra */
+  color: inherit !important; /* Mantiene el color de texto original */
+}
+
+/* Eliminar cualquier sombra o borde cuando se hace foco */
+.material-table .MuiTableCell-root button:focus {
+  outline: none !important; /* Elimina el borde de foco */
+  box-shadow: none !important; /* Elimina cualquier sombra */
+}
+
+/* Eliminar sombra en la toolbar */
+.material-table .MuiToolbar-root button:hover{
+  box-shadow: none !important; /* Elimina cualquier sombra en los iconos */
+  outline: none !important; /* Elimina el borde de enfoque */
+}
+
+/* Eliminar sombra predeterminada de los iconos en la tabla */
+.material-table .MuiSvgIcon-root {
+  box-shadow: none !important; /* Elimina cualquier sombra en los iconos */
+  outline: none !important; /* Elimina el borde de enfoque */
+}
+
+/* Eliminar sombra de los iconos en las acciones de la tabla */
+.material-table .MuiTableCell-root .MuiSvgIcon-root {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Eliminar sombra de los botones dentro de la tabla */
+.material-table .MuiTableCell-root button:hover {
+  background-color: transparent !important; /* Sin cambio de fondo al pasar el mouse */
+  box-shadow: none !important; /* Elimina cualquier sombra */
+  color: inherit !important; /* Mantiene el color de texto original */
+}
+
+/* Eliminar cualquier sombra o borde cuando se hace foco en los botones dentro de la tabla */
+.material-table .MuiTableCell-root button:focus {
+  outline: none !important; /* Elimina el borde de foco */
+  box-shadow: none !important; /* Elimina cualquier sombra */
+}
