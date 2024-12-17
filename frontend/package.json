@@ -7,20 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --port=443",
+    "start": "vite preview --port=3000"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@formkit/tempo": "^0.1.2",
-    "@material-ui/core": "^4.12.4",
-    "@material-ui/icons": "^4.11.3",
-    "@mui/icons-material": "^5.16.7",
-    "@mui/lab": "^6.0.0-beta.16",
-    "@mui/material": "^5.16.7",
     "@mui/styles": "^6.1.8",
     "@mui/system": "^6.1.8",
-    "@mui/x-date-pickers": "^7.14.0",
     "axios": "^1.7.7",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
@@ -28,8 +23,6 @@
     "jspdf-autotable": "^3.8.4",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
-    "material-react-table": "^2.13.2",
-    "material-table": "^1.63.0",
     "notistack": "^3.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -37,12 +30,10 @@
     "react-icons": "^5.3.0",
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.27.0",
-    "react-tabulator": "^0.21.0",
     "react-toastify": "^10.0.6",
     "rut.js": "^2.1.0",
     "sonner": "^1.7.0",
-    "sweetalert2": "^11.6.13",
-    "tabulator-tables": "^6.3.0"
+    "sweetalert2": "^11.6.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
