@@ -7,16 +7,15 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --port=443",
+    "start": "vite preview --port=3000"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@formkit/tempo": "^0.1.2",
-    "@mui/lab": "^6.0.0-beta.19",
     "@mui/styles": "^6.1.8",
     "@mui/system": "^6.1.8",
-    "@mui/x-date-pickers": "^7.14.0",
     "axios": "^1.7.7",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",

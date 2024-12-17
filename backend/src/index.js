@@ -44,13 +44,13 @@ async function setupServer() {
 
     app.use(
       session({
-        secret: cookieKey,
-        resave: false,
-        saveUninitialized: false,
+        secret: process.env.SESSION_SECRET, // Usa la clave desde el archivo .env
+        resave: false, // Evita guardar la sesión si no hay cambios
+        saveUninitialized: false, // No guarda sesiones vacías
         cookie: {
-          secure: false,
-          httpOnly: true,
-          sameSite: "strict",
+          secure: process.env.NODE_ENV === "production", // Asegura las cookies solo en producción
+          httpOnly: true, // Previene acceso desde JavaScript
+          sameSite: "strict", // Protege contra ataques CSRF
         },
       })
     );
