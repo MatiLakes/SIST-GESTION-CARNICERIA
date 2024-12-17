@@ -9,6 +9,7 @@ Este proyecto está diseñado para optimizar y simplificar la gestión de carnic
 2. [Tecnologias Utilizadas](#tecnologías-utilizadas)
 3. [Instrucciones para Instalar el Proyecto en Ubuntu Linux con Docker](#instrucciones-para-instalar-el-proyecto-en-ubuntu-linux-con-docker-)
 4. [Instrucciones para Instalar el Proyecto en Windowsso](#instrucciones-para-instalar-el-proyecto-en-windows)
+5. [Acceso al Sistema](#acceso-al-sistema)
 
 ---
 
@@ -132,6 +133,7 @@ Git necesita tu nombre y correo para identificar las confirmaciones (commits). C
 git config --global user.name "Tu Nombre"
 git config --global user.email "tuemail@example.com"
 ```
+Procura usar el mismo correo que tienes en GitHub.
 
 Verifica la configuración:
 ```bash
@@ -322,6 +324,8 @@ Configura tu correo electrónico:
 ```bash
 git config --global user.email "tuemail@example.com"
 ```
+
+Procura usar el mismo correo que tienes en GitHub.
 
 Verifica la configuración:
 ```bash
@@ -555,4 +559,10 @@ Contraseña: password
 
 Base de Datos: carniceria
 
+## Acceso al Sistema
 
+Una vez levantado el sistema, puedes iniciar sesión en el frontend con las siguientes credenciales de administrador:
+
+Correo: administrador2024@gmail.com
+
+Clave: admin1234
