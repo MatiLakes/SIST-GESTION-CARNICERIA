@@ -280,7 +280,7 @@ sudo docker compose up --build
 ```
 ### **Verificación del Proyecto**
 
-Frontend: http://localhost:5173
+Frontend: http://localhost:3000
 Backend: http://localhost:3050/api
 Base de Datos:
 Host: localhost
@@ -543,7 +543,7 @@ Docker levantará los servicios frontend, backend, y la base de datos PostgreSQL
 
 11. **Verificar el Sistema**
 
-Frontend: http://localhost:5173
+Frontend: http://localhost:3000
 
 Backend: http://localhost:3050/api
 
