@@ -9,7 +9,10 @@ Este proyecto está diseñado para optimizar y simplificar la gestión de carnic
 2. [Tecnologias Utilizadas](#tecnologías-utilizadas)
 3. [Instrucciones para Instalar el Proyecto en Ubuntu Linux con Docker](#instrucciones-para-instalar-el-proyecto-en-ubuntu-linux-con-docker-)
 4. [Instrucciones para Instalar el Proyecto en Windowsso](#instrucciones-para-instalar-el-proyecto-en-windows)
-5. [Acceso al Sistema](#acceso-al-sistema)
+5. [Despliegue Manual en un Servidor](#despliegue-manual-en-un-servidor)
+6. [Acceso al Sistema](#acceso-al-sistema)
+7. [Contribuciones](#contribuciones)
+8. [Licencia](#licencia)
 
 ---
 
@@ -559,6 +562,221 @@ Contraseña: password
 
 Base de Datos: carniceria
 
+
+## Despliegue Manual en un Servidor
+
+Asegúrate de contar con lo siguiente:
+
+Sistema operativo: Linux (Ubuntu 22.04 recomendado).
+Acceso SSH al servidor.
+Node.js v20.10.0 y npm v10.2.3 instalados.
+PostgreSQL instalado o acceso a una base de datos remota.
+PM2: Gestor de procesos de Node.js.
+Git: Control de versiones.
+Nginx (opcional): Para servir el frontend en producción.
+
+1. **Acceso al Servidor**
+Utiliza SSH para conectarte al servidor. Supongamos que el servidor tiene las siguientes credenciales:
+
+IP: 192.168.1.100
+Puerto SSH: 1669
+Usuario: miusuario
+Contraseña: miclave
+
+```bash
+ssh -p <PUERTO> <USUARIO>@<DIRECCION_IP>
+```
+Deberia ver así:
+```bash
+ssh -p 1669 miusuario@192.168.1.100
+```
+Si es la primera vez, confirma con yes y luego ingresa la contraseña (alvaro2024 en este caso).
+
+2. **Preparar el Entorno del Servidor**
+Actualizar el sistema
+Actualiza los paquetes del servidor:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+Instalar herramientas básicas
+```bash
+sudo apt install -y curl git nano build-essential
+```
+Instalar Git
+Verifica si Git está instalado:
+
+```bash
+git --version
+```
+Si no está, instálalo con:
+
+```bash
+sudo apt install -y git
+Configura tu nombre y correo para Git:
+```
+
+```bash
+git config --global user.name "Tu Nombre"
+git config --global user.email "tuemail@example.com"
+```
+
+3. *Instalar Node.js y npm*
+Instalar NVM (Node Version Manager)
+NVM permite instalar y gestionar versiones de Node.js:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+```
+
+Instalar Node.js v20.10.0 y npm v10.2.3
+```bash
+nvm install 20.10.0
+npm install -g npm@10.2.3
+```
+
+Verifica las versiones:
+```bash
+node -v
+npm -v
+```
+
+4.**Instalar PostgreSQL**
+Si PostgreSQL no está instalado, instálalo con:
+
+```bash
+sudo apt install -y postgresql postgresql-contrib
+```
+
+Configurar PostgreSQL
+1. **Inicia y habilita PostgreSQL:**
+
+```bash
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+```
+
+2. **Accede a PostgreSQL:**
+
+```bash
+sudo -u postgres psql
+```
+
+3. **Crea la base de datos y usuario:**
+
+```bash
+CREATE DATABASE carniceria;
+CREATE USER miusuario WITH ENCRYPTED PASSWORD 'miclave';
+GRANT ALL PRIVILEGES ON DATABASE carniceria TO miusuario;
+\q
+```
+
+5. **Clonar el Proyecto**
+Navega a la carpeta donde se guardará el proyecto y clónalo:
+
+```bash
+cd /var/www
+git clone https://github.com/MatiLakes/SIST-GESTION-CARNICERIA.git
+cd SIST-GESTION-CARNICERIA
+```
+
+6. **Configurar el Backend**
+
+1. **Accede al directorio del backend:**
+
+```bash
+cd backend/src/config
+```
+
+2. **Crea el archivo .env:**
+
+```bash
+nano .env
+```
+
+3. **Configura la conexión a la base de datos:**
+
+```bash
+DB_URL=postgresql://miusuario:miclave@pgsqltrans.face.ubiobio.cl:5432/carniceria
+PORT=3050
+HOST=0.0.0.0
+ACCESS_TOKEN_SECRET=hola123
+SESSION_SECRET=chao123
+REFRESH_JWT_SECRET=refresh123
+RESET_JWT_SECRET=reset123
+```
+
+4. **Guarda y cierra el archivo (Ctrl + O, luego Ctrl + X).**
+
+5. **Instala las dependencias:**
+
+```bash
+cd ../../
+npm install
+```
+
+6. **Inicia el backend con PM2:**
+
+```bash
+pm2 start src/server.js --name backend-carniceria
+pm2 save
+pm2 startup
+```
+
+7. **Configurar el Frontend**
+
+1. **Accede al directorio del frontend:**
+
+```bash
+cd ../frontend
+```
+
+2. **Crea el archivo .env:**
+
+```bash
+nano .env
+```
+
+3. **Configura la URL del backend:**
+
+```bash
+VITE_BASE_URL=http://192.168.1.100:3050/api
+```
+
+4. **Instala las dependencias:**
+
+```bash
+npm install
+```
+
+5. **Construye el frontend:**
+
+```bash
+npm run build
+```
+
+6. **Sirve el frontend con PM2:**
+
+```bash
+pm2 start npm --name frontend-carniceria -- run preview
+pm2 save
+```
+8. **Verificación del Despliegue**
+Frontend: http://192.168.1.100:4173
+Backend: http://192.168.1.100:3050/api
+Base de Datos:
+Usuario: miusuario
+Contraseña: miclave
+Base de Datos: carniceria
+
+9. **Restaurar PM2 en Caso de Reinicio**
+Si el servidor se reinicia, restaura los procesos con:
+
+```bash
+pm2 resurrect
+```
+
 ## Acceso al Sistema
 
 Una vez levantado el sistema, puedes iniciar sesión en el frontend con las siguientes credenciales de administrador:
@@ -566,3 +784,26 @@ Una vez levantado el sistema, puedes iniciar sesión en el frontend con las sigu
 Correo: administrador2024@gmail.com
 
 Clave: admin1234
+
+
+## Contribuciones
+
+Gracias por tu interés en mejorar este proyecto! 🙌
+Valoramos cada aporte, ya sea reportando errores, sugiriendo nuevas ideas, o colaborando con mejoras al código o documentación.
+
+**¿Cómo contribuir?**
+Para facilitar el proceso de contribución y asegurar la calidad del proyecto, hemos preparado un archivo de pautas detallado. Por favor, revisa el archivo [CONTRIBUTING](./CONTRIBUTING) en la carpeta raíz del proyecto antes de comenzar. En este archivo encontrarás:
+
+**Cómo reportar errores o abrir un issue:** Instrucciones para describir problemas de manera efectiva.
+**Configurar el entorno de desarrollo:** Pasos para configurar tu entorno local y empezar a trabajar.
+**Buenas prácticas de codificación:** Estándares y lineamientos para mantener la consistencia en el código.
+**Proceso para enviar Pull Requests:** Cómo estructurar y enviar tus cambios para que puedan ser revisados e integrados rápidamente.
+
+Nos encantaría que formes parte de este proyecto. ¡Gracias por contribuir! 
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
+
+**Autores**: Álvaro Jorquera y Matías Lagos
+
