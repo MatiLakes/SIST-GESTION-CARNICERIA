@@ -582,6 +582,7 @@ IP: 192.168.1.100
 Puerto SSH: 1669
 Usuario: miusuario
 Contraseña: miclave
+Nombre de la Base de Datos: carniceria
 
 ```bash
 ssh -p <PUERTO> <USUARIO>@<DIRECCION_IP>
@@ -590,7 +591,7 @@ Deberia ver así:
 ```bash
 ssh -p 1669 miusuario@192.168.1.100
 ```
-Si es la primera vez, confirma con yes y luego ingresa la contraseña (alvaro2024 en este caso).
+Si es la primera vez, confirma con yes y luego ingresa la contraseña.
 
 2. **Preparar el Entorno del Servidor**
 Actualizar el sistema
@@ -642,41 +643,10 @@ node -v
 npm -v
 ```
 
-4.**Instalar PostgreSQL**
-Si PostgreSQL no está instalado, instálalo con:
-
-```bash
-sudo apt install -y postgresql postgresql-contrib
-```
-
-Configurar PostgreSQL
-1. **Inicia y habilita PostgreSQL:**
-
-```bash
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-```
-
-2. **Accede a PostgreSQL:**
-
-```bash
-sudo -u postgres psql
-```
-
-3. **Crea la base de datos y usuario:**
-
-```bash
-CREATE DATABASE carniceria;
-CREATE USER miusuario WITH ENCRYPTED PASSWORD 'miclave';
-GRANT ALL PRIVILEGES ON DATABASE carniceria TO miusuario;
-\q
-```
-
 5. **Clonar el Proyecto**
 Navega a la carpeta donde se guardará el proyecto y clónalo:
 
 ```bash
-cd /var/www
 git clone https://github.com/MatiLakes/SIST-GESTION-CARNICERIA.git
 cd SIST-GESTION-CARNICERIA
 ```
@@ -698,9 +668,9 @@ nano .env
 3. **Configura la conexión a la base de datos:**
 
 ```bash
-DB_URL=postgresql://miusuario:miclave@pgsqltrans.face.ubiobio.cl:5432/carniceria
-PORT=3050
-HOST=0.0.0.0
+DB_URL=postgresql://miusuario:miclave@pgsqltrans.face.ubiobio.c:5432/carniceria 
+PORT= 80 
+HOST= 192.168.1.100 #Es la del ejemplo, debes reemplazar por tu dirección que escucha el servidor
 ACCESS_TOKEN_SECRET=hola123
 SESSION_SECRET=chao123
 REFRESH_JWT_SECRET=refresh123
@@ -719,7 +689,7 @@ npm install
 6. **Inicia el backend con PM2:**
 
 ```bash
-pm2 start src/server.js --name backend-carniceria
+pm2 start src/index.js --name backend-carniceria
 pm2 save
 pm2 startup
 ```
@@ -741,7 +711,17 @@ nano .env
 3. **Configura la URL del backend:**
 
 ```bash
-VITE_BASE_URL=http://192.168.1.100:3050/api
+VITE_BASE_URL=http://<HOST>:<PUERTO>/api
+```
+
+Reemplaza <HOST> con la dirección IP pública del servidor donde está configurado el backend.
+Reemplaza <PUERTO> con el puerto configurado públicamente en el servidor Apache.
+Ejemplo:
+Si la IP del servidor es 192.168.1.100 y el puerto  configurado es 1670, entonces el archivo .env debería verse de la siguiente manera:
+
+
+```bash
+VITE_BASE_URL=http://192.168.1.100:1670/api
 ```
 
 4. **Instala las dependencias:**
@@ -763,8 +743,10 @@ pm2 start npm --name frontend-carniceria -- run preview
 pm2 save
 ```
 8. **Verificación del Despliegue**
-Frontend: http://192.168.1.100:4173
-Backend: http://192.168.1.100:3050/api
+Si fuera con los datos de ejemplo los servicios deberían estar corriendo:
+
+Frontend: http://192.168.1.100:1670 
+Backend: http://192.168.1.100:1670/api
 Base de Datos:
 Usuario: miusuario
 Contraseña: miclave
@@ -806,4 +788,3 @@ Nos encantaría que formes parte de este proyecto. ¡Gracias por contribuir!
 Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
 
 **Autores**: Álvaro Jorquera y Matías Lagos
-
