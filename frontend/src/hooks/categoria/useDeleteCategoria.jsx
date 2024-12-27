@@ -1,35 +1,19 @@
-import { useState } from 'react';
+// src/hooks/useDeleteCategoria.jsx
 import { deleteCategoria } from '@services/categoria.service';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
-export function useDeleteCategoria() {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
-
-    const deleteCategoriaById = async (id) => {
-        setLoading(true);
-        setError(null);
-        setSuccess(null);
-
+const useDeleteCategoria = (fetchCategorias) => {
+    const handleDelete = async (id) => {
         try {
-            const response = await deleteCategoria(id);
-            // Aquí verificamos la respuesta para asegurarnos que está bien estructurada
-            if (response && response.status === 200) {
-                setSuccess("Categoría eliminada con éxito");
-            } else {
-                setError("No se pudo eliminar la categoría.");
-            }
+            await deleteCategoria(id); // Elimina la categoría directamente
+            fetchCategorias(); // Actualizamos la lista de categorías después de la eliminación
+            showSuccessAlert('Categoría eliminada con éxito');
         } catch (error) {
-            // Si el error tiene una respuesta del servidor, mostramos su mensaje
-            if (error.response && error.response.data) {
-                setError(error.response.data.message || "Error al eliminar la categoría");
-            } else {
-                setError("Error al eliminar la categoría");
-            }
-        } finally {
-            setLoading(false);
+            showErrorAlert('Error', 'No se pudo eliminar la categoría');
         }
     };
 
-    return { deleteCategoriaById, loading, error, success };
-}
+    return { handleDelete };
+};
+
+export { useDeleteCategoria };
