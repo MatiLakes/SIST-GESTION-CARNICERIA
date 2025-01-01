@@ -1,0 +1,97 @@
+.crear-lista-page {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.crear-lista-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: white;
+}
+
+.crear-lista-page th, .crear-lista-page td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.crear-lista-page th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: center;
+}
+
+.crear-lista-page td {
+    text-align: center;
+}
+
+.crear-lista-page input {
+    width: 90%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.crear-lista-page button {
+    display: block;
+    margin: 20px auto;
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.crear-lista-page button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.crear-lista-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.nombre-lista-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.nombre-lista-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.nombre-lista-input,
+.crear-lista-page input {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+    text-align: center;
+    background-color: #f9f9f9; /* Fondo claro */
+    color: #333; /* Color de texto oscuro */
+}
+
+/* Estilo para inputs al ser enfocados */
+.nombre-lista-input:focus,
+.crear-lista-page input:focus {
+    outline: none;
+    border-color: #007bff; /* Color azul al enfocar */
+    background-color: #fff; /* Fondo blanco al enfocar */
+}
