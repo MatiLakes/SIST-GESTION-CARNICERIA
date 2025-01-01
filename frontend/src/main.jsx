@@ -7,6 +7,8 @@ import Categorias from '@pages/Categoria';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
+import ListaPreciosPage from '@pages/ListaPreciosPage';
+import CrearListaPage from '@pages/CrearListaPage';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -20,6 +22,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Home />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/animal-corte/listas-precios',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <ListaPreciosPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/animal-corte/crear-lista',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <CrearListaPage />
           </ProtectedRoute>
         ),
       },
