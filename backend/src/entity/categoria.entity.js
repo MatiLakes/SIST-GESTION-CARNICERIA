@@ -33,18 +33,6 @@ const CategoriaSchema = new EntitySchema({
       unique: true,
     },
   },
-  relations: {
-    proveedores: {
-      type: "many-to-many",
-      target: "Proveedor",
-      // Aquí se define la tabla intermedia para la relación many-to-many
-      joinTable: {
-        name: "categoria_proveedor",  // Nombre de la tabla intermedia
-        joinColumn: { name: "categoriaId", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "proveedorId", referencedColumnName: "id" },
-      },
-    },
-  },
 });
 
 // Puedes usar este array para crear categorías iniciales en la base de datos al arrancar la app

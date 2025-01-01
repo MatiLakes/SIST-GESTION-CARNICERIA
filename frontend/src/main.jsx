@@ -4,6 +4,7 @@ import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
 import Categorias from '@pages/Categoria';
+import Proveedores from '@pages/Proveedor';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
@@ -28,6 +29,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Categorias />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/gestionProveedores/proveedor',  
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Proveedores /> 
           </ProtectedRoute>
         ),
       },

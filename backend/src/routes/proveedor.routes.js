@@ -16,10 +16,10 @@ const router = Router();
 router.use(authenticateJwt).use(isAdmin);
 
 router
-  .post("/", crearProveedor)           
-  .get("/", obtenerProveedores)              
+  .post("/crear", crearProveedor)           
+  .get("/obtener", obtenerProveedores)              
   .get("/:id", obtenerProveedor)             
-  .put("/:id", actualizarProveedor)       
-  .delete("/:id", eliminarProveedor);      
+  .put("/actualizar/:id", actualizarProveedor)       
+  .delete("/eliminar/:id", eliminarProveedor);      
 
 export default router;

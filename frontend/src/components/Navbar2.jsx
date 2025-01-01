@@ -33,8 +33,8 @@ const Navbar2 = () => {
             text: "Tu sesión será cerrada.",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#4CAF50",
+            cancelButtonColor: "#af4c4c",
             confirmButtonText: "Sí, salir",
             cancelButtonText: "Cancelar",
         }).then((result) => {
@@ -111,9 +111,9 @@ const Navbar2 = () => {
                                             </li>
                                             <li>
                                                 <NavLink
-                                                    to="/gestion-proveedores/proveedor"
+                                                    to="/gestionProveedores/proveedor"
                                                     onClick={() => setSubMenuOpen(false)} // Cierra el submenú
-                                                    className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}
+                                                    className={location.pathname === "/gestionProveedores/proveedor" ? "active" : ""}
                                                 >
                                                     - Proveedor
                                                 </NavLink>

@@ -12,7 +12,6 @@ const proveedorSchema = Joi.object({
       "string.max": "El nombre no puede tener más de {#limit} caracteres",
       "any.required": "El nombre es obligatorio",
     }),
-
   direccion: Joi.string()
     .max(255)
     .optional()
@@ -20,7 +19,6 @@ const proveedorSchema = Joi.object({
       "string.base": "La dirección debe ser un texto",
       "string.max": "La dirección no puede tener más de {#limit} caracteres",
     }),
-
   banco: Joi.string()
     .max(255)
     .optional()
@@ -28,7 +26,6 @@ const proveedorSchema = Joi.object({
       "string.base": "El banco debe ser un texto",
       "string.max": "El banco no puede tener más de {#limit} caracteres",
     }),
-
   numeroCuenta: Joi.string()
     .max(50)
     .optional()
@@ -36,7 +33,6 @@ const proveedorSchema = Joi.object({
       "string.base": "El número de cuenta debe ser un texto",
       "string.max": "El número de cuenta no puede tener más de {#limit} caracteres",
     }),
-
   tipoCuenta: Joi.string()
     .valid("Cuenta corriente", "Cuenta vista", "Cuenta de ahorro")
     .required()
@@ -45,13 +41,11 @@ const proveedorSchema = Joi.object({
       "string.valid": "El tipo de cuenta debe ser uno de los siguientes: 'Cuenta corriente', 'Cuenta vista', 'Cuenta de ahorro'",
       "any.required": "El tipo de cuenta es obligatorio",
     }),
-
   idEncargado: Joi.string()
     .optional()
     .messages({
       "string.base": "El ID del encargado debe ser un texto",
     }),
-
   nombreEncargado: Joi.string()
     .max(255)
     .optional()
@@ -59,30 +53,25 @@ const proveedorSchema = Joi.object({
       "string.base": "El nombre del encargado debe ser un texto",
       "string.max": "El nombre del encargado no puede tener más de {#limit} caracteres",
     }),
-
-  estadoEncargado: Joi.boolean()
-    .required()
-    .messages({
-      "boolean.base": "El estado debe ser un valor booleano",
-      "any.required": "El estado es obligatorio",
-    }),
-
-  movilEncargado: Joi.string()
-    .max(50)
+  estadoEncargado: Joi.string()
+    .valid("Activo", "Inactivo")
     .optional()
     .messages({
-      "string.base": "El número de móvil del encargado debe ser un texto",
-      "string.max": "El número de móvil del encargado no puede tener más de {#limit} caracteres",
+      "string.base": "El estado del encargado debe ser un texto",
+      "string.valid": "El estado del encargado debe ser 'Activo' o 'Inactivo'",
     }),
-
-  telefonoEncargado: Joi.string()
-    .max(50)
+  contactosEncargado: Joi.array()
+    .items(Joi.string().email().optional())
     .optional()
     .messages({
-      "string.base": "El número de teléfono del encargado debe ser un texto",
-      "string.max": "El número de teléfono del encargado no puede tener más de {#limit} caracteres",
+      "array.base": "Los contactos del encargado deben ser un arreglo",
+      "array.items": "Cada contacto del encargado debe ser una cadena de texto válida",
     }),
-
+  idRepartidor: Joi.string()
+    .optional()
+    .messages({
+      "string.base": "El ID del repartidor debe ser un texto",
+    }),
   nombreRepartidor: Joi.string()
     .max(255)
     .optional()
@@ -90,30 +79,32 @@ const proveedorSchema = Joi.object({
       "string.base": "El nombre del repartidor debe ser un texto",
       "string.max": "El nombre del repartidor no puede tener más de {#limit} caracteres",
     }),
-
-  estadoRepartidor: Joi.boolean()
-    .required()
-    .messages({
-      "boolean.base": "El estado debe ser un valor booleano",
-      "any.required": "El estado es obligatorio",
-    }),
-
-  movilRepartidor: Joi.string()
-    .max(50)
+  estadoRepartidor: Joi.string()
+    .valid("Activo", "Inactivo")
     .optional()
     .messages({
-      "string.base": "El número de móvil del repartidor debe ser un texto",
-      "string.max": "El número de móvil del repartidor no puede tener más de {#limit} caracteres",
+      "string.base": "El estado del repartidor debe ser un texto",
+      "string.valid": "El estado del repartidor debe ser 'Activo' o 'Inactivo'",
     }),
-
-  telefonoRepartidor: Joi.string()
-    .max(50)
+  contactosRepartidor: Joi.array()
+    .items(Joi.string().email().optional())
     .optional()
     .messages({
-      "string.base": "El número de teléfono del repartidor debe ser un texto",
-      "string.max": "El número de teléfono del repartidor no puede tener más de {#limit} caracteres",
+      "array.base": "Los contactos del repartidor deben ser un arreglo",
+      "array.items": "Cada contacto del repartidor debe ser una cadena de texto válida",
     }),
-});
+  categorias: Joi.array()
+    .items(Joi.number().integer().positive())
+    .optional()
+    .messages({
+      "array.base": "Las categorías deben ser un arreglo",
+      "array.items": "Cada categoría debe ser un número entero positivo",
+    }),
+})
+  .unknown(false)
+  .messages({
+    "object.unknown": "No se permiten propiedades adicionales.",
+  });
 
 export const proveedorBodyValidation = {
   validate: (data) => proveedorSchema.validate(data),
@@ -134,12 +125,12 @@ export const proveedorQueryValidation = Joi.object({
       "number.positive": "El ID debe ser un número positivo",
       "any.required": "El ID es obligatorio",
     }),
-
   nombre: Joi.string().optional(),
   direccion: Joi.string().optional(),
   banco: Joi.string().optional(),
   numeroCuenta: Joi.string().optional(),
   tipoCuenta: Joi.string().optional(),
+  categorias: Joi.array().items(Joi.number().integer().positive()).optional(),
 })
   .unknown(false)
   .messages({

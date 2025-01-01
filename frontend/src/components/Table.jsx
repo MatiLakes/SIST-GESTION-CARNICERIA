@@ -4,6 +4,7 @@ import Navbar2 from "../components/Navbar2";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoAddSharp } from "react-icons/io5";
+
 const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState(data);
@@ -46,6 +47,30 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
   // Total de páginas
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
+  // Función para formatear objetos y arrays en el formato deseado
+  const formatObject = (obj) => {
+    if (Array.isArray(obj)) {
+      // Si el valor es un array de objetos, los transformamos a formato de texto
+      return obj.map((item, index) => {
+        // Mostrar cada número con su tipo en formato tipo: valor
+        return (
+          <div key={index}>
+            {item.tipo}: {item.numero}
+          </div>
+        );
+      });
+    } else if (typeof obj === "object" && obj !== null) {
+      // Si es un solo objeto, mostramos solo los valores
+      return Object.entries(obj)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(", ");
+    } else if (typeof obj === "boolean") {
+      // Si el valor es booleano, mostramos un ícono o texto
+      return obj ? "Sí" : "No"; // O puedes mostrar un check (✔) si lo prefieres
+    }
+    return obj || "No disponible";
+  };
+
   return (
     <div>
       <Navbar2 />
@@ -69,7 +94,7 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
             onClick={onCreate}
             className="create-button-table"
           >
-           <IoAddSharp />  Crear
+            <IoAddSharp />  Crear
           </button>
         </div>
 
@@ -88,7 +113,10 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
               currentRows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {columns.map((col) => (
-                    <td key={col.key}>{row[col.key]}</td>
+                    <td key={col.key}>
+                      {/* Usar la función formatObject para manejar los objetos y arrays */}
+                      {formatObject(row[col.key])}
+                    </td>
                   ))}
                   <td>
                     {/* Botones de Acción: Editar y Eliminar */}

@@ -201,3 +201,18 @@ body, .container, .form, input, select, textarea, button, p {
     transform: scale(1.05); /* Efecto de zoom al hacer hover */
     backdrop-filter: blur(10px); /* Mayor desenfoque al hacer hover */
 }
+
+/* Estilo para el campo select */
+.tipo-cuenta-select {
+    color: white;
+    padding: 8px; /* Espaciado interno */
+
+  }
+  
+  /* Estilo para las opciones dentro del select */
+  .tipo-cuenta-select option {    
+    color: black;  /* Color de texto de las opciones */
+    background-color: rgba(238, 247, 255, 0.3); /* Fondo transparente para el formulario */
+
+
+  }

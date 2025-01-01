@@ -19,26 +19,6 @@ const ProveedorSchema = new EntitySchema({
       length: 255,
       nullable: true,
     },
-    nombreEncargado: {
-      type: "varchar",
-      length: 255,
-      nullable: true,
-    },
-    contactosEncargado: {
-      type: "json",
-      nullable: true, // Opcional
-      comment: "Lista de números de contacto del encargado con tipo (teléfono/móvil) y número",
-    },
-    nombreRepartidor: {
-      type: "varchar",
-      length: 255,
-      nullable: true,
-    },
-    contactosRepartidor: {
-      type: "json",
-      nullable: true, // Opcional
-      comment: "Lista de números de contacto del repartidor con tipo (teléfono/móvil) y número",
-    },
     banco: {
       type: "varchar",
       length: 255,
@@ -54,6 +34,60 @@ const ProveedorSchema = new EntitySchema({
       length: 50,
       nullable: true,
     },
+
+    // Campos para el encargado
+    idEncargado: {
+      type: "int",
+      nullable: true,
+      generated: true,
+    },
+    nombreEncargado: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
+    estadoEncargado: {
+      type: "boolean",
+      nullable: false,
+      default: true, 
+    },
+    movilEncargado: {
+      type: "varchar", 
+      length: 50,
+      nullable: true,
+    },
+    telefonoEncargado: {
+      type: "varchar", 
+      length: 50,
+      nullable: true,
+    },
+
+
+    idRepartidor: {
+      type: "int",
+      nullable: true,
+      generated: true,
+    },
+    nombreRepartidor: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
+    estadoRepartidor: {
+      type: "boolean",
+      nullable: false,
+      default: true,
+    },
+    movilRepartidor: {
+      type: "varchar", 
+      nullable: true,
+    },
+    telefonoRepartidor: {
+      type: "varchar", 
+      length: 50,
+      nullable: true,
+    },
+
     createdAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",
@@ -64,17 +98,6 @@ const ProveedorSchema = new EntitySchema({
       default: () => "CURRENT_TIMESTAMP",
       onUpdate: "CURRENT_TIMESTAMP",
       nullable: false,
-    },
-  },
-  relations: {
-    categorias: {
-      type: "many-to-many",
-      target: "Categoria",
-      joinTable: {
-        name: "categoria_proveedor",
-        joinColumn: { name: "proveedorId", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "categoriaId", referencedColumnName: "id" },
-      },
     },
   },
 });

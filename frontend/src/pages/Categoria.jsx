@@ -1,12 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import { useGetCategoria } from "@hooks/categoria/useGetCategoria";
 import { useCreateCategoria } from "@hooks/categoria/useCreateCategoria";
 import { useDeleteCategoria } from "@hooks/categoria/useDeleteCategoria";
 import { useUpdateCategoria } from "@hooks/categoria/useUpdateCategoria";
+import { useErrorHandlerCategoria } from "@hooks/categoria/useErrorHandlerCategoria"; // Importa el hook de errores
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
-
 import "@styles/formulariotable.css";
 
 const Categorias = () => {
@@ -14,6 +15,8 @@ const Categorias = () => {
   const { handleCreate } = useCreateCategoria(fetchCategorias);
   const { handleDelete } = useDeleteCategoria(fetchCategorias);
   const { handleUpdate } = useUpdateCategoria(fetchCategorias);
+
+  const { createError, editError, deleteError, handleCreateError, handleEditError, handleDeleteError } = useErrorHandlerCategoria();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -38,11 +41,11 @@ const Categorias = () => {
   };
 
   const confirmDelete = () => {
-    if (categoriaToDelete) {
-      handleDelete(categoriaToDelete.id);
-      setIsDeleteModalOpen(false);
-      setCategoriaToDelete(null);
-    }
+    if (handleDeleteError(categoriaToDelete)) return; // Maneja el error de eliminación
+
+    handleDelete(categoriaToDelete.id);
+    setIsDeleteModalOpen(false);
+    setCategoriaToDelete(null);
   };
 
   const handleUpdateClick = (categoria) => {
@@ -61,10 +64,9 @@ const Categorias = () => {
 
   const handleCreateModalSubmit = (e) => {
     e.preventDefault();
-    if (newCategoryData.nombre.trim() === "") {
-      alert("El nombre de la categoría no puede estar vacío");
-      return;
-    }
+
+    if (handleCreateError(newCategoryData)) return; // Maneja el error de creación
+
     handleCreate(newCategoryData);
     setNewCategoryData({ nombre: "" });
     setIsCreateModalOpen(false);
@@ -76,10 +78,9 @@ const Categorias = () => {
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
-    if (formData.nombre.trim() === "") {
-      alert("El nombre de la categoría no puede estar vacío");
-      return;
-    }
+
+    if (handleEditError(formData)) return; // Maneja el error de edición
+
     handleUpdate(categoriaToEdit.id, formData);
     setIsEditModalOpen(false);
   };
@@ -125,6 +126,7 @@ const Categorias = () => {
               required
               className="formulario-table-input"
             />
+            {createError && <span className="error-message">{createError}</span>}
           </div>
           <div className="formulario-table-form-actions">
             <button type="submit" className="formulario-table-btn-confirm">
@@ -163,6 +165,7 @@ const Categorias = () => {
               required
               className="formulario-table-input"
             />
+            {editError && <span className="error-message">{editError}</span>}
           </div>
           <div className="formulario-table-form-actions">
             <button type="submit" className="formulario-table-btn-confirm">
@@ -179,30 +182,23 @@ const Categorias = () => {
         </form>
       </Modal>
 
-      {/* Modal de Confirmación de Eliminación */}
+      {/* Modal de Eliminación */}
       <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        contentLabel="Eliminar Categoría"
+        contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
       >
-        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
-        <p>¿Estás seguro de que deseas eliminar la categoría {categoriaToDelete?.nombre}?</p>
+        <h2 className="formulario-table-modal-title">Eliminar Categoría</h2>
+        <p>¿Estás seguro de que deseas eliminar esta categoría?</p>
+        {deleteError && <span className="error-message">{deleteError}</span>}
         <div className="formulario-table-form-actions">
-          <button
-            type="button"
-            className="formulario-table-btn-eliminar"
-            onClick={confirmDelete}
-          >
-            Eliminar
+          <button onClick={confirmDelete} className="formulario-table-btn-confirm">
+            Confirmar
           </button>
-          <button
-            type="button"
-            onClick={handleDeleteModalClose}
-            className="formulario-table-btn-cancel"
-          >
+          <button onClick={handleDeleteModalClose} className="formulario-table-btn-cancel">
             Cancelar
           </button>
         </div>

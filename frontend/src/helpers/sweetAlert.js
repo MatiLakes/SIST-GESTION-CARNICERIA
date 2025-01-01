@@ -1,5 +1,5 @@
-
 import Swal from 'sweetalert2';
+import "@styles/alertStyles.css";
 
 export async function deleteDataAlert() {
   return Swal.fire({
@@ -10,7 +10,6 @@ export async function deleteDataAlert() {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Si, eliminar!",
-    timer: 1500,  
     
   })
   

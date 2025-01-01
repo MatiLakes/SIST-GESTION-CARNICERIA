@@ -1,0 +1,80 @@
+/* Importa la fuente Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* Usar la fuente en todo el sitio */
+body, .container, .form, input, select, textarea, button, p {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Estilos generales del modal */
+.swal2-container {
+    z-index: 9999; /* Asegura que el modal esté encima de otros elementos */
+}
+
+.swal2-popup {
+    background-color: #5a5a5a; /* Color oscuro sólido */
+    border-radius: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */   
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(10px); /* Desenfoque de fondo */
+    color: #fff; /* Texto blanco */
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif; /* Usar la fuente Poppins */
+}
+
+/* Estilo del título del modal */
+.swal2-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Estilo del contenido del modal */
+.swal2-content {
+    color: #fff; /* Texto blanco para el contenido */
+}
+
+/* Estilos de los botones */
+.swal2-confirm {
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    background-color: #4CAF50; /* Fondo verde */
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.swal2-confirm:hover {
+    background-color: #45a049;
+    backdrop-filter: blur(20px);
+}
+
+.swal2-cancel {
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    background-color: #af4c4c; /* Fondo rojo */
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.swal2-cancel:hover {
+    background-color: #a04545;
+    backdrop-filter: blur(20px);
+}
+
+
+
+
+
