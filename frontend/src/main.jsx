@@ -9,6 +9,7 @@ import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import ListaPreciosPage from '@pages/ListaPreciosPage';
 import CrearListaPage from '@pages/CrearListaPage';
+import Pedidos from "@pages/Pedidos";
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -59,6 +60,22 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
+  {
+    path: "/",
+    element: <Root />,
+    children: [
+      {
+        path: "/pedidos",
+        element: (
+          <ProtectedRoute allowedRoles={["administrador"]}>
+            <Pedidos />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+
   {
     path: '/auth',
     element: <Login />,

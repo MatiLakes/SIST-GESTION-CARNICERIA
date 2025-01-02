@@ -4,9 +4,8 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHouse } from "react-icons/fa6";
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
-import { FaTruck, FaListAlt, FaPlusSquare } from "react-icons/fa";
 
 const Navbar2 = () => {
   const navigate = useNavigate();
@@ -72,7 +71,7 @@ const Navbar2 = () => {
                     to="/home"
                     className={location.pathname === "/home" ? "active" : ""}
                   >
-                    <FaHouse className="nav-icon" />
+                    <FaHome className="nav-icon" />
                     <span>Inicio</span>
                   </NavLink>
                 </li>
@@ -90,8 +89,17 @@ const Navbar2 = () => {
                     to="/animal-corte/crear-lista"
                     className={location.pathname === "/animal-corte/crear-lista" ? "active" : ""}
                   >
-                    <FaPlusSquare className="nav-icon" />
+                    <FaPlus className="nav-icon" />
                     <span>Crear Lista</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/pedidos"
+                    className={location.pathname === "/pedidos" ? "active" : ""}
+                  >
+                    <FaClipboardList className="nav-icon" />
+                    <span>Pedidos</span>
                   </NavLink>
                 </li>
                 <li>
