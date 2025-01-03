@@ -46,11 +46,7 @@ const ProveedorSchema = new EntitySchema({
       length: 255,
       nullable: true,
     },
-    estadoEncargado: {
-      type: "boolean",
-      nullable: false,
-      default: true, 
-    },
+
     movilEncargado: {
       type: "varchar", 
       length: 50,
@@ -73,11 +69,7 @@ const ProveedorSchema = new EntitySchema({
       length: 255,
       nullable: true,
     },
-    estadoRepartidor: {
-      type: "boolean",
-      nullable: false,
-      default: true,
-    },
+
     movilRepartidor: {
       type: "varchar", 
       nullable: true,

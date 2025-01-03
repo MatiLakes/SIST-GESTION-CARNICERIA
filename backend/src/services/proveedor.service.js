@@ -15,10 +15,9 @@ export async function crearProveedorService(body) {
       return [null, "Ya existe un proveedor con el mismo nombre"];
     }
 
-    // Crear el proveedor con los datos proporcionados, incluyendo los datos de Encargado y Repartidor
+    // Crear el proveedor con los datos proporcionados
     const nuevoProveedor = proveedorRepository.create({
       ...body,
-      // Asegúrate de que los campos encargados y repartidores sean correctamente pasados en el body
     });
 
     // Guardar el nuevo proveedor en la base de datos
@@ -54,31 +53,15 @@ export async function obtenerProveedoresService() {
           tipoCuenta: proveedor.tipoCuenta,
           createdAt: proveedor.createdAt.toISOString(),
           updatedAt: proveedor.updatedAt.toISOString(),
+          idEncargado: proveedor.idEncargado,
+          nombreEncargado: proveedor.nombreEncargado,
+          movilEncargado: proveedor.movilEncargado,
+          telefonoEncargado: proveedor.telefonoEncargado,
+          idRepartidor: proveedor.idRepartidor,
+          nombreRepartidor: proveedor.nombreRepartidor,
+          movilRepartidor: proveedor.movilRepartidor,
+          telefonoRepartidor: proveedor.telefonoRepartidor,
         };
-
-        // Incluir encargado solo si su estado es true
-        if (proveedor.estadoEncargado) {
-          proveedorData.idEncargado = proveedor.idEncargado;
-          proveedorData.nombreEncargado = proveedor.nombreEncargado;
-          proveedorData.estadoEncargado = proveedor.estadoEncargado;
-          proveedorData.movilEncargado = proveedor.movilEncargado;
-          proveedorData.telefonoEncargado = proveedor.telefonoEncargado;
-        } else {
-          // Si el estado es false, solo mostrar el nombre
-          proveedorData.nombreEncargado = proveedor.nombreEncargado;
-        }
-
-        // Incluir repartidor solo si su estado es true
-        if (proveedor.estadoRepartidor) {
-          proveedorData.idRepartidor = proveedor.idRepartidor;
-          proveedorData.nombreRepartidor = proveedor.nombreRepartidor;
-          proveedorData.estadoRepartidor = proveedor.estadoRepartidor;
-          proveedorData.movilRepartidor = proveedor.movilRepartidor;
-          proveedorData.telefonoRepartidor = proveedor.telefonoRepartidor;
-        } else {
-          // Si el estado es false, solo mostrar el nombre
-          proveedorData.nombreRepartidor = proveedor.nombreRepartidor;
-        }
 
         return proveedorData;
       }),
@@ -115,32 +98,16 @@ export async function obtenerProveedorService(id) {
         tipoCuenta: proveedorFound.tipoCuenta,
         createdAt: proveedorFound.createdAt.toISOString(),
         updatedAt: proveedorFound.updatedAt.toISOString(),
+        idEncargado: proveedorFound.idEncargado,
+        nombreEncargado: proveedorFound.nombreEncargado,
+        movilEncargado: proveedorFound.movilEncargado,
+        telefonoEncargado: proveedorFound.telefonoEncargado,
+        idRepartidor: proveedorFound.idRepartidor,
+        nombreRepartidor: proveedorFound.nombreRepartidor,
+        movilRepartidor: proveedorFound.movilRepartidor,
+        telefonoRepartidor: proveedorFound.telefonoRepartidor,
       },
     };
-
-    // Incluir encargado solo si su estado es true
-    if (proveedorFound.estadoEncargado) {
-      responseData.data.idEncargado = proveedorFound.idEncargado;
-      responseData.data.nombreEncargado = proveedorFound.nombreEncargado;
-      responseData.data.estadoEncargado = proveedorFound.estadoEncargado;
-      responseData.data.movilEncargado = proveedorFound.movilEncargado;
-      responseData.data.telefonoEncargado = proveedorFound.telefonoEncargado;
-    } else {
-      // Si el estado es false, solo mostrar el nombre
-      responseData.data.nombreEncargado = proveedorFound.nombreEncargado;
-    }
-
-    // Incluir repartidor solo si su estado es true
-    if (proveedorFound.estadoRepartidor) {
-      responseData.data.idRepartidor = proveedorFound.idRepartidor;
-      responseData.data.nombreRepartidor = proveedorFound.nombreRepartidor;
-      responseData.data.estadoRepartidor = proveedorFound.estadoRepartidor;
-      responseData.data.movilRepartidor = proveedorFound.movilRepartidor;
-      responseData.data.telefonoRepartidor = proveedorFound.telefonoRepartidor;
-    } else {
-      // Si el estado es false, solo mostrar el nombre
-      responseData.data.nombreRepartidor = proveedorFound.nombreRepartidor;
-    }
 
     return [responseData, null];
   } catch (error) {
@@ -187,12 +154,10 @@ export async function actualizarProveedorService(id, body) {
         tipoCuenta: updatedProveedor.tipoCuenta,
         idEncargado: updatedProveedor.idEncargado,
         nombreEncargado: updatedProveedor.nombreEncargado,
-        estadoEncargado: updatedProveedor.estadoEncargado,
         movilEncargado: updatedProveedor.movilEncargado,
         telefonoEncargado: updatedProveedor.telefonoEncargado,
         idRepartidor: updatedProveedor.idRepartidor,
         nombreRepartidor: updatedProveedor.nombreRepartidor,
-        estadoRepartidor: updatedProveedor.estadoRepartidor,
         movilRepartidor: updatedProveedor.movilRepartidor,
         telefonoRepartidor: updatedProveedor.telefonoRepartidor,
         createdAt: updatedProveedor.createdAt.toISOString(),

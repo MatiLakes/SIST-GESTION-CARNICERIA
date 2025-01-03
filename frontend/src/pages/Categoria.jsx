@@ -8,7 +8,7 @@ import { useErrorHandlerCategoria } from "@hooks/categoria/useErrorHandlerCatego
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
-import "@styles/formulariotable.css";
+import "@styles/formulariotabledatos.css";
 
 const Categorias = () => {
   const { categorias, loading, error, fetchCategorias } = useGetCategoria();
@@ -102,6 +102,8 @@ const Categorias = () => {
         onCreate={handleCreateClick}
         onEdit={handleUpdateClick}
         onDelete={handleDeleteClick}
+        showEditAllButton={false}
+        showViewButton={false}
       />
 
       {/* Modal de Creación */}
@@ -110,12 +112,12 @@ const Categorias = () => {
         onRequestClose={() => setIsCreateModalOpen(false)}
         contentLabel="Añadir Categoría"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
+        className="formulario-table-modal-form-datos"
         overlayClassName="formulario-table-overlay"
       >
         <h2 className="formulario-table-modal-title">Añadir Categoría</h2>
         <form onSubmit={handleCreateModalSubmit} className="formulario-table-formulario-table">
-          <div className="formulario-table-form-group">
+          <div className="formulario-table-formulario-table-datos">
             <label htmlFor="nombre">Nombre de la Categoría:</label>
             <input
               type="text"
@@ -149,12 +151,12 @@ const Categorias = () => {
         onRequestClose={() => setIsEditModalOpen(false)}
         contentLabel="Editar Categoría"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
+        className="formulario-table-modal-form-datos"
         overlayClassName="formulario-table-overlay"
       >
         <h2 className="formulario-table-modal-title">Editar Categoría</h2>
         <form onSubmit={handleEditSubmit} className="formulario-table-formulario-table">
-          <div className="formulario-table-form-group">
+          <div className="formulario-table-formulario-table-datos">
             <label htmlFor="nombre">Nombre de la Categoría:</label>
             <input
               type="text"

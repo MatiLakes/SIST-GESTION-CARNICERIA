@@ -60,13 +60,6 @@ const proveedorSchema = Joi.object({
       "string.max": "El nombre del encargado no puede tener más de {#limit} caracteres",
     }),
 
-  estadoEncargado: Joi.boolean()
-    .required()
-    .messages({
-      "boolean.base": "El estado debe ser un valor booleano",
-      "any.required": "El estado es obligatorio",
-    }),
-
   movilEncargado: Joi.string()
     .max(50)
     .optional()
@@ -89,13 +82,6 @@ const proveedorSchema = Joi.object({
     .messages({
       "string.base": "El nombre del repartidor debe ser un texto",
       "string.max": "El nombre del repartidor no puede tener más de {#limit} caracteres",
-    }),
-
-  estadoRepartidor: Joi.boolean()
-    .required()
-    .messages({
-      "boolean.base": "El estado debe ser un valor booleano",
-      "any.required": "El estado es obligatorio",
     }),
 
   movilRepartidor: Joi.string()

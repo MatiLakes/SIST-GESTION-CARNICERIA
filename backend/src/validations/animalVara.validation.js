@@ -1,4 +1,3 @@
-"use strict";
 import Joi from "joi";
 
 export const animalVaraValidation = (animalCortes) =>
@@ -44,12 +43,19 @@ export const animalVaraValidation = (animalCortes) =>
         "number.integer": "El precio total de la vara debe ser un número entero.",
         "any.required": "El precio total de la vara es obligatorio.",
       }),
-    tipoAnimal: Joi.string()
-      .valid(...animalCortes)
+    tipoAnimal: Joi.object({
+      nombreLista: Joi.string()
+        .valid(...animalCortes)
+        .required()
+        .messages({
+          "any.only": "El tipo de animal seleccionado no es válido.",
+          "any.required": "El tipo de animal es obligatorio.",
+        }),
+    })
       .required()
       .messages({
-        "any.only": "El tipo de animal seleccionado no es válido.",
-        "any.required": "El tipo de animal es obligatorio.",
+        "object.base": "El tipo de animal debe ser un objeto.",
+        "object.required": "El tipo de animal es obligatorio.",
       }),
   })
     .unknown(false)

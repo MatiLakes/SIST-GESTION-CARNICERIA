@@ -4,15 +4,30 @@ import Navbar2 from "../components/Navbar2";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoAddSharp } from "react-icons/io5";
+import { FaRegEye } from "react-icons/fa";
 
-const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+
+const Table = ({
+  data,
+  columns,
+  headerTitle,
+  onCreate,
+  onEdit,
+  onDelete,
+  onView,  // Nueva prop para manejar la acción de ver
+  showCreateButton = true,
+  showEditButton = true,
+  showDeleteButton = true,
+  showEditAllButton = true,
+  showViewButton = true, // Agregamos un control para mostrar el botón de ver
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState(data);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(8);  // Número de filas por página
-  const [pageInput, setPageInput] = useState(currentPage); // Valor del input de la página
+  const [rowsPerPage] = useState(8);
+  const [pageInput, setPageInput] = useState(currentPage);
+  const [editAll, setEditAll] = useState(false);
 
-  // Filtrar los datos según el término de búsqueda
   const handleSearch = (event) => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
@@ -23,20 +38,43 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
         )
       )
     );
-    setCurrentPage(1); // Resetear la página cuando cambie el término de búsqueda
+    setCurrentPage(1);
   };
 
-  // Calcular los datos visibles para la página actual
+  const handleCellChange = (value, rowIndex, columnKey) => {
+    const updatedData = [...filteredData];
+    updatedData[rowIndex][columnKey] = value;
+    setFilteredData(updatedData);
+  };
+
+  const formatObject = (obj) => {
+    if (Array.isArray(obj)) {
+      return obj.map((item, index) => (
+        <div key={index}>
+          {item.tipo}: {item.numero}
+        </div>
+      ));
+    } else if (typeof obj === "object" && obj !== null) {
+      return Object.entries(obj)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(", ");
+    } else if (typeof obj === "boolean") {
+      return obj ? "Sí" : "No";
+    }
+    return obj || "No disponible";
+  };
+
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
 
-  // Función para cambiar la página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Función para manejar la entrada de la página en el buscador
   const handlePageInputChange = (event) => {
-    const page = Math.max(1, Math.min(event.target.value, Math.ceil(filteredData.length / rowsPerPage)));
+    const page = Math.max(
+      1,
+      Math.min(event.target.value, Math.ceil(filteredData.length / rowsPerPage))
+    );
     setPageInput(page);
   };
 
@@ -44,43 +82,14 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
     paginate(pageInput);
   };
 
-  // Total de páginas
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
-  // Función para formatear objetos y arrays en el formato deseado
-  const formatObject = (obj) => {
-    if (Array.isArray(obj)) {
-      // Si el valor es un array de objetos, los transformamos a formato de texto
-      return obj.map((item, index) => {
-        // Mostrar cada número con su tipo en formato tipo: valor
-        return (
-          <div key={index}>
-            {item.tipo}: {item.numero}
-          </div>
-        );
-      });
-    } else if (typeof obj === "object" && obj !== null) {
-      // Si es un solo objeto, mostramos solo los valores
-      return Object.entries(obj)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(", ");
-    } else if (typeof obj === "boolean") {
-      // Si el valor es booleano, mostramos un ícono o texto
-      return obj ? "Sí" : "No"; // O puedes mostrar un check (✔) si lo prefieres
-    }
-    return obj || "No disponible";
-  };
 
   return (
     <div>
       <Navbar2 />
       <div className="table-container">
-        {/* Título dinámico con la clase 'table-titulo' */}
         <h1 className="table-titulo">{headerTitle}</h1>
-
-        {/* Contenedor para el buscador y el botón */}
         <div className="search-and-create-container">
-          {/* Buscador */}
           <input
             type="text"
             value={searchTerm}
@@ -88,49 +97,86 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
             placeholder="Buscar"
             className="search-input"
           />
-
-          {/* Botón Crear que llama la función onCreate pasada desde Categorias.js */}
-          <button
-            onClick={onCreate}
-            className="create-button-table"
-          >
-            <IoAddSharp />  Crear
-          </button>
+          <div className="buttons-container">
+            {showCreateButton && (
+              <button onClick={onCreate} className="create-button-table">
+                <IoAddSharp /> Crear
+              </button>
+            )}
+            {showEditAllButton && ( // Solo mostramos el botón si showEditAllButton es true
+              <button
+                onClick={() => setEditAll((prev) => !prev)}
+                className="edit-all-button"
+              >
+                <MdOutlineEdit /> {editAll ? "Guardar Edición" : "Editar Todo"}
+              </button>
+            )}
+          </div>
         </div>
-
-        {/* Tabla */}
         <table>
           <thead>
             <tr>
               {columns.map((col) => (
                 <th key={col.key}>{col.header}</th>
               ))}
-              <th style={{ textAlign: "right" }}>Acciones</th> {/* Alinea "Acciones" a la derecha */}
+              <th style={{ textAlign: "right" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {currentRows.length > 0 ? (
-              currentRows.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {columns.map((col) => (
-                    <td key={col.key}>
-                      {/* Usar la función formatObject para manejar los objetos y arrays */}
-                      {formatObject(row[col.key])}
-                    </td>
-                  ))}
-                  <td>
-                    {/* Botones de Acción: Editar y Eliminar */}
-                    <div className="acciones-table-container">
-                      <button onClick={() => onEdit(row)} className="acciones-table edit-button">
-                        <MdOutlineEdit />
-                      </button>
-                      <button onClick={() => onDelete(row)} className="acciones-table delete-button">
-                        <AiTwotoneDelete />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+              currentRows.map((row, rowIndex) => {
+                if (row !== null && row !== undefined) {
+                  return (
+                    <tr key={rowIndex}>
+                      {columns.map((col) => (
+                        <td key={col.key}>
+                          {editAll && (col.key === "precio" || col.key === "cantidad") ? (
+                            <input
+                              type="text"
+                              value={row[col.key]}
+                              onChange={(e) =>
+                                handleCellChange(e.target.value, rowIndex, col.key)
+                              }
+                            />
+                          ) : (
+                            formatObject(row[col.key])
+                          )}
+                        </td>
+                      ))}
+                      <td>
+                        <div className="acciones-table-container">
+                          {showEditButton && (
+                            <button
+                              onClick={() => onEdit(row)}
+                              className="acciones-table edit-button"
+                            >
+                              <MdOutlineEdit />
+                            </button>
+                          )}
+                          {showDeleteButton && (
+                            <button
+                              onClick={() => onDelete(row)}
+                              className="acciones-table delete-button"
+                            >
+                              <AiTwotoneDelete />
+                            </button>
+                          )}
+                          {showViewButton && (  // Agregamos el ícono de ver
+                            <button
+                              onClick={() => onView(row)}  // Ejecutamos la acción de ver
+                              className="acciones-table view-button"
+                            >
+                              <FaRegEye />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                } else {
+                  return null; // Si row es null o undefined, no lo renderizamos
+                }
+              })
             ) : (
               <tr>
                 <td colSpan={columns.length + 1} className="no-results">
@@ -140,8 +186,6 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
             )}
           </tbody>
         </table>
-
-        {/* Paginación */}
         {totalPages > 1 && (
           <div className="paginacion-table">
             <button
@@ -150,8 +194,6 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
             >
               Anterior
             </button>
-
-            {/* Buscador de página */}
             <div className="page-input-container">
               <input
                 type="number"
@@ -165,10 +207,7 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
                 Ir
               </button>
             </div>
-
-            {/* Botones de páginas */}
             <span> de {totalPages} páginas </span>
-
             <button
               onClick={() => paginate(currentPage + 1)}
               disabled={currentPage === totalPages}
@@ -183,3 +222,4 @@ const Table = ({ data, columns, headerTitle, onCreate, onEdit, onDelete }) => {
 };
 
 export default Table;
+

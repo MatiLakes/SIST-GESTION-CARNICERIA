@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCrearLista from "@hooks/listas/useCrearLista";
-import { createListaPrecios } from "@services/animalCorte.service";
 import "@styles/CrearListaPage.css";
-
 
 const CrearListaPage = () => {
   const navigate = useNavigate();
@@ -59,7 +57,7 @@ const CrearListaPage = () => {
         alert("Por favor, ingresa un nombre para la lista.");
         return;
       }
-  
+
       await crearLista(nombreLista, cortes); // Usa el hook en lugar del servicio
       alert("Lista guardada exitosamente.");
       navigate("/animal-corte/listas-precios"); // Redirigir
@@ -85,42 +83,36 @@ const CrearListaPage = () => {
           onChange={(e) => setNombreLista(e.target.value)}
         />
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Producto/Servicio</th>
-            <th>Precio</th>
-            <th>Cantidad</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cortes.map((corte, index) => (
-            <tr key={index}>
-              <td>{corte.nombre}</td>
-              <td>
-                <input
-                  type="number"
-                  placeholder="Ingrese precio"
-                  value={corte.precio}
-                  onChange={(e) =>
-                    handleInputChange(index, "precio", parseFloat(e.target.value))
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  placeholder="Ingrese cantidad"
-                  value={corte.cantidad}
-                  onChange={(e) =>
-                    handleInputChange(index, "cantidad", parseFloat(e.target.value))
-                  }
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+      {/* Sección donde se ingresan los precios y cantidades */}
+      <div className="cortes-lista-container">
+        {cortes.map((corte, index) => (
+          <div key={index} className="corte-item">
+            <h3>{corte.nombre}</h3>
+            <label htmlFor={`precio-${index}`}>Precio:</label>
+            <input
+              type="number"
+              id={`precio-${index}`}
+              placeholder="Ingrese precio"
+              value={corte.precio}
+              onChange={(e) =>
+                handleInputChange(index, "precio", parseFloat(e.target.value))
+              }
+            />
+            <label htmlFor={`cantidad-${index}`}>Cantidad:</label>
+            <input
+              type="number"
+              id={`cantidad-${index}`}
+              placeholder="Ingrese cantidad"
+              value={corte.cantidad}
+              onChange={(e) =>
+                handleInputChange(index, "cantidad", parseFloat(e.target.value))
+              }
+            />
+          </div>
+        ))}
+      </div>
+
       <button onClick={handleGuardar}>Guardar Lista</button>
     </div>
   );

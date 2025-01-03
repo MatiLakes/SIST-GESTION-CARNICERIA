@@ -281,9 +281,10 @@
   gap: 20px;
 }
 
-/* Estilo para los iconos de editar y eliminar */
+/* Estilo para los iconos de editar, eliminar y ver */
 .acciones-table.edit-button,
-.acciones-table.delete-button {
+.acciones-table.delete-button,
+.acciones-table.view-button {
   background-color: transparent; /* Sin fondo */
   color: black; /* Color negro para los iconos */
   border: none; /* Sin borde */
@@ -302,15 +303,42 @@
 
 /* Efecto hover para los iconos */
 .acciones-table.edit-button:hover,
-.acciones-table.delete-button:hover {
+.acciones-table.delete-button:hover,
+.acciones-table.view-button:hover {
   opacity: 0.7;
 }
 
-/* Si se quieren diferenciar por colores */
+/* Colores específicos para cada botón */
 .acciones-table.edit-button {
   color: black;
 }
 
 .acciones-table.delete-button {
   color: black;
+}
+
+.acciones-table.view-button {
+ color: black;
+}
+
+/* Color más claro en hover para el ícono de ver */
+.acciones-table.view-button:hover {
+  color: #45a049; /* Un verde más oscuro para el hover */
+}
+
+/* Opcional: color más claro en hover para el ícono de ver */
+.acciones-table.view-button:hover {
+  color: #45a049; /* Un verde más oscuro para el hover */
+}
+.formulario-table-modal-form {
+  max-height: 70vh;  /* Ajusta la altura máxima según sea necesario */
+  overflow-y: auto;  /* Activa el desplazamiento vertical */
+  padding: 20px;
+}
+
+.formulario-table-formulario-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Puedes agregar más estilos si lo necesitas */
 }

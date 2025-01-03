@@ -8,8 +8,8 @@ import Proveedores from '@pages/Proveedor';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
-import ListaPreciosPage from '@pages/ListaPreciosPage';
-import CrearListaPage from '@pages/CrearListaPage';
+import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
+
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         path: '/animal-corte/listas-precios',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-            <ListaPreciosPage />
+           <VerAnimalListaCorte />
           </ProtectedRoute>
         ),
       },
@@ -38,7 +38,7 @@ const router = createBrowserRouter([
         path: '/animal-corte/crear-lista',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-            <CrearListaPage />
+           
           </ProtectedRoute>
         ),
       },
@@ -51,7 +51,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/gestionProveedores/proveedor',  
+        path: '/gestion-proveedores/proveedor',  
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Proveedores /> 

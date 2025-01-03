@@ -27,8 +27,6 @@ const Proveedores = () => {
     tipoCuenta: "",
     nombreEncargado: "",
     nombreRepartidor: "",
-    estadoEncargado: "",
-    estadoRepartidor: "",
     movilEncargado: "",
     telefonoEncargado: "",
     movilRepartidor: "",
@@ -42,8 +40,6 @@ const Proveedores = () => {
     tipoCuenta: "",
     nombreEncargado: "",
     nombreRepartidor: "",
-    estadoEncargado: "",
-    estadoRepartidor: "",
     movilEncargado: "",
     telefonoEncargado: "",
     movilRepartidor: "",
@@ -84,8 +80,6 @@ const Proveedores = () => {
       tipoCuenta: proveedor.tipoCuenta,
       nombreEncargado: proveedor.nombreEncargado,
       nombreRepartidor: proveedor.nombreRepartidor,
-      estadoEncargado: proveedor.estadoEncargado,
-      estadoRepartidor: proveedor.estadoRepartidor,
       movilEncargado: proveedor.movilEncargado,
       telefonoEncargado: proveedor.telefonoEncargado,
       movilRepartidor: proveedor.movilRepartidor,
@@ -129,8 +123,6 @@ const Proveedores = () => {
       tipoCuenta: "",
       nombreEncargado: "",
       nombreRepartidor: "",
-      estadoEncargado: "",
-      estadoRepartidor: "",
       movilEncargado: "",
       telefonoEncargado: "",
       movilRepartidor: "",
@@ -177,11 +169,10 @@ const Proveedores = () => {
     { header: "Encargado", key: "nombreEncargado" },
     { header: "Teléfono Encargado", key: "telefonoEncargado" },
     { header: "Móvil Encargado", key: "movilEncargado" },
-    { header: "Estado Encargado", key: "estadoEncargado" },
     { header: "Repartidor", key: "nombreRepartidor" },
     { header: "Telefono Repartidor", key: "telefonoRepartidor" },
     { header: "Móvil Repartidor", key: "movilRepartidor" },
-    { header: "Estado Repartidor", key: "estadoRepartidor" },
+
     
     
   ];
@@ -195,6 +186,8 @@ const Proveedores = () => {
         onCreate={handleCreateClick}
         onEdit={handleUpdateClick}
         onDelete={handleDeleteClick}
+        showEditAllButton={false}
+        showViewButton={false}
       />
 
       {/* Modal de Creación */}
@@ -210,7 +203,7 @@ const Proveedores = () => {
         <form onSubmit={handleCreateModalSubmit} className="formulario-table-formulario-table">
           {formStep === 1 && (
             <>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="nombre">Nombre del Proveedor:</label>
                 <input
                   type="text"
@@ -222,7 +215,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="direccion">Dirección:</label>
                 <input
                   type="text"
@@ -234,7 +227,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="banco">Banco:</label>
                 <input
                   type="text"
@@ -246,7 +239,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="numeroCuenta">Número de Cuenta:</label>
                 <input
                   type="text"
@@ -258,7 +251,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="tipoCuenta">Tipo de Cuenta:</label>
                 <select
                   id="tipoCuenta"
@@ -296,7 +289,7 @@ const Proveedores = () => {
           )}
           {formStep === 2 && (
             <>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="nombreEncargado">Encargado:</label>
                 <input
                   type="text"
@@ -308,7 +301,7 @@ const Proveedores = () => {
                 />
               </div>
 
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
   <label htmlFor="telefonoEncargado">Telefono Encargado:</label>
   <input
     type="tel"
@@ -321,7 +314,7 @@ const Proveedores = () => {
     className="formulario-table-input"
   />
 </div>
-<div className="formulario-table-form-group">
+<div className="formulario-table-field-group">
   <label htmlFor="movilEncargado">Móvil Encargado:</label>
   <input
     type="tel"
@@ -335,21 +328,7 @@ const Proveedores = () => {
   />
 </div>
 
-      <div className="formulario-table-form-group">
-  <label htmlFor="estadoEncargado">Estado Encargado:</label>
-  <select
-    id="estadoEncargado"
-    name="estadoEncargado"
-    value={newProveedorData.estadoEncargado || "seleccionar"} // Valor por defecto 'seleccionar'
-    onChange={(e) => handleCreateModalChange(e, true)} // Pasa un segundo argumento para convertir a booleano
-    className="formulario-table-input tipo-cuenta-select"
-  >
-        <option value="seleccionar" >Seleccionar</option> {/* Opción para seleccionar */}
-    <option value="true">Activo</option> {/* "true" como cadena */}
-    <option value="false">Inactivo</option> {/* "false" como cadena */}
-  </select>
-</div>
-       
+
               <div className="formulario-table-form-actions">
               <button
                   type="button"
@@ -371,7 +350,7 @@ const Proveedores = () => {
           )}
           {formStep === 3 && (
             <>
-                            <div className="formulario-table-form-group">
+                            <div className="formulario-table-field-group">
                 <label htmlFor="nombreRepartidor">Repartidor:</label>
                 <input
                   type="text"
@@ -394,7 +373,7 @@ const Proveedores = () => {
                 className="formulario-table-input"
               />
 
-<div className="formulario-table-form-group">
+<div className="formulario-table-field-group">
   <label htmlFor="movilRepartidor">Móvil Repartidor:</label>
   <input
     type="tel"
@@ -408,20 +387,7 @@ const Proveedores = () => {
   />
 </div>
                
-      <div className="formulario-table-form-group">
-  <label htmlFor="estadoRepartidor">Estado Repartidor:</label>
-  <select
-    id="estadoRepartidor"
-    name="estadoRepartidor"
-    value={newProveedorData.estadoRepartidor || "seleccionar"} // Valor por defecto 'seleccionar'
-    onChange={(e) => handleCreateModalChange(e, true)} // Pasa un segundo argumento para convertir a booleano
-    className="formulario-table-input tipo-cuenta-select"
-  >
-    <option value="seleccionar" >Seleccionar</option> {/* Opción para seleccionar */}    
-    <option value="true">Activo</option> {/* "true" como cadena */}
-    <option value="false">Inactivo</option> {/* "false" como cadena */}
-  </select>
-</div>
+
              
               <div className="formulario-table-form-actions">
                 <button
@@ -460,7 +426,7 @@ const Proveedores = () => {
         <form onSubmit={handleEditSubmit} className="formulario-table-formulario-table">
           {formStep === 1 && (
             <>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="nombre">Nombre del Proveedor:</label>
                 <input
                   type="text"
@@ -472,7 +438,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="direccion">Dirección:</label>
                 <input
                   type="text"
@@ -484,7 +450,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="banco">Banco:</label>
                 <input
                   type="text"
@@ -496,7 +462,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="numeroCuenta">Número de Cuenta:</label>
                 <input
                   type="text"
@@ -508,7 +474,7 @@ const Proveedores = () => {
                   className="formulario-table-input"
                 />
               </div>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="tipoCuenta">Tipo de Cuenta:</label>
                 <select
                   id="tipoCuenta"
@@ -546,7 +512,7 @@ const Proveedores = () => {
           )}
                   {formStep === 2 && (
             <>
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
                 <label htmlFor="nombreEncargado">Encargado:</label>
                 <input
                   type="text"
@@ -558,7 +524,7 @@ const Proveedores = () => {
                 />
               </div>
 
-              <div className="formulario-table-form-group">
+              <div className="formulario-table-field-group">
   <label htmlFor="telefonoEncargado">Telefono Encargado:</label>
   <input
     type="tel"
@@ -571,7 +537,7 @@ const Proveedores = () => {
     className="formulario-table-input"
   />
 </div>
-<div className="formulario-table-form-group">
+<div className="formulario-table-field-group">
   <label htmlFor="movilEncargado">Móvil Encargado:</label>
   <input
     type="tel"
@@ -585,20 +551,7 @@ const Proveedores = () => {
   />
 </div>
 
-      <div className="formulario-table-form-group">
-  <label htmlFor="estadoEncargado">Estado Encargado:</label>
-  <select
-    id="estadoEncargado"
-    name="estadoEncargado"
-    value={formData.estadoEncargado || "seleccionar"} // Valor por defecto 'seleccionar'
-    onChange={(e) => handleEditChange(e, true)} // Pasa un segundo argumento para convertir a booleano
-    className="formulario-table-input tipo-cuenta-select"
-  >
-        <option value="seleccionar" >Seleccionar</option> {/* Opción para seleccionar */}
-    <option value="true">Activo</option> {/* "true" como cadena */}
-    <option value="false">Inactivo</option> {/* "false" como cadena */}
-  </select>
-</div>
+
        
               <div className="formulario-table-form-actions">
               <button
@@ -621,7 +574,7 @@ const Proveedores = () => {
           )}
           {formStep === 3 && (
             <>
-                            <div className="formulario-table-form-group">
+                            <div className="formulario-table-field-group">
                 <label htmlFor="nombreRepartidor">Repartidor:</label>
                 <input
                   type="text"
@@ -644,7 +597,7 @@ const Proveedores = () => {
                 className="formulario-table-input"
               />
 
-<div className="formulario-table-form-group">
+<div className="formulario-table-field-group">
   <label htmlFor="movilRepartidor">Móvil Repartidor:</label>
   <input
     type="tel"
@@ -658,21 +611,7 @@ const Proveedores = () => {
   />
 </div>
                
-      <div className="formulario-table-form-group">
-  <label htmlFor="estadoRepartidor">Estado Repartidor:</label>
-  <select
-    id="estadoRepartidor"
-    name="estadoRepartidor"
-    value={formData.estadoRepartidor || "seleccionar"} // Valor por defecto 'seleccionar'
-    onChange={(e) => handleEditChange(e, true)} // Pasa un segundo argumento para convertir a booleano
-    className="formulario-table-input tipo-cuenta-select"
-  >
-    <option value="seleccionar" >Seleccionar</option> {/* Opción para seleccionar */}    
-    <option value="true">Activo</option> {/* "true" como cadena */}
-    <option value="false">Inactivo</option> {/* "false" como cadena */}
-  </select>
-</div>
-             
+    
               <div className="formulario-table-form-actions">
                 <button
                   type="button"
