@@ -9,7 +9,7 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
-
+import Pedidos from "@pages/Pedidos"; 
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         path: '/animal-corte/listas-precios',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-           <VerAnimalListaCorte />
+            <VerAnimalListaCorte />
           </ProtectedRoute>
         ),
       },
@@ -58,6 +58,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: '/pedidos',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Pedidos />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {
@@ -68,6 +76,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: '/auth',
     element: <Login />,

@@ -1,0 +1,253 @@
+.pedidoItem {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+  }
+  
+  .pedidoForm input,
+  .pedidoForm textarea {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 60px; /* Ajuste inicial para la navbar cerrada */
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+  }
+  
+  .container.activado {
+    margin-left: 250px; /* Ajuste cuando la navbar está abierta */
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .createButton {
+    padding: 10px 15px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+  
+  .createButton:hover {
+    background-color: red;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .table th {
+    background-color: #f4f4f4;
+  }
+  
+  .detailButton,
+  .editButton,
+  .deleteButton {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .detailButton {
+    background-color: #008cba;
+    color: white;
+  }
+  
+  .detailButton:hover {
+    background-color: #007bb5;
+  }
+  
+  .editButton {
+    background-color: red;
+    color: white;
+  }
+  
+  .editButton:hover {
+    background-color: red;
+  }
+  
+  .deleteButton {
+    background-color: black;
+    color: white;
+  }
+  
+  .deleteButton:hover {
+    background-color: #d32f2f;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 50%;
+  }
+  
+  .closeButton {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .closeButton:hover {
+    background-color: #d32f2f;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .formGroup {
+    margin-bottom: 15px;
+  }
+  
+  .formGroup label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .formGroup input,
+  .formGroup textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #000; /* Asegura que el texto sea negro */
+    background-color: #fff; /* Asegura que el fondo sea blanco */
+  }
+  
+  .formGroup textarea {
+    resize: vertical;
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .saveButton {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .saveButton:hover {
+    background-color: red;
+  }
+  
+  .cancelButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .cancelButton:hover {
+    background-color: #d32f2f;
+  }
+  
+  .filterContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* Espaciado entre los botones */
+    margin-bottom: 10px; /* Separación con otros elementos */
+  }
+  
+  .filterButton {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    width: 150px;
+    margin-left: 10px;
+  }
+  
+  .filterButton.filter {
+    background-color: black 
+  }
+  
+  .filterButton.filter:hover {
+    background-color: whitesmoke 
+  }
+  
+  .filterButton.reset {
+    background-color: #dc3545; 
+  }
+  
+  .filterButton.reset:hover {
+    background-color: #c82333; 
+  }
+  
+  .filterInput {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 150px;
+    color: black; 
+    background-color: white;
+  }
