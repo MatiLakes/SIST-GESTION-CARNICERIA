@@ -5,14 +5,15 @@ import useDeletePedido from "@hooks/pedidos/useDeletePedido.jsx";
 import useEditPedido from "@hooks/pedidos/useEditPedido.jsx";
 import useFilterPedidosByFecha from "@hooks/pedidos/useFilterPedidosByFecha.jsx";
 import Swal from "sweetalert2";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 import styles from "@styles/Pedido.module.css";
 
 const Pedidos = () => {
-  const { pedidos, loading } = useGetPedidos();
-  const { create } = useCreatePedido();
-  const { remove } = useDeletePedido();
-  const { edit } = useEditPedido();
+  const { pedidos, loading, fetchPedidos } = useGetPedidos();
+  const { create } = useCreatePedido(fetchPedidos);
+  const { remove } = useDeletePedido(fetchPedidos);
+  const { edit } = useEditPedido(fetchPedidos);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -43,7 +44,6 @@ const Pedidos = () => {
     try {
       await create(newPedido);
       closeModal();
-      window.location.reload();
     } catch (error) {
       console.error("Error al crear el pedido:", error);
     }
@@ -63,7 +63,6 @@ const Pedidos = () => {
     try {
       await edit(currentPedido.id, updatedPedido);
       closeEditModal();
-      window.location.reload();
     } catch (error) {
       console.error("Error al editar pedido:", error);
     }
@@ -103,7 +102,6 @@ const Pedidos = () => {
           icon: "success",
           confirmButtonColor: "#3085d6",
         });
-        window.location.reload();
       } catch (error) {
         Swal.fire({
           title: "Error",
@@ -168,19 +166,21 @@ const Pedidos = () => {
               <td>{pedido.productos}</td>
               <td>{pedido.fecha_entrega}</td>
               <td>
-                <button
-                  className={styles.editButton}
-                  onClick={() => openEditModal(pedido)}
-                >
-                  Editar
-                </button>
-                <button
-            className={styles.deleteButton}
-            onClick={() => handleDeletePedido(pedido.id)}
-          >
-            Borrar
-          </button>
-              </td>
+        <button
+          className={styles.iconButton}
+          onClick={() => openEditModal(pedido)}
+          title="Editar"
+        >
+          <FaEdit />
+        </button>
+        <button
+          className={styles.iconButton}
+          onClick={() => handleDeletePedido(pedido.id)}
+          title="Borrar"
+        >
+          <FaTrash />
+        </button>
+      </td>
             </tr>
           ))}
         </tbody>

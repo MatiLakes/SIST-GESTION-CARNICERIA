@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { updatePedido } from "@services/pedido.service.js";
 
-const useEditPedido = () => {
+const useEditPedido = (fetchPedidos) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -10,7 +10,13 @@ const useEditPedido = () => {
     setError(null);
     try {
       const response = await updatePedido(id, updatedPedido);
-      console.log("Pedido actualizado:", response); // Para verificar
+      console.log("Pedido actualizado:", response);
+
+      // Llama a fetchPedidos para recargar los datos
+      if (fetchPedidos) {
+        await fetchPedidos();
+      }
+
       return response; // Retorna el pedido actualizado
     } catch (err) {
       setError(err.message);
