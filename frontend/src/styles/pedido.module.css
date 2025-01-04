@@ -251,3 +251,17 @@
     color: black; 
     background-color: white;
   }
+
+  .iconButton {
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    cursor: pointer; /* Cambia el cursor a una mano */
+    font-size: 1.1rem; /* Tamaño del icono */
+    margin: 0 5px; /* Espaciado entre iconos */
+    color: #000; /* Color negro */
+    transition: color 0.3s ease; /* Transición suave para el hover */
+  }
+  
+  .iconButton:hover {
+    color: #d32f2f; /* Cambia a rojo cuando se pasa el mouse */
+  }
