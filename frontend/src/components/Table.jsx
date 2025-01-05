@@ -5,7 +5,9 @@ import { AiTwotoneDelete } from "react-icons/ai";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoAddSharp } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
-
+import { FcCalendar } from "react-icons/fc";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Table = ({
   data,
@@ -14,12 +16,14 @@ const Table = ({
   onCreate,
   onEdit,
   onDelete,
-  onView,  // Nueva prop para manejar la acción de ver
+  onView,
   showCreateButton = true,
   showEditButton = true,
   showDeleteButton = true,
   showEditAllButton = true,
-  showViewButton = true, // Agregamos un control para mostrar el botón de ver
+  showViewButton = true,
+  customFormat = null, // Nueva prop para formatear datos de forma personalizada
+  showCalendarButton = true, // Prop para controlar la visibilidad del botón de calendario
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState(data);
@@ -27,20 +31,66 @@ const Table = ({
   const [rowsPerPage] = useState(8);
   const [pageInput, setPageInput] = useState(currentPage);
   const [editAll, setEditAll] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false); // Estado para manejar la visibilidad del calendario
+  const [showClearButton, setShowClearButton] = useState(false); // Estado para manejar la visibilidad del botón "Mostrar Todo"
 
+  // Manejo del filtro de búsqueda
   const handleSearch = (event) => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
+    
     setFilteredData(
       data.filter((row) =>
         columns.some((col) =>
-          String(row[col.key]).toLowerCase().includes(term)
+          searchInObject(row[col.key], term) // Función que buscará en los objetos
         )
       )
     );
+    
     setCurrentPage(1);
   };
 
+  // Función para realizar la búsqueda recursiva en objetos
+  const searchInObject = (value, term) => {
+    if (typeof value === "object" && value !== null) {
+      return Object.values(value).some((v) => searchInObject(v, term)); // Recurre en objetos
+    } else {
+      return String(value).toLowerCase().includes(term); // Comparación normal en valores primitivos
+    }
+  };
+
+
+
+  // Filtrar datos por fecha
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    if (date) {
+      // Convierte la fecha seleccionada en formato ISO y extrae solo la parte de la fecha
+      const selectedDateString = date.toISOString().split('T')[0];
+
+      // Filtra los datos, comparando solo la parte de la fecha (yyyy-MM-dd)
+      const filteredByDate = data.filter((row) => {
+        // Convierte la fecha de llegada a ISO y extrae solo la parte de la fecha
+        const rowDateString = new Date(row.fechaLlegada).toISOString().split('T')[0];
+        return rowDateString === selectedDateString;
+      });
+
+      setFilteredData(filteredByDate);
+    } else {
+      setFilteredData(data); // Mostrar todos los datos si no hay fecha seleccionada
+    }
+    setCurrentPage(1); // Resetear a la primera página cuando se aplica un filtro de fecha
+  };
+
+  const handleClearDateFilter = () => {
+    setSelectedDate(null);
+    setFilteredData(data); // Mostrar todos los datos
+    setShowClearButton(false); // Ocultar el botón "Mostrar Todo"
+    setShowDatePicker(false); // Ocultar el calendario
+  };
+
+  // Manejo de cambios en las celdas de la tabla
   const handleCellChange = (value, rowIndex, columnKey) => {
     const updatedData = [...filteredData];
     updatedData[rowIndex][columnKey] = value;
@@ -64,6 +114,12 @@ const Table = ({
     return obj || "No disponible";
   };
 
+  const formatData = (value) => {
+    // Usa la función personalizada si está definida, de lo contrario usa la genérica
+    return customFormat ? customFormat(value) : formatObject(value);
+  };
+
+  // Paginación de la tabla
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
@@ -97,13 +153,45 @@ const Table = ({
             placeholder="Buscar"
             className="search-input"
           />
+          <div className="date-filter-container">
+            {showCalendarButton && (
+              <button
+                onClick={() => {
+                  setShowDatePicker((prev) => !prev);
+                  setShowClearButton((prev) => !prev); // Alternar la visibilidad del botón "Mostrar Todo"
+                }}
+                className="calendar-icon-button"
+              >
+                <FcCalendar /> {/* Icono de calendario */}
+              </button>
+            )}
+            {showDatePicker && (
+              <div className="calendar-overlay">
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  dateFormat="yyyy/MM/dd"
+                  className="date-picker"
+                  inline
+                />
+              </div>
+            )}
+            {showClearButton && (
+              <button
+                onClick={handleClearDateFilter}
+                className="clear-date-filter-button"
+              >
+                Mostrar Todo
+              </button>
+            )}
+          </div>
           <div className="buttons-container">
             {showCreateButton && (
               <button onClick={onCreate} className="create-button-table">
                 <IoAddSharp /> Crear
               </button>
             )}
-            {showEditAllButton && ( // Solo mostramos el botón si showEditAllButton es true
+            {showEditAllButton && (
               <button
                 onClick={() => setEditAll((prev) => !prev)}
                 className="edit-all-button"
@@ -125,24 +213,28 @@ const Table = ({
           <tbody>
             {currentRows.length > 0 ? (
               currentRows.map((row, rowIndex) => {
-                if (row !== null && row !== undefined) {
+                // Verifica que row no sea null
+                if (row) {
                   return (
                     <tr key={rowIndex}>
-                      {columns.map((col) => (
-                        <td key={col.key}>
-                          {editAll && (col.key === "precio" || col.key === "cantidad") ? (
-                            <input
-                              type="text"
-                              value={row[col.key]}
-                              onChange={(e) =>
-                                handleCellChange(e.target.value, rowIndex, col.key)
-                              }
-                            />
-                          ) : (
-                            formatObject(row[col.key])
-                          )}
-                        </td>
-                      ))}
+                      {columns.map((col) => {
+                        const cellValue = row[col.key];
+                        return (
+                          <td key={col.key}>
+                            {editAll && (col.key === "precio" || col.key === "cantidad") ? (
+                              <input
+                                type="text"
+                                value={cellValue || ""}
+                                onChange={(e) =>
+                                  handleCellChange(e.target.value, rowIndex, col.key)
+                                }
+                              />
+                            ) : (
+                              formatData(cellValue || "No disponible")
+                            )}
+                          </td>
+                        );
+                      })}
                       <td>
                         <div className="acciones-table-container">
                           {showEditButton && (
@@ -161,9 +253,9 @@ const Table = ({
                               <AiTwotoneDelete />
                             </button>
                           )}
-                          {showViewButton && (  // Agregamos el ícono de ver
+                          {showViewButton && (
                             <button
-                              onClick={() => onView(row)}  // Ejecutamos la acción de ver
+                              onClick={() => onView(row)}
                               className="acciones-table view-button"
                             >
                               <FaRegEye />
@@ -173,9 +265,8 @@ const Table = ({
                       </td>
                     </tr>
                   );
-                } else {
-                  return null; // Si row es null o undefined, no lo renderizamos
                 }
+                return null; // Si row es null, no renderiza esta fila
               })
             ) : (
               <tr>
@@ -191,26 +282,24 @@ const Table = ({
             <button
               onClick={() => paginate(currentPage - 1)}
               disabled={currentPage === 1}
+              className="pagina-button"
             >
               Anterior
             </button>
-            <div className="page-input-container">
-              <input
-                type="number"
-                value={pageInput}
-                onChange={handlePageInputChange}
-                min={1}
-                max={totalPages}
-                className="page-input"
-              />
-              <button onClick={goToPage} className="go-to-page-button">
-                Ir
-              </button>
-            </div>
-            <span> de {totalPages} páginas </span>
+            <input
+              type="number"
+              value={pageInput}
+              onChange={handlePageInputChange}
+              onBlur={goToPage}
+              className="page-input"
+              min="1"
+              max={totalPages}
+            />
+            <span>de {totalPages}</span>
             <button
               onClick={() => paginate(currentPage + 1)}
               disabled={currentPage === totalPages}
+              className="pagina-button"
             >
               Siguiente
             </button>
@@ -222,4 +311,8 @@ const Table = ({
 };
 
 export default Table;
+
+
+
+
 

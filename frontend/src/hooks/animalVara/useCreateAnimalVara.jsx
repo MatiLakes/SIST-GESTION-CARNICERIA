@@ -1,18 +1,18 @@
-import { createAnimalCorteService } from '@services/animalCorte.service.js'; // Asegúrate de que este servicio esté correcto
+import { createAnimalVaraService } from '@services/animalVara.service.js'; // Asegúrate de que este servicio esté correcto
 import { showSuccessAlert, showErrorAlert } from '@helpers/sweetAlert'; // Importar las funciones de SweetAlert
 
-const useCreateAnimalCorte = (fetchAnimalCortes) => {
-  const handleCreate = async (animalCorteData) => {
+const useCreateAnimalVara = (fetchAnimalVaras) => {
+  const handleCreate = async (animalVaraData) => {
     try {
-      const newAnimalCorte = await createAnimalCorteService(animalCorteData);
-      if (newAnimalCorte) {
-        // Si el AnimalCorte se crea correctamente, obtenemos nuevamente la lista
-        fetchAnimalCortes(); // Actualizamos la lista de AnimalCortes
+      const newAnimalVara = await createAnimalVaraService(animalVaraData);
+      if (newAnimalVara) {
+        // Si la AnimalVara se crea correctamente, obtenemos nuevamente la lista
+        fetchAnimalVaras(); // Actualizamos la lista de AnimalVaras
 
         // Mostrar mensaje de éxito
-        showSuccessAlert('Lista de precios creada éxitosamente'); // Muestra el mensaje de éxito
+        showSuccessAlert('Vara ingresada con éxito'); // Muestra el mensaje de éxito
       } else {
-        throw new Error('No se pudo crear el AnimalCorte');
+        throw new Error('No se pudo crear la AnimalVara');
       }
     } catch (error) {
       // Si el error es de validación de Joi
@@ -26,7 +26,7 @@ const useCreateAnimalCorte = (fetchAnimalCortes) => {
         showErrorAlert('Error de validación', errorMessages); // Muestra los errores de validación
       } else {
         // Si no es un error de validación, muestra un mensaje genérico
-        const errorMessage = error.response?.data?.message || 'No se pudo crear el AnimalCorte';
+        const errorMessage = error.response?.data?.message || 'No se pudo crear la AnimalVara';
         console.error(errorMessage); // Mostramos el error en la consola
 
         // Mostrar mensaje de error genérico
@@ -38,4 +38,4 @@ const useCreateAnimalCorte = (fetchAnimalCortes) => {
   return { handleCreate }; // Se exporta 'handleCreate'
 };
 
-export { useCreateAnimalCorte };
+export { useCreateAnimalVara };

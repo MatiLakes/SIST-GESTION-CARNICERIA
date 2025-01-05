@@ -9,6 +9,7 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
 import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
+import AnimalVara from '@pages/AnimalVara';
 import Pedidos from "@pages/Pedidos"; 
 import '@styles/styles.css';
 
@@ -35,10 +36,10 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/animal-corte/crear-lista',
+        path: '/animal-vara/vara',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-           
+           <AnimalVara />
           </ProtectedRoute>
         ),
       },

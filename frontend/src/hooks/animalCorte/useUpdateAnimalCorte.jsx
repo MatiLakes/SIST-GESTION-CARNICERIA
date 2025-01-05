@@ -6,7 +6,7 @@ const useUpdateAnimalCorte = (fetchAnimalCortes) => {
     try {
       await updateAnimalCorteService(id, animalCorteData); // Actualiza el AnimalCorte
       fetchAnimalCortes(); // Actualiza la lista de AnimalCortes después de la actualización
-      showSuccessAlert('AnimalCorte actualizado con éxito'); // Mensaje de éxito
+      showSuccessAlert('Lista de precios actualizada con éxito'); // Mensaje de éxito
     } catch (error) {
       showErrorAlert('Error', 'No se pudo actualizar el AnimalCorte'); // Mensaje de error
     }

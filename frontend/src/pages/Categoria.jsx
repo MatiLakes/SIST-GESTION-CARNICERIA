@@ -104,6 +104,7 @@ const Categorias = () => {
         onDelete={handleDeleteClick}
         showEditAllButton={false}
         showViewButton={false}
+        showCalendarButton = {false}
       />
 
       {/* Modal de Creación */}

@@ -273,8 +273,17 @@ const VerAnimalListaCorte = () => {
 
   const handleCreateModalSubmit = (e) => {
     e.preventDefault();
-    handleCreate(newAnimalCorteData);
-    setNewAnimalCorteData({ nombre: "" });
+    
+    // Asegúrate de que todos los valores necesarios sean números válidos
+    const validatedData = { ...newAnimalCorteData };
+    for (let key in validatedData) {
+      if (validatedData[key] === '') {
+        validatedData[key] = 0; // Si es vacío, asigna 0
+      }
+    }
+  
+    handleCreate(validatedData);
+    setNewAnimalCorteData({ nombreLista: "" });
     setIsCreateModalOpen(false);
   };
 
@@ -323,6 +332,7 @@ const VerAnimalListaCorte = () => {
         showDeleteButton={true}
         showCreateButton={true}
         showViewButton={true} // Asegúrate de mostrar el botón de "Ver"
+        showCalendarButton = {false}
       />
 
       {/* Modal de Creación */}
@@ -494,12 +504,12 @@ const VerAnimalListaCorte = () => {
     </div>
 
     <div className="formulario-table-field-group">
-    <label htmlFor="cogote">Precio Choclillo:</label>
+    <label htmlFor="precioChoclillo">Precio Choclillo:</label>
     <input
     type="number"
-    id="cogote"
-    name="cogote"
-    value={newAnimalCorteData.cogote || 0} 
+    id="precioChoclillo"
+    name="precioChoclillo"
+    value={newAnimalCorteData.precioChoclillo || 0} 
     onChange={handleCreateModalChange}
     required
     min="0"
@@ -718,18 +728,6 @@ const VerAnimalListaCorte = () => {
     </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     <div className="formulario-table-field-group">
     <label htmlFor="precioLomoVetado">Precio Lomo Vetado:</label>
     <input
@@ -912,7 +910,7 @@ const VerAnimalListaCorte = () => {
     
     <div className="formulario-table-form-group">
     <div className="formulario-table-field-group">
-    <label htmlFor="postaPaleta">Cantidad posta Paleta:</label>
+    <label htmlFor="postaPaleta">Cantidad Posta Paleta:</label>
     <input
     type="number"
     id="postaPaleta"
@@ -1137,7 +1135,7 @@ const VerAnimalListaCorte = () => {
     onChange={handleCreateModalChange}
     required
     min="0"
-    step="0.1"
+    step="1"
     className="formulario-table-input"
     />
     </div>
@@ -1573,8 +1571,8 @@ const VerAnimalListaCorte = () => {
     <input
       type="number"
       id="precioAbastero"
-      name="PrecioAbastero"
-      value={formData.PrecioAbastero || 0} 
+      name="precioAbastero"
+      value={formData.precioAbastero || 0} 
       onChange={handleEditChange}
       required
       min="0"
@@ -1697,12 +1695,12 @@ const VerAnimalListaCorte = () => {
     </div>
 
     <div className="formulario-table-field-group">
-    <label htmlFor="cogote">Precio Choclillo:</label>
+    <label htmlFor="precioChoclillo">Precio Choclillo:</label>
     <input
     type="number"
-    id="cogote"
-    name="cogote"
-    value={formData.cogote || 0} 
+    id="precioChoclillo"
+    name="precioChoclillo"
+    value={formData.precioChoclillo || 0} 
     onChange={handleEditChange}
     required
     min="0"
@@ -2707,13 +2705,10 @@ const VerAnimalListaCorte = () => {
     </div>
     </div>
     
-    
-
-
 
           <div className="formulario-table-form-actions">
             <button type="submit" className="formulario-table-btn-confirm">
-              Crear
+              Editar
             </button>
             <button
               type="button"
@@ -2871,6 +2866,9 @@ const VerAnimalListaCorte = () => {
         
         <p><strong>Cantidad Tapaposta:</strong> {animalCorteToView.tapaposta}</p>
         <p><strong>Precio Tapaposta:</strong> {animalCorteToView.precioTapaposta}</p>
+
+        <p><strong>Cantidad Malaya:</strong> {animalCorteToView.malaya}</p>
+        <p><strong>Precio Malaya:</strong> {animalCorteToView.precioMalaya}</p>
       </div>
     )}
     <div className="modal-actions">

@@ -20,19 +20,7 @@ export const animalVaraValidation = (animalCortes) =>
         "number.max": "La temperatura de llegada no puede ser mayor a 50.",
         "any.required": "La temperatura de llegada es obligatoria.",
       }),
-    recibidoPor: Joi.string()
-      .min(3)
-      .max(100)
-      .pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)
-      .required()
-      .messages({
-        "string.empty": "El nombre de quien recibe no puede estar vacío.",
-        "string.base": "El nombre de quien recibe debe ser de tipo string.",
-        "string.min": "El nombre de quien recibe debe tener como mínimo 3 caracteres.",
-        "string.max": "El nombre de quien recibe debe tener como máximo 100 caracteres.",
-        "string.pattern.base": "El nombre de quien recibe solo puede contener letras y espacios.",
-        "any.required": "El nombre de quien recibe es obligatorio.",
-      }),
+
     precioTotalVara: Joi.number()
       .min(0)
       .integer()
@@ -60,5 +48,5 @@ export const animalVaraValidation = (animalCortes) =>
   })
     .unknown(false)
     .messages({
-      "object.unknown": "No se permiten propiedades adicionales.",
+      "object.unknown": "No se permiten propiedades adicionaless.",
     });

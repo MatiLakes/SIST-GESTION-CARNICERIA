@@ -115,7 +115,7 @@
 .create-button-table {
   padding: 12px 30px;  /* Ajusta el padding si es necesario */
   font-size: 15px;
-  background-color: #4079a8ec;
+  background-color: #d32f2f;
   color: white;
   border: none;
   border-radius: 4px;
@@ -138,7 +138,7 @@
 
 /* Elimina el efecto hover, manteniendo el color del fondo igual */
 .create-button-table:hover {
-  background-color: #4079a8ec;  /* El mismo color de fondo que en el estado normal */
+  background-color: #d32f2f;
 }
 
 /* Estilos responsivos */
@@ -342,3 +342,99 @@
   gap: 10px;
   /* Puedes agregar más estilos si lo necesitas */
 }
+
+
+/* Estilo del botón "Mostrar Todo" */
+.clear-date-filter-button {
+  background-color: #d32f2f; /* Color de fondo verde */
+  color: white; /* Color de texto blanco */
+  padding: 6px 10px; /* Reducción del padding para hacerlo más pequeño */
+  font-size: 0.8rem; /* Tamaño de fuente más pequeño */
+  border-radius: 28px; /* Bordes redondeados */
+  cursor: pointer; /* Cursor de mano */
+  transition: all 0.3s ease; /* Transición suave */
+}
+
+.clear-date-filter-button:hover {
+  background-color: #d32f2f;
+}
+
+.calendar-icon-button {
+  background-color: transparent; /* Fondo transparente */
+  color: black; /* Color negro para los iconos */
+  border: none; /* Sin borde */
+  cursor: pointer;
+  padding: 8px; /* Aumenta el padding para más espacio alrededor */
+  height: 50px; /* Aumenta la altura para acomodar un icono más grande */
+  width: 70px; /* Aumenta el ancho para que el icono tenga más espacio */
+  line-height: 1; /* Ajuste para evitar el salto de línea */
+  transition: opacity 0.3s ease; /* Efecto al pasar el cursor */
+  font-size: 4rem; /* Aumenta el tamaño del icono */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 8px; /* Espacio entre el icono y otros elementos */
+}
+
+/* Contenedor de los filtros de fecha (con el icono de calendario y el botón "Mostrar Todo") */
+.date-filter-container {
+  display: flex;
+  align-items: center; /* Alinea los elementos verticalmente */
+  gap: 8px; /* Espacio entre los botones */
+  justify-content: flex-start; /* Alinea todo a la izquierda */
+}
+
+/* Efecto al pasar el ratón sobre el icono de calendario */
+.calendar-icon-button:hover {
+  opacity: 0.8; /* Efecto al pasar el ratón */
+}
+
+/* Alineación de los botones "Crear", "Editar" y "Calendario" */
+.buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Distribuye los elementos a los extremos */
+  width: 100%; /* Ocupa todo el espacio disponible */
+  gap: 12px; /* Espacio entre los botones */
+}
+
+.buttons-container .create-button-table {
+  margin-left: auto; /* Empuja el botón Crear hacia la derecha */
+}
+
+/* El contenedor del calendario */
+.calendar-overlay {
+  position: absolute;
+  z-index: 999; /* Asegura que el calendario esté sobre la tabla */
+  
+
+  
+  /* Para centrar el calendario en su contenedor */
+  left: 30%; /* Lo coloca al 50% desde el borde izquierdo */
+  transform: translateX(-50%); /* Ajusta el centro para que se alinee perfectamente */
+  top: 4px; /* Ajusta la posición vertical según lo necesites */
+}
+
+/* Botón de filtro de fecha */
+.calendar-icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1000; /* Asegura que el icono esté encima del calendario */
+}
+
+
+/* Cambiar el color de fondo del encabezado */
+.react-datepicker__header {
+  background-color: #d32f2f !important; /* Color de fondo del encabezado */
+  border: none !important; /* Eliminar borde */
+  box-shadow: none !important; /* Eliminar sombra */
+}
+
+/* Cambiar el color del texto del mes/año */
+.react-datepicker__current-month {
+  color: white !important; /* Color del texto del mes/año */
+}
+
+

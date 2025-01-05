@@ -86,11 +86,11 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink
-                    to="/animal-corte/crear-lista"
-                    className={location.pathname === "/animal-corte/crear-lista" ? "active" : ""}
+                    to="/animal-vara/vara"
+                    className={location.pathname === "/animal-vara/vara" ? "active" : ""}
                   >
                     <FaPlus className="nav-icon" />
-                    <span>Crear Lista</span>
+                    <span>Vara</span>
                   </NavLink>
                 </li>
                 <li>
