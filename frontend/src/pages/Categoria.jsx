@@ -10,13 +10,15 @@ import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
 import "@styles/formulariotabledatos.css";
 
+import Swal from "sweetalert2";
+
 const Categorias = () => {
   const { categorias, loading, error, fetchCategorias } = useGetCategoria();
   const { handleCreate } = useCreateCategoria(fetchCategorias);
   const { handleDelete } = useDeleteCategoria(fetchCategorias);
   const { handleUpdate } = useUpdateCategoria(fetchCategorias);
 
-  const { createError, editError, deleteError, handleCreateError, handleEditError, handleDeleteError } = useErrorHandlerCategoria();
+  const { createError, editError, deleteError,  handleEditError, handleDeleteError } = useErrorHandlerCategoria();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -64,26 +66,41 @@ const Categorias = () => {
 
   const handleCreateModalSubmit = (e) => {
     e.preventDefault();
+  
+    if (validateFields(newCategoryData)) {
+      handleCreate(newCategoryData);
+      setNewCategoryData({ nombre: "", tipo_producto: "" });
+      setIsCreateModalOpen(false);
+    }
+  };
 
-    if (handleCreateError(newCategoryData)) return; // Maneja el error de creación
-
-    handleCreate(newCategoryData);
-    setNewCategoryData({ nombre: "" });
-    setIsCreateModalOpen(false);
+  const validateFields = (data) => {
+    // Validación para el campo nombre (solo letras y mínimo 3 caracteres)
+    if (!/^[a-zA-Z\s]{3,}$/.test(data.nombre)) {
+      Swal.fire("Error", "El nombre de la categoría solo puede contener letras y debe tener al menos 3 caracteres.", "error");
+      return false;
+    }
+  
+    return true;
   };
 
   const handleEditChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
+const handleEditSubmit = (e) => {
+  e.preventDefault();
 
-    if (handleEditError(formData)) return; // Maneja el error de edición
+  // Validar los campos antes de editar
+  if (!validateFields(formData)) {
+    return; // Si la validación falla, no continúa con el proceso
+  }
 
-    handleUpdate(categoriaToEdit.id, formData);
-    setIsEditModalOpen(false);
-  };
+  if (handleEditError(formData)) return; // Maneja el error de edición
+
+  handleUpdate(categoriaToEdit.id, formData);
+  setIsEditModalOpen(false);
+};
 
   if (loading) return <p>Cargando categorías...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -187,6 +204,21 @@ const Categorias = () => {
             />
             {editError && <span className="error-message">{editError}</span>}
           </div>
+          <div className="formulario-table-field-group">
+                <label htmlFor="tipo_producto">Tipo producto:</label>
+                <select
+                  id="tipo_producto"
+                  name="tipo_producto"
+                  value={formData.tipo_producto}
+                  onChange={handleEditChange}
+                  required
+                  className="formulario-table-input tipo-cuenta-select"
+                >
+                  <option value="">Selecciona un Tipo de producto</option>
+                  <option value="Cárnico">Cárnico</option>
+                  <option value="No Cárnico">No Cárnico</option>
+                </select>
+              </div>
           <div className="formulario-table-form-actions">
             <button type="submit" className="formulario-table-btn-confirm">
               Guardar Cambios

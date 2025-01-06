@@ -4,12 +4,12 @@ import { useCreateProductoCarnico } from "@hooks/productoCarnico/useCreateProduc
 import { useDeleteProductoCarnico } from "@hooks/productoCarnico/useDeleteProductoCarnico";
 import { useUpdateProductoCarnico } from "@hooks/productoCarnico/useUpdateProductoCarnico";
 import { getCategoriasCarnicas }  from '../services/categoria.service';
-
+import Swal from "sweetalert2";
 
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
-import "@styles/formulariotabledatos.css";
+import "@styles/formulariotable.css";
 
 const ProductoCarnico = () => {
   const { productosCarnicos, loading, error, fetchProductosCarnicos } = useGetProductoCarnico();
@@ -95,25 +95,80 @@ const ProductoCarnico = () => {
     setNewProductoData({ ...newProductoData, [e.target.name]: e.target.value });
   };
 
+  
+
+  const validateFields = (data) => {
+    // Validaciones para campos de texto (tipo_producto y marca)
+    if (!/^[a-zA-Z\s]*$/.test(data.tipo_producto)) {
+      Swal.fire("Error", "El tipo de producto solo puede contener letras.", "error");
+      return false;
+    }
+    if (!/^[a-zA-Z\s]*$/.test(data.marca)) {
+      Swal.fire("Error", "La marca solo puede contener letras.", "error");
+      return false;
+    }
+  
+    // Validación de cantidad de kg
+    if (parseFloat(data.cantidad_kg) <= 0) {
+      Swal.fire("Error", "La cantidad de kg no puede ser negativa o cero.", "error");
+      return false;
+    }
+  
+    // Validaciones de precios
+    if (parseFloat(data.precio_kg_compra) <= 0) {
+      Swal.fire("Error", "El precio de compra por kg no puede ser negativo o cero.", "error");
+      return false;
+    }
+  
+    if (parseFloat(data.precio_kg_venta) <= 0) {
+      Swal.fire("Error", "El precio de venta por kg no puede ser negativo o cero.", "error");
+      return false;
+    }
+  
+    if (parseFloat(data.precio_kg_compra) >= parseFloat(data.precio_kg_venta)) {
+      Swal.fire("Error", "El precio de compra no puede ser mayor o igual que el precio de venta.", "error");
+      return false;
+    }
+  
+    // Validación de fechas: fecha_llegada no puede ser superior a fecha_vencimiento
+    const fechaLlegada = new Date(data.fecha_llegada);
+    const fechaVencimiento = new Date(data.fecha_vencimiento);
+  
+    if (fechaLlegada > fechaVencimiento) {
+      Swal.fire("Error", "La fecha de llegada no puede ser superior a la fecha de vencimiento.", "error");
+      return false;
+    }
+  
+    // Validación de fechas: fecha_vencimiento no puede ser inferior a fecha_llegada
+    if (fechaVencimiento < fechaLlegada) {
+      Swal.fire("Error", "La fecha de vencimiento no puede ser inferior a la fecha de llegada.", "error");
+      return false;
+    }
+  
+    return true;
+  };
+  
   // Enviar los datos para crear el producto
   const handleCreateModalSubmit = (e) => {
     e.preventDefault();
-    handleCreate(newProductoData);
-    setNewProductoData({ nombre: "", precio: "", tipo_producto: "" });
-    setIsCreateModalOpen(false);
+    if (validateFields(newProductoData)) {
+      handleCreate(newProductoData);
+      setNewProductoData({ nombre: "", precio: "", tipo_producto: "" });
+      setIsCreateModalOpen(false);
+    }
   };
-
   // Manejo de cambios en el modal de edición
   const handleEditChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Enviar los datos para actualizar el producto
   const handleEditSubmit = (e) => {
     e.preventDefault();
-    handleUpdate(productoCarnicoToEdit.id, formData);
-    setIsEditModalOpen(false);
-  };
+    if (validateFields(formData)) {
+      handleUpdate(productoCarnicoToEdit.id, formData);
+      setIsEditModalOpen(false);
+    }
+  }; 
 
   if (loading) return <p>Cargando productos cárnicos...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -154,12 +209,12 @@ const ProductoCarnico = () => {
         onRequestClose={() => setIsCreateModalOpen(false)}
         contentLabel="Añadir Producto Cárnico"
         ariaHideApp={false}
-        className="formulario-table-modal-form-datos"
+        className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
       >
         <h2 className="formulario-table-modal-title">Añadir Producto Cárnico</h2>
         <form onSubmit={handleCreateModalSubmit} className="formulario-table-formulario-table">
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="tipo_producto">Tipo de Producto:</label>
             <input
               type="text"
@@ -171,7 +226,7 @@ const ProductoCarnico = () => {
               className="formulario-table-input"
             />
           </div>
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="marca">Marca:</label>
             <input
               type="text"
@@ -182,7 +237,7 @@ const ProductoCarnico = () => {
               required
               className="formulario-table-input"
             />
-                      <div className="formulario-table-formulario-table-datos">
+                      <div className="formulario-table-field-group">
             <label htmlFor="cantidad_kg">cantidad kg:</label>
             <input
               type="number"
@@ -197,7 +252,7 @@ const ProductoCarnico = () => {
           </div>
       
           </div>
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="precio_kg_compra">Precio (kg) Compra:</label>
             <input
               type="number"
@@ -212,7 +267,7 @@ const ProductoCarnico = () => {
           </div>
 
 
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="precio_kg_venta">Precio (kg) Venta:</label>
             <input
               type="number"
@@ -289,12 +344,12 @@ const ProductoCarnico = () => {
         onRequestClose={() => setIsEditModalOpen(false)}
         contentLabel="Editar Producto Cárnico"
         ariaHideApp={false}
-        className="formulario-table-modal-form-datos"
+        className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
       >
         <h2 className="formulario-table-modal-title">Editar Producto Cárnico</h2>
         <form onSubmit={handleEditSubmit} className="formulario-table-formulario-table">
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="tipo_producto">Tipo_producto:</label>
             <input
               type="text"
@@ -306,7 +361,7 @@ const ProductoCarnico = () => {
               required
             />
           </div>
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="marca">Marca:</label>
             <input
               type="text"
@@ -318,7 +373,7 @@ const ProductoCarnico = () => {
               required
             />
           </div>
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="cantidad_kg">Cantidad kg:</label>
             <input
               type="text"
@@ -330,7 +385,7 @@ const ProductoCarnico = () => {
               required
             />
           </div>
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="precio_kg_compra">Precio (kg) Compra:</label>
             <input
               type="text"
@@ -342,7 +397,7 @@ const ProductoCarnico = () => {
               required
             />
           </div>
-          <div className="formulario-table-formulario-table-datos">
+          <div className="formulario-table-field-group">
             <label htmlFor="precio_kg_venta">Precio (kg) Venta:</label>
             <input
               type="text"
