@@ -47,12 +47,10 @@ const Proveedores = () => {
     telefonoRepartidor: "",
   });
 
-  
-
   const [formStep, setFormStep] = useState(1);
 
   useEffect(() => {
-    console.log("Proveedores obtenidos:", proveedores[0]);
+    console.log("Proveedores obtenidos:", proveedores);
   }, [proveedores]);
 
   const handleDeleteClick = (proveedor) => {
@@ -100,70 +98,70 @@ const Proveedores = () => {
       Swal.fire("Error", "El nombre solo puede contener letras y debe tener al menos 3 caracteres.", "error");
       return false;
     }
-  
+
     // Validación de direccion (máximo 50 caracteres y mínimo 3 caracteres)
     if (data.direccion.length < 3 || data.direccion.length > 50) {
       Swal.fire("Error", "La dirección debe tener entre 3 y 50 caracteres.", "error");
       return false;
     }
-  
+
     // Validación de banco (máximo 20 caracteres y mínimo 3 caracteres)
     if (data.banco.length < 3 || data.banco.length > 20) {
       Swal.fire("Error", "El banco debe tener entre 3 y 20 caracteres.", "error");
       return false;
     }
-  
+
     // Validación de numeroCuenta (solo números)
     const cuentaRegex = /^[0-9]+$/;
     if (!cuentaRegex.test(data.numeroCuenta)) {
       Swal.fire("Error", "El número de cuenta solo puede contener números.", "error");
       return false;
     }
-  
+
     // Validación de nombreEncargado (solo letras y mínimo 3 caracteres)
     if (!nombreRegex.test(data.nombreEncargado) || data.nombreEncargado.length < 3) {
       Swal.fire("Error", "El nombre del encargado solo puede contener letras y debe tener al menos 3 caracteres.", "error");
       return false;
     }
-  
+
     // Validación de movilEncargado (debe tener 9 dígitos)
     const movilEncargadoRegex = /^[0-9]{9}$/;
     if (!movilEncargadoRegex.test(data.movilEncargado)) {
       Swal.fire("Error", "El móvil del encargado debe tener 9 dígitos.", "error");
       return false;
     }
-  
+
     // Validación de telefonoEncargado (debe ser un número válido)
     const telefonoEncargadoRegex = /^[0-9]+$/;
     if (!telefonoEncargadoRegex.test(data.telefonoEncargado)) {
       Swal.fire("Error", "El teléfono del encargado debe ser un número válido.", "error");
       return false;
     }
-  
+
     // Validación de movilRepartidor (debe tener 9 dígitos)
     const movilRepartidorRegex = /^[0-9]{9}$/;
     if (!movilRepartidorRegex.test(data.movilRepartidor)) {
       Swal.fire("Error", "El móvil del repartidor debe tener 9 dígitos.", "error");
       return false;
     }
-  
+
     // Validación de telefonoRepartidor (debe ser un número válido)
     const telefonoRepartidorRegex = /^[0-9]+$/;
     if (!telefonoRepartidorRegex.test(data.telefonoRepartidor)) {
       Swal.fire("Error", "El teléfono del repartidor debe ser un número válido.", "error");
       return false;
     }
-  
+
     return true;
   };
 
   const handleCreateModalChange = (e) => {
     const { name, value } = e.target;
-  
+
     // Manejo de campos booleanos (estadoEncargado o estadoRepartidor)
     if (name === "estadoEncargado" || name === "estadoRepartidor") {
       const booleanValue = value === "true"; // Convertir "true"/"false" a booleano
-  
+
       setNewProveedorData((prevData) => ({
         ...prevData,
         [name]: booleanValue, // Actualiza el estado con el valor booleano
@@ -184,7 +182,7 @@ const Proveedores = () => {
     if (validateFields(newProveedorData)) {
       // Llamar a la función de creación pasando los datos validados
       handleCreate(newProveedorData);
-  
+
       // Limpiar los datos después de guardar
       setNewProveedorData({
         nombre: "",
@@ -199,7 +197,7 @@ const Proveedores = () => {
         movilRepartidor: "",
         telefonoRepartidor: "",
       });
-  
+
       // Cerrar el modal de creación
       setIsCreateModalOpen(false);
     }
@@ -211,22 +209,11 @@ const Proveedores = () => {
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
-  
-    // Convertir los datos a formato adecuado antes de la actualización
-    const updatedData = {
-      ...formData,
-      tipoAnimal: { nombreLista: formData.tipoAnimal },  // Ejemplo si se necesita convertir a objeto
-    };
-  
-    // Validar los campos antes de proceder
-    if (validateFields(updatedData)) {
-      // Llamar a la función de actualización pasando los datos validados
-      handleUpdate(proveedorToEdit.id, updatedData);
-  
-      // Cerrar el modal de edición
+    if (validateFields(formData)) {
+      handleUpdate(proveedorToEdit.id, formData);
       setIsEditModalOpen(false);
     }
-  };
+  }; 
 
   const handleBackStep = () => {
     if (formStep === 3) {
@@ -243,7 +230,6 @@ const Proveedores = () => {
       setFormStep(3);  // Avanza al paso 3 si estás en el paso 2
     }
   };
-
   if (loading) return <p>Cargando proveedores...</p>;
   if (error) return <p>Error: {error}</p>;
 
