@@ -7,7 +7,6 @@ import animalVaraRoutes from "./animalVara.routes.js";
 import proveedorRoutes from "./proveedor.routes.js";
 import CategoriaRoutes from "./categoria.routes.js";
 import pedidoRoutes from "./pedido.routes.js"; 
-import productosNoCarnicosRoutes from "./productosNoCarnicos.routes.js";
 import productosCarnicosRoutes from "./productosCarnicos.routes.js";
 
 const router = Router();
@@ -20,7 +19,6 @@ router
   .use("/proveedor", proveedorRoutes)
   .use("/categoria", CategoriaRoutes)
   .use("/pedido", pedidoRoutes)
-  .use("/producto-no-carnico", productosNoCarnicosRoutes)
   .use("/producto-carnico", productosCarnicosRoutes); 
 
 

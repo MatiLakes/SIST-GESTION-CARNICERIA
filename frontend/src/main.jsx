@@ -54,14 +54,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/producto/noCarnico',
-        element: (
-          <ProtectedRoute allowedRoles={['administrador']}>
-           
-          </ProtectedRoute>
-        ),
-      },
-      {
         path: '/producto/categoria',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
