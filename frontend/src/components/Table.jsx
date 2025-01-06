@@ -62,33 +62,44 @@ const Table = ({
 
 
 
-  // Filtrar datos por fecha
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    if (date) {
-      // Convierte la fecha seleccionada en formato ISO y extrae solo la parte de la fecha
-      const selectedDateString = date.toISOString().split('T')[0];
+// Filtrar datos por fecha
+const handleDateChange = (date) => {
+  setSelectedDate(date);
+  if (date) {
+    // Convierte la fecha seleccionada en formato ISO y extrae solo la parte de la fecha
+    const selectedDateString = date.toISOString().split('T')[0];
 
-      // Filtra los datos, comparando solo la parte de la fecha (yyyy-MM-dd)
-      const filteredByDate = data.filter((row) => {
-        // Convierte la fecha de llegada a ISO y extrae solo la parte de la fecha
-        const rowDateString = new Date(row.fechaLlegada).toISOString().split('T')[0];
-        return rowDateString === selectedDateString;
+    // Filtra los datos, comparando solo la parte de la fecha (yyyy-MM-dd)
+    const filteredByDate = data.filter((row) => {
+      // Define un arreglo con las propiedades de fecha de cada fila
+      const datesToCheck = [
+        row.fechaLlegada,
+        row.fecha_llegada,
+        row.fecha_vencimiento,
+        row.otraFecha // Añadir otras fechas si es necesario
+      ];
+
+      // Recorre las fechas y verifica si alguna de ellas es válida y coincide con la fecha seleccionada
+      return datesToCheck.some(date => {
+        // Verifica si la fecha es válida antes de convertirla
+        const parsedDate = new Date(date);
+        return !isNaN(parsedDate) && parsedDate.toISOString().split('T')[0] === selectedDateString;
       });
+    });
 
-      setFilteredData(filteredByDate);
-    } else {
-      setFilteredData(data); // Mostrar todos los datos si no hay fecha seleccionada
-    }
-    setCurrentPage(1); // Resetear a la primera página cuando se aplica un filtro de fecha
-  };
+    setFilteredData(filteredByDate);
+  } else {
+    setFilteredData(data); // Mostrar todos los datos si no hay fecha seleccionada
+  }
+  setCurrentPage(1); // Resetear a la primera página cuando se aplica un filtro de fecha
+};
 
-  const handleClearDateFilter = () => {
-    setSelectedDate(null);
-    setFilteredData(data); // Mostrar todos los datos
-    setShowClearButton(false); // Ocultar el botón "Mostrar Todo"
-    setShowDatePicker(false); // Ocultar el calendario
-  };
+const handleClearDateFilter = () => {
+  setSelectedDate(null);
+  setFilteredData(data); // Mostrar todos los datos
+  setShowClearButton(false); // Ocultar el botón "Mostrar Todo"
+  setShowDatePicker(false); // Ocultar el calendario
+};
 
   // Manejo de cambios en las celdas de la tabla
   const handleCellChange = (value, rowIndex, columnKey) => {

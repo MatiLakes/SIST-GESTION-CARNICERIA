@@ -23,8 +23,8 @@ const Categorias = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [categoriaToEdit, setCategoriaToEdit] = useState(null);
   const [categoriaToDelete, setCategoriaToDelete] = useState(null);
-  const [newCategoryData, setNewCategoryData] = useState({ nombre: "" });
-  const [formData, setFormData] = useState({ nombre: "" });
+  const [newCategoryData, setNewCategoryData] = useState({ nombre: "",tipo_producto: "" });
+  const [formData, setFormData] = useState({ nombre: "",tipo_producto: "" });
 
   useEffect(() => {
     console.log("Categorías obtenidas:", categorias);
@@ -50,7 +50,7 @@ const Categorias = () => {
 
   const handleUpdateClick = (categoria) => {
     setCategoriaToEdit(categoria);
-    setFormData({ nombre: categoria.nombre });
+    setFormData({ nombre: categoria.nombre,tipo_producto: categoria.tipo_producto });
     setIsEditModalOpen(true);
   };
 
@@ -91,6 +91,7 @@ const Categorias = () => {
   const columns = [
     { header: "ID", key: "id" },
     { header: "Nombre", key: "nombre" },
+    { header: "Tipo Producto", key: "tipo_producto" },
   ];
 
   return (
@@ -131,6 +132,22 @@ const Categorias = () => {
             />
             {createError && <span className="error-message">{createError}</span>}
           </div>
+
+          <div className="formulario-table-field-group">
+                <label htmlFor="tipo_producto">Tipo producto:</label>
+                <select
+                  id="tipo_producto"
+                  name="tipo_producto"
+                  value={newCategoryData.tipo_producto}
+                  onChange={handleCreateModalChange}
+                  required
+                  className="formulario-table-input tipo-cuenta-select"
+                >
+                  <option value="">Selecciona un Tipo de producto</option>
+                  <option value="Cárnico">Cárnico</option>
+                  <option value="No Cárnico">No Cárnico</option>
+                </select>
+              </div>
           <div className="formulario-table-form-actions">
             <button type="submit" className="formulario-table-btn-confirm">
               Crear

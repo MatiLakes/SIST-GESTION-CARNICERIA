@@ -124,6 +124,11 @@
     animation-delay: 1.2s;    
     
 }
+.navbar2 li:nth-child(6) {
+    animation-delay: 1.5s;    
+    
+}
+
 
 /* Estilos para pantallas pequeñas */
 @media (max-width: 768px) {

@@ -4,6 +4,8 @@ import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
 import Categorias from '@pages/Categoria';
+import ProductoCarnico from '@pages/productoCarnico';
+
 import Proveedores from '@pages/Proveedor';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
@@ -44,7 +46,23 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/proveedores/categoria',
+        path: '/producto/carnico',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <ProductoCarnico />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/producto/noCarnico',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+           
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/producto/categoria',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Categorias />

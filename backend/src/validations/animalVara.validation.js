@@ -46,7 +46,7 @@ export const animalVaraValidation = (animalCortes) =>
         "object.required": "El tipo de animal es obligatorio.",
       }),
   })
-    .unknown(false)
+    .unknown(true)
     .messages({
       "object.unknown": "No se permiten propiedades adicionaless.",
     });

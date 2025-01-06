@@ -1,22 +1,36 @@
-"use strict";
 import { EntitySchema } from "typeorm";
 
-const CATEGORIAS = [
+// Categorías para productos no cárnicos
+const CATEGORIASNOCARNICAS = [
   "Bebidas",
   "Huevos",
   "Condimentos",
   "Artículos parrilleros",
   "Verduras",
   "Quesos",
-  "Cecinas",
+  "Licores",
+  "Carbón",
   "Productos congelados",
   "Pescado",
   "Mariscos",
-  "Carnes",
-  "Carbón",
-  "Licores",
 ];
 
+// Categorías para productos cárnicos
+const CATEGORIASCARNICAS = [
+  "Carnes",
+  "Pollo",
+  "Cerdo",
+  "Pechugas",
+  "Chuletas",
+  "Lomo",
+  "Longanizas",
+  "Costillares",
+];
+
+// Lista combinada de todas las categorías
+const CATEGORIAS = [...CATEGORIASNOCARNICAS, ...CATEGORIASCARNICAS];
+
+// Definición de la entidad de Categoría
 const CategoriaSchema = new EntitySchema({
   name: "Categoria",
   tableName: "categorias",
@@ -32,21 +46,25 @@ const CategoriaSchema = new EntitySchema({
       nullable: false,
       unique: true,
     },
+    tipo_producto: {
+      type: "varchar",
+      length: 50,
+      nullable: false,
+      default: "No Cárnico", // Valor predeterminado
+    },
+  },
+  relations: {
+    productosNoCarnicos: {
+      type: "one-to-many",
+      target: "productosNoCarnicos",
+      inverseSide: "categoria", // Relación bidireccional
+    },
+    productosCarnicos: {
+      type: "one-to-many",
+      target: "ProductosCarnicos",
+      inverseSide: "categoria", // Relación bidireccional
+    },
   },
 });
 
-// Puedes usar este array para crear categorías iniciales en la base de datos al arrancar la app
-async function crearCategoriasIniciales() {
-  const categoriaRepository = AppDataSource.getRepository("Categoria");
-  
-  // Verificar si ya existen categorías en la base de datos
-  const categoriasExistentes = await categoriaRepository.find();
-  if (categoriasExistentes.length === 0) {
-    // Si no existen, creamos las categorías predeterminadas
-    const categorias = CATEGORIAS.map((nombre) => ({ nombre }));
-    await categoriaRepository.save(categorias);
-    console.log("Categorías iniciales creadas");
-  }
-}
-
-export { CategoriaSchema, CATEGORIAS, crearCategoriasIniciales };
+export { CategoriaSchema, CATEGORIAS, CATEGORIASNOCARNICAS, CATEGORIASCARNICAS };

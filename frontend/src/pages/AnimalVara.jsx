@@ -27,14 +27,14 @@ const AnimalVara = () => {
         fechaLlegada: "",
         temperaturaLlegada: "",
         precioTotalVara: "",
-        tipoAnimal: { nombreLista: "" },
+        tipoAnimal: "", 
     });
 
     const [formData, setFormData] = useState({
         fechaLlegada: "",
         temperaturaLlegada: "",
         precioTotalVara: "",
-        tipoAnimal: { nombreLista: "" },
+        tipoAnimal: "",  // Solo guardamos el nombreLista (string) directamente
     });
 
     useEffect(() => {
@@ -82,17 +82,17 @@ const AnimalVara = () => {
         setAnimalVaraToDelete(null);
     };
 
-    // Manejo de edición
-    const handleUpdateClick = (animalVara) => {
-        setAnimalVaraToEdit(animalVara);
-        setFormData({
-            fechaLlegada: animalVara.fechaLlegada,
-            temperaturaLlegada: animalVara.temperaturaLlegada,
-            precioTotalVara: animalVara.precioTotalVara,
-            tipoAnimal: { nombreLista: animalVara.tipoAnimal.nombreLista || "" },
-        });
-        setIsEditModalOpen(true);
-    };
+// Manejo de edición
+const handleUpdateClick = (animalVara) => {
+    setAnimalVaraToEdit(animalVara);
+    setFormData({
+        fechaLlegada: animalVara.fechaLlegada,
+        temperaturaLlegada: animalVara.temperaturaLlegada,
+        precioTotalVara: animalVara.precioTotalVara,
+        tipoAnimal: animalVara.tipoAnimal.nombreLista || "",  // Directamente asignamos solo el nombreLista
+    });
+    setIsEditModalOpen(true);
+};
 
     // Manejo de creación
     const handleCreateClick = () => {
@@ -125,17 +125,31 @@ const AnimalVara = () => {
         });
         setIsCreateModalOpen(false);
     };
+// Manejo de cambios en el formulario de edición
+const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === "tipoAnimal") {
+        // Actualizamos tipoAnimal con el valor directamente, que es el nombreLista
+        setFormData({
+            ...formData,
+            tipoAnimal: value,
+        });
+    } else {
+        setFormData({ ...formData, [name]: value });
+    }
+};
 
-    // Manejo de cambios en el formulario de edición
-    const handleEditChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+// Manejo de envío del formulario de edición
+const handleEditSubmit = (e) => {
+    e.preventDefault();
+    const updatedData = {
+        ...formData,
+        tipoAnimal: { nombreLista: formData.tipoAnimal },  // Convertimos de nuevo a objeto para la actualización
     };
-
-    const handleEditSubmit = (e) => {
-        e.preventDefault();
-        handleUpdate(animalVaraToEdit.id, formData);  
-        setIsEditModalOpen(false);
-    };
+    handleUpdate(animalVaraToEdit.id, updatedData);  
+    setIsEditModalOpen(false);
+};
 
     const columns = [
         { header: "Fecha Llegada", key: "fechaLlegada" },
@@ -290,17 +304,23 @@ const AnimalVara = () => {
                         />
                     </div>
                     <div className="formulario-table-field-group">
-                        <label htmlFor="tipoAnimal.nombreLista">Tipo de Animal:</label>
-                        <input
-                            type="text"
-                            id="tipoAnimal_nombreLista"
-                            name="tipoAnimal.nombreLista"
-                            value={formData.tipoAnimal.nombreLista}
-                            onChange={handleEditChange}
-                            required
-                            className="formulario-table-input"
-                        />
-                    </div>
+                    <label htmlFor="nombreLista">Lista de Precios:</label>
+                    <select
+                        id="nombreLista"
+                        name="tipoAnimal.nombreLista"  // Es importante usar el nombre correcto para actualizar el campo dentro de tipoAnimal
+                        value={formData.tipoAnimal}  // Usamos el valor correcto de tipoAnimal.nombreLista
+                        onChange={handleEditChange}
+                        required
+                        className="formulario-table-input tipo-cuenta-select"
+                    >
+                        <option value="">Selecciona una Lista de Precios</option>
+                        {tiposAnimales.map((tipo) => (
+                            <option key={tipo.id} value={tipo.nombreLista}>
+                                {tipo.nombreLista}  {/* Muestra el nombreLista */}
+                            </option>
+                        ))}
+                    </select>
+                </div>  
                     <div className="formulario-table-form-actions">
                         <button type="submit" className="formulario-table-btn-confirm">
                             Actualizar
