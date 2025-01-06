@@ -6,6 +6,7 @@ import { useState } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
 import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox } from "react-icons/fa"; // Agregado FaBox para productos
 import { ImExit } from "react-icons/im";
+import { GiMilkCarton } from 'react-icons/gi';
 
 const Navbar2 = () => {
   const navigate = useNavigate();

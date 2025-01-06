@@ -7,13 +7,11 @@ import animalVaraRoutes from "./animalVara.routes.js";
 import proveedorRoutes from "./proveedor.routes.js";
 import CategoriaRoutes from "./categoria.routes.js";
 import pedidoRoutes from "./pedido.routes.js"; 
-import productosCarnicosRoutes from "./productosCarnicos.routes.js";
 import productoRoutes from "./producto.routes.js";
 import tipoProductoRoutes from "./tipoProducto.routes.js"; 
 import marcaProductoRoutes from "./marcaProducto.routes.js"; 
-import pedidoRoutes from "./pedido.routes.js"; 
-import productosCarnicosRoutes from "./productosCarnicos.routes.js";
 import subproductoRoutes from "./subproducto.routes.js";
+import productosCarnicosRoutes from "./productosCarnicos.routes.js";
 
 const router = Router();
 
