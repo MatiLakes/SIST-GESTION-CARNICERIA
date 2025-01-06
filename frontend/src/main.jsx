@@ -5,14 +5,15 @@ import Home from '@pages/Home';
 import Users from '@pages/Users';
 import Categorias from '@pages/Categoria';
 import ProductoCarnico from '@pages/productoCarnico';
-
 import Proveedores from '@pages/Proveedor';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
+import Pedidos from "@pages/Pedidos";
+import Productos from './pages/Productos'; // Importar la página de productos
 import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
 import AnimalVara from '@pages/AnimalVara';
-import Pedidos from "@pages/Pedidos"; 
+import Subproductos from '@pages/Subproductos';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
         path: '/animal-vara/vara',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-           <AnimalVara />
+            <AnimalVara />
           </ProtectedRoute>
         ),
       },
@@ -54,14 +55,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/producto/noCarnico',
-        element: (
-          <ProtectedRoute allowedRoles={['administrador']}>
-           
-          </ProtectedRoute>
-        ),
-      },
-      {
         path: '/producto/categoria',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
@@ -70,10 +63,26 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/gestion-proveedores/proveedor',  
+        path: '/productos',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-            <Proveedores /> 
+            <Productos />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/gestion-proveedores/proveedor',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Proveedores />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/subproductos', // Nueva ruta para Subproductos
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Subproductos />
           </ProtectedRoute>
         ),
       },
@@ -87,6 +96,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: '/users',
     element: (
@@ -95,7 +105,6 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
-
   {
     path: '/auth',
     element: <Login />,

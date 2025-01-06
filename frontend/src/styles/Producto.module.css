@@ -1,0 +1,287 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 60px; /* Ajuste inicial para la navbar cerrada */
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+  }
+  
+  .container.activado {
+    margin-left: 250px; /* Ajuste cuando la navbar está abierta */
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .createButton {
+    padding: 10px 15px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+    font-size: 16px;
+  }
+  
+  .createButton:hover {
+    background-color: darkred;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .table th {
+    background-color: #f4f4f4;
+  }
+  
+  .editButton,
+  .deleteButton {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .editButton {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .editButton:hover {
+    background-color: #e0a800;
+  }
+  
+  .deleteButton {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .deleteButton:hover {
+    background-color: #c82333;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px; /* Aumenta el ancho */
+    max-width: 90%; /* Asegura que sea responsivo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow-y: auto; /* Agrega scroll si el contenido es demasiado largo */
+    max-height: 80vh; /* Limita la altura para pantallas pequeñas */
+  }
+  
+  .formGroup {
+    margin-bottom: 15px;
+  }
+  
+  .formGroup label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #000;
+    background-color: #fff;
+  }
+  
+  .formGroup select {
+    appearance: none;
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .saveButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .saveButton:hover {
+    background-color: darkred;
+  }
+  
+  .cancelButton {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .cancelButton:hover {
+    background-color: darkred;
+  }
+  
+  .addButton {
+    width: 30px; /* Ancho fijo */
+    height: 30px; /* Altura fija */
+    padding: 0; /* Elimina relleno */
+    margin-left: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    align-self: center;
+  }
+  
+  .addButton:hover {
+    background-color: darkred;
+  }
+  
+  .loading {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .iconButton {
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    cursor: pointer; /* Cambia el cursor a una mano */
+    font-size: 1.1rem; /* Tamaño del icono */
+    margin: 0 5px; /* Espaciado entre iconos */
+    color: black; /* Color negro */
+    transition: color 0.3s ease; /* Transición suave para el hover */
+  }
+  
+  .iconButton:hover {
+    color: #d32f2f; /* Cambia a rojo cuando se pasa el mouse */
+  }
+
+  .filters {
+    display: flex;
+    justify-content: flex-start; /* Alinear los filtros a la izquierda */
+    align-items: center;
+    gap: 10px; /* Espaciado entre los elementos */
+    margin-bottom: 20px; /* Separación con otros elementos */
+  }
+  
+  .searchInput {
+    height: 40px;
+    padding: 5px 10px; /* Espaciado interno */
+    width: 200px; /* Ancho del campo */
+    border: 1px solid black; /* Borde negro */
+    border-radius: 5px; /* Esquinas redondeadas */
+    font-size: 14px; /* Tamaño de fuente */
+    color: black; /* Color del texto */
+    background-color: white; /* Fondo blanco */
+  }
+  
+  .searchButton {
+    padding: 5px 10px; /* Espaciado interno */
+    width: 150px; /* Ancho del botón */
+    font-size: 14px; /* Tamaño de fuente */
+    border: none; /* Sin bordes */
+    border-radius: 5px; /* Esquinas redondeadas */
+    cursor: pointer; /* Cursor en forma de mano */
+    color: white; /* Color del texto */
+    background-color: black; /* Fondo negro */
+  }
+  
+  .searchButton:hover {
+    background-color: #c82333; /* Cambio de color al pasar el cursor */
+    color: black; /* Cambiar el texto a negro */
+  }
+  
+  .filterSelect {
+    padding: 5px 10px; /* Espaciado interno */
+    width: 200px; /* Ancho del selector */
+    font-size: 14px; /* Tamaño de fuente */
+    border: 1px solid black; /* Borde negro */
+    border-radius: 5px; /* Esquinas redondeadas */
+    background-color: white; /* Fondo blanco */
+    color: black; /* Color del texto */
+  }
+  
+  .filterButton {
+    padding: 5px 10px; /* Espaciado interno */
+    width: 100px; /* Ancho del botón */
+    font-size: 14px; /* Tamaño de fuente */
+    border: none; /* Sin bordes */
+    border-radius: 5px; /* Esquinas redondeadas */
+    cursor: pointer; /* Cursor en forma de mano */
+    color: white; /* Color del texto */
+    background-color: black; /* Fondo negro */
+  }
+  
+  .filterButton:hover {
+    background-color: #c82333; /* Cambio de color al pasar el cursor */
+    color: black; /* Cambiar el texto a negro */
+  }
+  
+  .resetButton {
+    padding: 5px 10px; /* Espaciado interno */
+    width: 150px; /* Ancho del botón */
+    font-size: 14px; /* Tamaño de fuente */
+    border: none; /* Sin bordes */
+    border-radius: 5px; /* Esquinas redondeadas */
+    cursor: pointer; /* Cursor en forma de mano */
+    color: white; /* Color del texto */
+    background-color: #dc3545; /* Fondo rojo */
+  }
+  
+  .resetButton:hover {
+    background-color: #c82333; /* Cambio de color al pasar el cursor */ /* Cambio de color al pasar el cursor */
+}
+
+.exportButton {
+  padding: 5px 10px; /* Espaciado interno */
+  width: 150px; /* Ancho del botón */
+  font-size: 14px; /* Tamaño de fuente */
+  border: none; /* Sin bordes */
+  border-radius: 5px; /* Esquinas redondeadas */
+  cursor: pointer; /* Cursor en forma de mano */
+  color: white; /* Color del texto */
+  background-color: #dc3545; /* Fondo azul */
+}
+
+.exportButton:hover {
+  background-color: #c82333; /* Cambio de color al pasar el cursor */
+}

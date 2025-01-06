@@ -1,146 +1,108 @@
 "use strict";
-import {
-  createproductosNoCarnicoservice,
-  deleteproductosNoCarnicoservice,
-  getAllproductosNoCarnicosService,
-  getProductoNoCarnicoByIdService,
-  updateproductosNoCarnicoservice,
-} from "../services/productosNoCarnicos.service.js";
 
-import {
-  createproductosCarnicoservice,
-  deleteproductosCarnicoservice,
-  getAllProductosCarnicosService,
-  getProductoCarnicoByIdService,
-  updateproductosCarnicoservice,
-} from "../services/productosCarnicos.service.js";  // CORRIGIENDO LA RUTA
-
-import { productosNoCarnicosValidation } from "../validations/productosNoCarnicos.validation.js";
-import { productosCarnicosValidation } from "../validations/productosCarnicos.validation.js";
+import { productoService } from "../services/producto.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
-// Controladores para productos no cárnicos
-export async function createProductoNoCarnico(req, res) {
-  const { error } = productosNoCarnicosValidation.validate(req.body);
-  if (error) return handleErrorClient(res, 400, error.message);
+export const productoController = {
+  async crearProducto(req, res) {
+    try {
+      const productoData = req.body;
+      const [producto, err] = await productoService.crearProducto(productoData);
+      if (err) return handleErrorClient(res, 400, err);
 
-  try {
-    const [productoNoCarnico, errorService] = await createproductosNoCarnicoservice(req.body);
-    if (errorService) return handleErrorClient(res, 400, errorService);
-    handleSuccess(res, 201, "Producto no cárnico creado correctamente.", productoNoCarnico);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+      handleSuccess(res, 201, "Producto creado exitosamente.", producto);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 
-export async function updateProductoNoCarnico(req, res) {
-  const { id } = req.params;
-  const { error } = productosNoCarnicosValidation.validate(req.body);
-  if (error) return handleErrorClient(res, 400, error.message);
+  async obtenerProductos(req, res) {
+    try {
+      const [productos, err] = await productoService.obtenerProductos();
+      if (err) return handleErrorClient(res, 500, err);
 
-  try {
-    const [productoNoCarnicoActualizado, errorService] = await updateproductosNoCarnicoservice(id, req.body);
-    if (errorService) return handleErrorClient(res, 400, errorService);
-    handleSuccess(res, 200, "Producto no cárnico actualizado correctamente.", productoNoCarnicoActualizado);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+      handleSuccess(res, 200, "Productos obtenidos correctamente.", productos);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 
-export async function deleteProductoNoCarnico(req, res) {
-  const { id } = req.params;
+  async filtrarProductosPorNombre(req, res) {
+    try {
+      const { nombre } = req.params;
+      const [productos, err] = await productoService.filtrarProductosPorNombre(nombre);
+      if (err) return handleErrorClient(res, 500, err);
 
-  try {
-    const [mensaje, errorService] = await deleteproductosNoCarnicoservice(id);
-    if (errorService) return handleErrorClient(res, 400, errorService);
-    handleSuccess(res, 200, mensaje);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+      handleSuccess(res, 200, "Productos filtrados por nombre correctamente.", productos);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 
-export async function getAllproductosNoCarnicos(req, res) {
-  try {
-    const [productosNoCarnicos, errorService] = await getAllproductosNoCarnicosService();
-    if (errorService) return handleErrorClient(res, 500, errorService);
-    handleSuccess(res, 200, "Lista de productos no cárnicos obtenida con éxito.", productosNoCarnicos);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+  async filtrarProductosPorMarca(req, res) {
+    try {
+      const { marca } = req.params;
+      const [productos, err] = await productoService.filtrarProductosPorMarca(marca);
+      if (err) return handleErrorClient(res, 500, err);
 
-export async function getProductoNoCarnicoById(req, res) {
-  const { id } = req.params;
+      handleSuccess(res, 200, "Productos filtrados por marca correctamente.", productos);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 
-  try {
-    const [productoNoCarnico, errorService] = await getProductoNoCarnicoByIdService(id);
+  async filtrarProductosPorTipo(req, res) {
+    try {
+      const { tipo } = req.params;
+      const [productos, err] = await productoService.filtrarProductosPorTipo(tipo);
+      if (err) return handleErrorClient(res, 500, err);
 
-    if (errorService) return handleErrorClient(res, 404, errorService);
-    handleSuccess(res, 200, "Producto no cárnico obtenido con éxito.", productoNoCarnico);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+      handleSuccess(res, 200, "Productos filtrados por tipo correctamente.", productos);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 
-// Controladores para productos cárnicos
-export async function createProductoCarnico(req, res) {
-  const { error } = productosCarnicosValidation.validate(req.body);
-  if (error) return handleErrorClient(res, 400, error.message);
+  async modificarProducto(req, res) {
+    try {
+      const { id } = req.params;
+      const datosActualizados = req.body;
 
-  try {
-    const [productoCarnico, errorService] = await createproductosCarnicoservice(req.body);
-    if (errorService) return handleErrorClient(res, 400, errorService);
-    handleSuccess(res, 201, "Producto cárnico creado correctamente.", productoCarnico);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+      const [producto, err] = await productoService.modificarProducto(id, datosActualizados);
+      if (err) return handleErrorClient(res, 400, err);
 
-export async function updateProductoCarnico(req, res) {
-  const { id } = req.params;
-  const { error } = productosCarnicosValidation.validate(req.body);
-  if (error) return handleErrorClient(res, 400, error.message);
+      handleSuccess(res, 200, "Producto modificado correctamente.", producto);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 
-  try {
-    const [productoCarnicoActualizado, errorService] = await updateproductosCarnicoservice(id, req.body);
-    if (errorService) return handleErrorClient(res, 400, errorService);
-    handleSuccess(res, 200, "Producto cárnico actualizado correctamente.", productoCarnicoActualizado);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+  async eliminarProducto(req, res) {
+    try {
+      const { id } = req.params;
 
-export async function deleteProductoCarnico(req, res) {
-  const { id } = req.params;
+      const [_, err] = await productoService.eliminarProducto(id);
+      if (err) return handleErrorClient(res, 404, err);
 
-  try {
-    const [mensaje, errorService] = await deleteproductosCarnicoservice(id);
-    if (errorService) return handleErrorClient(res, 400, errorService);
-    handleSuccess(res, 200, mensaje);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+      handleSuccess(res, 200, "Producto eliminado correctamente.");
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 
-export async function getAllProductosCarnicos(req, res) {
-  try {
-    const [productosCarnicos, errorService] = await getAllProductosCarnicosService();
-    if (errorService) return handleErrorClient(res, 500, errorService);
-    handleSuccess(res, 200, "Lista de productos cárnicos obtenida con éxito.", productosCarnicos);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+  async exportarExcelProductos(req, res) {
+    try {
+        const workbook = await productoService.generarExcelProductos();
 
-export async function getProductoCarnicoById(req, res) {
-  const { id } = req.params;
+        // Configurar la respuesta para enviar el archivo Excel
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", "attachment; filename=productos.xlsx");
 
-  try {
-    const [productoCarnico, errorService] = await getProductoCarnicoByIdService(id);
-
-    if (errorService) return handleErrorClient(res, 404, errorService);
-    handleSuccess(res, 200, "Producto cárnico obtenido con éxito.", productoCarnico);
-  } catch (error) {
-    handleErrorServer(res, 500, error.message);
-  }
-}
+        // Enviar el archivo
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+} 
+};
