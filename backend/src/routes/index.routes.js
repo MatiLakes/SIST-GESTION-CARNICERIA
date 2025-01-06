@@ -22,7 +22,7 @@ router
   .use("/proveedor", proveedorRoutes)
   .use("/categoria", CategoriaRoutes)
   .use("/pedido", pedidoRoutes)
-  .use("/producto-carnico", productosCarnicosRoutes); 
+  .use("/producto-carnico", productosCarnicosRoutes)
   .use("/productos", productoRoutes)
   .use("/tipos-productos", tipoProductoRoutes)
   .use("/marcas-productos", marcaProductoRoutes)

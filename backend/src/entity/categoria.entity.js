@@ -54,11 +54,6 @@ const CategoriaSchema = new EntitySchema({
     },
   },
   relations: {
-    productosNoCarnicos: {
-      type: "one-to-many",
-      target: "productosNoCarnicos",
-      inverseSide: "categoria", // Relación bidireccional
-    },
     productosCarnicos: {
       type: "one-to-many",
       target: "ProductosCarnicos",
