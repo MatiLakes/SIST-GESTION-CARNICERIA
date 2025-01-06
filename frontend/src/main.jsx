@@ -54,7 +54,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-
       {
         path: '/producto/categoria',
         element: (
