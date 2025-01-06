@@ -4,6 +4,7 @@ import { useCreateAnimalVara } from "@hooks/animalVara/useCreateAnimalVara";
 import { useDeleteAnimalVara } from "@hooks/animalVara/useDeleteAnimalVara";
 import { useUpdateAnimalVara } from "@hooks/animalVara/useUpdateAnimalVara";
 import { getAllAnimalCortesService } from '../services/animalCorte.service';  // Aquí la importación correcta
+import Swal from 'sweetalert2';
 
 import Table from "../components/Table";
 import Modal from "react-modal";
@@ -65,6 +66,32 @@ const AnimalVara = () => {
 
     const varasData = Array.isArray(animalVaras) && animalVaras[0] ? animalVaras[0] : [];
 
+
+    const validateFields = (data) => {
+        // Validación de fecha de llegada (debe ser hoy o anterior)
+        const today = new Date().toISOString().split('T')[0]; // Fecha de hoy en formato YYYY-MM-DD
+        if (data.fechaLlegada > today) {
+            Swal.fire("Error", "La fecha de llegada no puede ser posterior a hoy.", "error");
+            return false;
+        }
+    
+        // Validación de temperatura de llegada (debe estar entre -50 y 50 grados)
+        const temperatura = parseFloat(data.temperaturaLlegada);
+        if (isNaN(temperatura) || temperatura < -50 || temperatura > 50) {
+            Swal.fire("Error", "La temperatura de llegada debe estar entre -50 y 50 grados.", "error");
+            return false;
+        }
+    
+        // Validación de precio total vara (no puede ser negativo)
+        const precioTotal = parseFloat(data.precioTotalVara);
+        if (isNaN(precioTotal) || precioTotal < 0) {
+            Swal.fire("Error", "El precio total de vara no puede ser negativo.", "error");
+            return false;
+        }
+    
+        return true;
+    };
+
     // Manejo de eliminación
     const handleDeleteClick = (animalVara) => {
         setAnimalVaraToDelete(animalVara);
@@ -116,14 +143,18 @@ const handleUpdateClick = (animalVara) => {
 
     const handleCreateModalSubmit = (e) => {
         e.preventDefault();
-        handleCreate(newAnimalVaraData);  
-        setNewAnimalVaraData({
-            fechaLlegada: "",
-            temperaturaLlegada: "",
-            precioTotalVara: "",
-            tipoAnimal: { nombreLista: "" },
-        });
-        setIsCreateModalOpen(false);
+    
+        // Validar los campos antes de proceder
+        if (validateFields(newAnimalVaraData)) {
+            handleCreate(newAnimalVaraData);  
+            setNewAnimalVaraData({
+                fechaLlegada: "",
+                temperaturaLlegada: "",
+                precioTotalVara: "",
+                tipoAnimal: { nombreLista: "" },
+            });
+            setIsCreateModalOpen(false); // Cerrar el modal después de guardar los datos
+        }
     };
 // Manejo de cambios en el formulario de edición
 const handleEditChange = (e) => {
@@ -140,17 +171,20 @@ const handleEditChange = (e) => {
     }
 };
 
-// Manejo de envío del formulario de edición
 const handleEditSubmit = (e) => {
     e.preventDefault();
+
+    // Validar los campos antes de proceder
     const updatedData = {
         ...formData,
         tipoAnimal: { nombreLista: formData.tipoAnimal },  // Convertimos de nuevo a objeto para la actualización
     };
-    handleUpdate(animalVaraToEdit.id, updatedData);  
-    setIsEditModalOpen(false);
-};
 
+    if (validateFields(updatedData)) {
+        handleUpdate(animalVaraToEdit.id, updatedData);  
+        setIsEditModalOpen(false); // Cerrar el modal después de actualizar los datos
+    }
+};
     const columns = [
         { header: "Fecha Llegada", key: "fechaLlegada" },
         { header: "Temperatura Llegada", key: "temperaturaLlegada" },

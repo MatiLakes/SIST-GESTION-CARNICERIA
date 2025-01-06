@@ -9,6 +9,8 @@ import styles from "@styles/categoria.module.css";
 import "@styles/formulariotable.css";
 import "@styles/modaldatos.css";
 
+import Swal from "sweetalert2";
+
 const VerAnimalListaCorte = () => {
   const { animalCortes, loading, error, fetchAnimalCortes } = useGetAnimalCorte();
   const { handleCreate } = useCreateAnimalCorte(fetchAnimalCortes);
@@ -273,13 +275,18 @@ const VerAnimalListaCorte = () => {
 
   const handleCreateModalSubmit = (e) => {
     e.preventDefault();
-    
+  
     // Asegúrate de que todos los valores necesarios sean números válidos
     const validatedData = { ...newAnimalCorteData };
     for (let key in validatedData) {
       if (validatedData[key] === '') {
         validatedData[key] = 0; // Si es vacío, asigna 0
       }
+    }
+  
+    // Validar el campo nombreLista antes de crear
+    if (!validateFields(validatedData)) {
+      return; // Si la validación falla, no continúa con el proceso
     }
   
     handleCreate(validatedData);
@@ -293,12 +300,35 @@ const VerAnimalListaCorte = () => {
 
   const handleEditSubmit = (e) => {
     e.preventDefault();
+    
+    // Validar antes de enviar los datos de edición
+    if (!validateFields(formData)) {
+      return; // Si la validación falla, no continúa con el proceso
+    }
+    
     if (animalCorteToEdit) {
       handleUpdate(animalCorteToEdit.id, formData);
       setIsEditModalOpen(false);
     }
   };
 
+  const validateFields = (data) => {
+    // Validación de nombreLista (mínimo 3 caracteres y solo letras y espacios)
+    const regex = /^[A-Za-z\s]+$/; // Expresión regular para permitir solo letras y espacios
+    
+    if (data.nombreLista.length < 3) {
+      Swal.fire("Error", "El nombre de la lista debe tener al menos 3 caracteres.", "error");
+      return false;
+    }
+  
+    if (!regex.test(data.nombreLista)) {
+      Swal.fire("Error", "El nombre de la lista solo puede contener letras y espacios.", "error");
+      return false;
+    }
+  
+    return true;
+  };
+  
   const handleViewClick = (animalCorte) => {
     setAnimalCorteToView(animalCorte);
     setIsViewModalOpen(true);
@@ -311,7 +341,6 @@ const VerAnimalListaCorte = () => {
 
   if (loading) return <p>Cargando cortes de animales...</p>;
   if (error) return <p>Error: {error}</p>;
-
   const columns = [
     { header: "ID", key: "id" },
     { header: "Nombre", key: "nombreLista" },
