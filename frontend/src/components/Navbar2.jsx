@@ -105,7 +105,6 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink
-<<<<<<< HEAD
                     to="/productos"
                     className={location.pathname === "/productos" ? "active" : ""}
                   >
@@ -115,7 +114,6 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink
-=======
                   
                   to="/gestion-proveedores/proveedor"
                   className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}
@@ -128,7 +126,6 @@ const Navbar2 = () => {
                 <NavLink
                   
                   
->>>>>>> 19b2bccad39c0eed622572d4466b85498eb1e155
                     to="#"
                     onClick={(e) => {
                       e.preventDefault();

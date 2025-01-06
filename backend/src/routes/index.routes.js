@@ -10,7 +10,6 @@ import productoRoutes from "./producto.routes.js";
 import tipoProductoRoutes from "./tipoProducto.routes.js"; 
 import marcaProductoRoutes from "./marcaProducto.routes.js"; 
 import pedidoRoutes from "./pedido.routes.js"; 
-import productosNoCarnicosRoutes from "./productosNoCarnicos.routes.js";
 import productosCarnicosRoutes from "./productosCarnicos.routes.js";
 
 const router = Router();
@@ -26,7 +25,6 @@ router
   .use("/productos", productoRoutes)
   .use("/tipos-productos", tipoProductoRoutes)
   .use("/marcas-productos", marcaProductoRoutes)
-  .use("/producto-no-carnico", productosNoCarnicosRoutes)
   .use("/producto-carnico", productosCarnicosRoutes); 
 
 

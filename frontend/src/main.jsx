@@ -9,8 +9,6 @@ import Proveedores from '@pages/Proveedor';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
-import ListaPreciosPage from '@pages/ListaPreciosPage';
-import CrearListaPage from '@pages/CrearListaPage';
 import Pedidos from "@pages/Pedidos";
 import Productos from './pages/Productos'; // Importar la página de productos
 import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
@@ -55,14 +53,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: '/producto/noCarnico',
-        element: (
-          <ProtectedRoute allowedRoles={['administrador']}>
-            {/* Inserta aquí el componente de no cárnicos si corresponde */}
-          </ProtectedRoute>
-        ),
-      },
+
       {
         path: '/producto/categoria',
         element: (
