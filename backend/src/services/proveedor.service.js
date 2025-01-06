@@ -1,7 +1,5 @@
-"use strict";
 import { AppDataSource } from "../config/configDb.js";
 import Proveedor from "../entity/proveedor.entity.js";
-import { CategoriaSchema } from "../entity/categoria.entity.js"; // Asegúrate de importar la entidad Categoria
 import { In, Not } from "typeorm";
 
 export async function crearProveedorService(body) {
@@ -17,26 +15,9 @@ export async function crearProveedorService(body) {
       return [null, "Ya existe un proveedor con el mismo nombre"];
     }
 
-    // Verificar si las categorías están definidas y son un array
-    if (!Array.isArray(body.categorias)) {
-      return [null, "Las categorías deben ser un array"];
-    }
-
-    // Verificar que no sea vacío
-    if (body.categorias.length === 0) {
-      return [null, "Las categorías no pueden estar vacías"];
-    }
-
-    // Obtener las categorías desde la base de datos
-    const categorias = await AppDataSource.getRepository(CategoriaSchema).findByIds(body.categorias);
-    if (categorias.length !== body.categorias.length) {
-      return [null, "Algunas categorías no existen"];
-    }
-
-    // Crear el proveedor y asociar las categorías
+    // Crear el proveedor con los datos proporcionados
     const nuevoProveedor = proveedorRepository.create({
       ...body,
-      categorias,   // Asociar las categorías al proveedor
     });
 
     // Guardar el nuevo proveedor en la base de datos
@@ -54,42 +35,39 @@ export async function obtenerProveedoresService() {
     const proveedorRepository = AppDataSource.getRepository(Proveedor);
 
     // Obtener todos los proveedores
-    const proveedoresFound = await proveedorRepository.find({
-      relations: ["categorias"],  // Solo cargar las categorías
-    });
+    const proveedoresFound = await proveedorRepository.find();
 
     if (!proveedoresFound || proveedoresFound.length === 0) return [null, "No se encontraron proveedores"];
 
-    // Formato de respuesta con los proveedores y categorías
+    // Formato de respuesta con los proveedores
     const responseData = {
       status: "Success",
       message: "Proveedores obtenidos correctamente",
       data: proveedoresFound.map(proveedor => {
-        // Obtener las categorías asociadas al proveedor
-        const categorias = proveedor.categorias;
-
-        return {
+        const proveedorData = {
           id: proveedor.id,
           nombre: proveedor.nombre,
           direccion: proveedor.direccion,
-          nombreEncargado: proveedor.nombreEncargado,
-          contactosEncargado: proveedor.contactosEncargado,  // Lista de contactos del encargado
-          nombreRepartidor: proveedor.nombreRepartidor,
-          contactosRepartidor: proveedor.contactosRepartidor,  // Lista de contactos del repartidor
           banco: proveedor.banco,
           numeroCuenta: proveedor.numeroCuenta,
           tipoCuenta: proveedor.tipoCuenta,
           createdAt: proveedor.createdAt.toISOString(),
           updatedAt: proveedor.updatedAt.toISOString(),
-          categorias: categorias.map(categoria => ({
-            id: categoria.id,
-            nombre: categoria.nombre,
-          })),
+          idEncargado: proveedor.idEncargado,
+          nombreEncargado: proveedor.nombreEncargado,
+          movilEncargado: proveedor.movilEncargado,
+          telefonoEncargado: proveedor.telefonoEncargado,
+          idRepartidor: proveedor.idRepartidor,
+          nombreRepartidor: proveedor.nombreRepartidor,
+          movilRepartidor: proveedor.movilRepartidor,
+          telefonoRepartidor: proveedor.telefonoRepartidor,
         };
+
+        return proveedorData;
       }),
     };
 
-    return [responseData, null];  // Retornar la lista de proveedores con sus categorías asociadas
+    return [responseData, null];
   } catch (error) {
     console.error("Error al obtener los proveedores:", error);
     return [null, "Error interno del servidor"];
@@ -103,15 +81,11 @@ export async function obtenerProveedorService(id) {
     // Buscar el proveedor por ID
     const proveedorFound = await proveedorRepository.findOne({
       where: { id },
-      relations: ["categorias"],  // Solo cargar las categorías
     });
 
     if (!proveedorFound) return [null, "Proveedor no encontrado"];
 
-    // Obtener las categorías asociadas al proveedor
-    const categorias = proveedorFound.categorias;
-
-    // Formato de respuesta con las categorías de acuerdo al proveedor
+    // Formato de respuesta
     const responseData = {
       status: "Success",
       message: "Proveedor obtenido correctamente",
@@ -119,24 +93,23 @@ export async function obtenerProveedorService(id) {
         id: proveedorFound.id,
         nombre: proveedorFound.nombre,
         direccion: proveedorFound.direccion,
-        telefono: proveedorFound.telefono,
-        nombreEncargado: proveedorFound.nombreEncargado,
-        contactosEncargado: proveedorFound.contactosEncargado,  // Lista de contactos del encargado
-        nombreRepartidor: proveedorFound.nombreRepartidor,
-        contactosRepartidor: proveedorFound.contactosRepartidor,  // Lista de contactos del repartidor
         banco: proveedorFound.banco,
         numeroCuenta: proveedorFound.numeroCuenta,
         tipoCuenta: proveedorFound.tipoCuenta,
         createdAt: proveedorFound.createdAt.toISOString(),
         updatedAt: proveedorFound.updatedAt.toISOString(),
-        categorias: categorias.map(categoria => ({
-          id: categoria.id,
-          nombre: categoria.nombre,
-        })),
+        idEncargado: proveedorFound.idEncargado,
+        nombreEncargado: proveedorFound.nombreEncargado,
+        movilEncargado: proveedorFound.movilEncargado,
+        telefonoEncargado: proveedorFound.telefonoEncargado,
+        idRepartidor: proveedorFound.idRepartidor,
+        nombreRepartidor: proveedorFound.nombreRepartidor,
+        movilRepartidor: proveedorFound.movilRepartidor,
+        telefonoRepartidor: proveedorFound.telefonoRepartidor,
       },
     };
 
-    return [responseData, null];  // Retornar el proveedor con categorías asociadas
+    return [responseData, null];
   } catch (error) {
     console.error("Error al obtener el proveedor:", error);
     return [null, "Error interno del servidor"];
@@ -163,14 +136,8 @@ export async function actualizarProveedorService(id, body) {
       }
     }
 
-    // Obtener las categorías usando los IDs proporcionados
-    const categorias = await AppDataSource.getRepository(CategoriaSchema).find({
-      where: { id: In(body.categorias) },
-    });
-
-    // Actualizar los datos del proveedor con las categorías
+    // Actualizar el proveedor
     const updatedProveedor = Object.assign(proveedorFound, body);
-    updatedProveedor.categorias = categorias;
 
     // Guardar el proveedor actualizado
     await proveedorRepository.save(updatedProveedor);
@@ -179,23 +146,22 @@ export async function actualizarProveedorService(id, body) {
       status: "Success",
       message: "Proveedor actualizado correctamente",
       data: {
-        id: updatedProveedor.id,  // Ahora se utiliza updatedProveedor
+        id: updatedProveedor.id,
         nombre: updatedProveedor.nombre,
         direccion: updatedProveedor.direccion,
-        telefono: updatedProveedor.telefono,
-        nombreEncargado: updatedProveedor.nombreEncargado,
-        contactosEncargado: updatedProveedor.contactosEncargado,  // Lista de contactos del encargado
-        nombreRepartidor: updatedProveedor.nombreRepartidor,
-        contactosRepartidor: updatedProveedor.contactosRepartidor,  // Lista de contactos del repartidor
         banco: updatedProveedor.banco,
         numeroCuenta: updatedProveedor.numeroCuenta,
         tipoCuenta: updatedProveedor.tipoCuenta,
+        idEncargado: updatedProveedor.idEncargado,
+        nombreEncargado: updatedProveedor.nombreEncargado,
+        movilEncargado: updatedProveedor.movilEncargado,
+        telefonoEncargado: updatedProveedor.telefonoEncargado,
+        idRepartidor: updatedProveedor.idRepartidor,
+        nombreRepartidor: updatedProveedor.nombreRepartidor,
+        movilRepartidor: updatedProveedor.movilRepartidor,
+        telefonoRepartidor: updatedProveedor.telefonoRepartidor,
         createdAt: updatedProveedor.createdAt.toISOString(),
         updatedAt: updatedProveedor.updatedAt.toISOString(),
-        categorias: updatedProveedor.categorias.map(categoria => ({
-          id: categoria.id,
-          nombre: categoria.nombre,
-        })),
       },
     };
 
@@ -215,7 +181,7 @@ export async function eliminarProveedorService(id) {
 
     // Eliminar el proveedor
     await proveedorRepository.remove(proveedorFound);
-    return [null, null];  
+    return [null, null];
   } catch (error) {
     console.error("Error al eliminar el proveedor:", error);
     return [null, "Error interno del servidor"];

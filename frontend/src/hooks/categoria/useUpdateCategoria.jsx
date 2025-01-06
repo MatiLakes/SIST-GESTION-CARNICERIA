@@ -1,22 +1,19 @@
-import { updateCategoria } from '@services/categoria.service.js';
+// src/hooks/useUpdateCategoria.jsx
+import { updateCategoria } from '@services/categoria.service';
 import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
-const useUpdateCategoria = (fetchCategorias, setShowPopup, setCategoriaToEdit) => {
-  const handleUpdate = async (id, categoriaData) => {
-    try {
-      await updateCategoria(id, categoriaData); // Llamamos a la función updateCategoria
+const useUpdateCategoria = (fetchCategorias) => {
+    const handleUpdate = async (id, categoriaData) => {
+        try {
+            await updateCategoria(id, categoriaData); // Actualiza la categoría
+            fetchCategorias(); // Actualiza la lista de categorías después de la actualización
+            showSuccessAlert('Categoría actualizada con éxito'); // Mensaje de éxito
+        } catch (error) {
+            showErrorAlert('Error', 'No se pudo actualizar la categoría'); // Mensaje de error
+        }
+    };
 
-      fetchCategorias(); // Refrescamos las categorías
-      showSuccessAlert('Categoría actualizada con éxito');
-      setShowPopup(false);
-      setCategoriaToEdit(null);
-    } catch (error) {
-      console.error('Error al actualizar la categoría:', error);
-      showErrorAlert('Error', 'No se pudo actualizar la categoría');
-    }
-  };
-
-  return { handleUpdate };
+    return { handleUpdate };
 };
 
 export { useUpdateCategoria };

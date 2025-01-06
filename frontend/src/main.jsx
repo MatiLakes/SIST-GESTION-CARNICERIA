@@ -4,6 +4,8 @@ import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Users from '@pages/Users';
 import Categorias from '@pages/Categoria';
+import ProductoCarnico from '@pages/productoCarnico';
+import Proveedores from '@pages/Proveedor';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import ProtectedRoute from '@components/ProtectedRoute';
@@ -11,6 +13,8 @@ import ListaPreciosPage from '@pages/ListaPreciosPage';
 import CrearListaPage from '@pages/CrearListaPage';
 import Pedidos from "@pages/Pedidos";
 import Productos from './pages/Productos'; // Importar la página de productos
+import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
+import AnimalVara from '@pages/AnimalVara';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -31,20 +35,36 @@ const router = createBrowserRouter([
         path: '/animal-corte/listas-precios',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-            <ListaPreciosPage />
+            <VerAnimalListaCorte />
           </ProtectedRoute>
         ),
       },
       {
-        path: '/animal-corte/crear-lista',
+        path: '/animal-vara/vara',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
-            <CrearListaPage />
+            <AnimalVara />
           </ProtectedRoute>
         ),
       },
       {
-        path: '/proveedores/categoria',
+        path: '/producto/carnico',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <ProductoCarnico />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/producto/noCarnico',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            {/* Inserta aquí el componente de no cárnicos si corresponde */}
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/producto/categoria',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Categorias />
@@ -52,10 +72,26 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/productos', 
+        path: '/productos',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Productos />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/gestion-proveedores/proveedor',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Proveedores />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/pedidos',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Pedidos />
           </ProtectedRoute>
         ),
       },
@@ -66,14 +102,6 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={['administrador']}>
         <Users />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: '/pedidos',
-    element: (
-      <ProtectedRoute allowedRoles={['administrador']}>
-        <Pedidos />
       </ProtectedRoute>
     ),
   },

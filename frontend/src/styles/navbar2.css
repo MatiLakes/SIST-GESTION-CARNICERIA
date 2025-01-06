@@ -15,6 +15,7 @@
     align-items: center;
     padding-top: 10px; /* Espacio reducido en la parte superior */
     transition: width 0.3s ease; /* Transición suave para el cambio de tamaño */
+    
 }
 
 /* Para ocultar la barra lateral completamente */
@@ -119,6 +120,15 @@
 .navbar2 li:nth-child(4) {
     animation-delay: 0.9s;
 }
+.navbar2 li:nth-child(5) {
+    animation-delay: 1.2s;    
+    
+}
+.navbar2 li:nth-child(6) {
+    animation-delay: 1.5s;    
+    
+}
+
 
 /* Estilos para pantallas pequeñas */
 @media (max-width: 768px) {
@@ -162,7 +172,7 @@
 
 /* Efecto hover para el botón flechamenu */
 .flechamenu:hover {
-    background-color: rgba(255, 255, 255, 0.1); /* Fondo suave */
+    background-color: transparent;
     transform: scale(1.2); /* Aumenta el tamaño ligeramente */
 }
 
@@ -215,4 +225,7 @@
         width: 100%; /* El contenedor ocupa todo el ancho */
     }
 }
+
+
+
 

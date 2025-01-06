@@ -1,6 +1,4 @@
-"use strict";
 import Joi from "joi";
-
 
 const categoriaSchema = Joi.object({
   nombre: Joi.string()
@@ -14,12 +12,12 @@ const categoriaSchema = Joi.object({
       "string.max": "El nombre no puede tener más de {#limit} caracteres",
       "any.required": "El nombre es obligatorio",
     }),
-  descripcion: Joi.string()
-    .max(200)
-    .optional()
+  tipo_producto: Joi.string()
+    .valid("Cárnico", "No Cárnico")
+    .default("No Cárnico")
     .messages({
-      "string.base": "La descripción debe ser un texto",
-      "string.max": "La descripción no puede tener más de {#limit} caracteres",
+      "string.base": "El tipo de producto debe ser un texto",
+      "any.only": "El tipo de producto debe ser 'Cárnico' o 'No Cárnico'",
     }),
 })
   .unknown(false)
@@ -27,16 +25,14 @@ const categoriaSchema = Joi.object({
     "object.unknown": "No se permiten propiedades adicionales.",
   });
 
-
+// Exportaciones
 export const categoriaBodyValidation = {
   validate: (data) => categoriaSchema.validate(data),
 };
 
-
 export const categoriaUpdateBodyValidation = {
   validate: (data) => categoriaSchema.validate(data),
 };
-
 
 export const categoriaQueryValidation = Joi.object({
   id: Joi.number()
@@ -50,7 +46,6 @@ export const categoriaQueryValidation = Joi.object({
       "any.required": "El ID es obligatorio",
     }),
   nombre: Joi.string().optional(),
-  descripcion: Joi.string().optional(),
 })
   .unknown(false)
   .messages({

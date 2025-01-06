@@ -1,31 +1,230 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetCategoria } from "@hooks/categoria/useGetCategoria";
+import { useCreateCategoria } from "@hooks/categoria/useCreateCategoria";
+import { useDeleteCategoria } from "@hooks/categoria/useDeleteCategoria";
+import { useUpdateCategoria } from "@hooks/categoria/useUpdateCategoria";
+import { useErrorHandlerCategoria } from "@hooks/categoria/useErrorHandlerCategoria"; // Importa el hook de errores
+import Table from "../components/Table";
+import Modal from "react-modal";
+import styles from "@styles/categoria.module.css";
+import "@styles/formulariotabledatos.css";
 
 const Categorias = () => {
-    const { categorias, loading, error } = useGetCategoria();
+  const { categorias, loading, error, fetchCategorias } = useGetCategoria();
+  const { handleCreate } = useCreateCategoria(fetchCategorias);
+  const { handleDelete } = useDeleteCategoria(fetchCategorias);
+  const { handleUpdate } = useUpdateCategoria(fetchCategorias);
 
-    useEffect(() => {
-        console.log("Categorías obtenidas:", categorias); // Verifica que los datos llegan correctamente
-    }, [categorias]);
+  const { createError, editError, deleteError, handleCreateError, handleEditError, handleDeleteError } = useErrorHandlerCategoria();
 
-    if (loading) return <p>Cargando categorías...</p>;
-    if (error) return <p>Error: {error}</p>;
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [categoriaToEdit, setCategoriaToEdit] = useState(null);
+  const [categoriaToDelete, setCategoriaToDelete] = useState(null);
+  const [newCategoryData, setNewCategoryData] = useState({ nombre: "",tipo_producto: "" });
+  const [formData, setFormData] = useState({ nombre: "",tipo_producto: "" });
 
-    return (
-        <div>
-            <h1>Lista de Categorías</h1>
-            {categorias.length === 0 ? (
-                <p>No hay categorías disponibles.</p>
-            ) : (
-                <ul>
-                    {categorias.map((categoria) => (
-                        <li key={categoria.id}>{categoria.nombre}</li>
-                    ))}
-                </ul>
-            )}
+  useEffect(() => {
+    console.log("Categorías obtenidas:", categorias);
+  }, [categorias]);
+
+  const handleDeleteClick = (categoria) => {
+    setCategoriaToDelete(categoria);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+    setCategoriaToDelete(null);
+  };
+
+  const confirmDelete = () => {
+    if (handleDeleteError(categoriaToDelete)) return; // Maneja el error de eliminación
+
+    handleDelete(categoriaToDelete.id);
+    setIsDeleteModalOpen(false);
+    setCategoriaToDelete(null);
+  };
+
+  const handleUpdateClick = (categoria) => {
+    setCategoriaToEdit(categoria);
+    setFormData({ nombre: categoria.nombre,tipo_producto: categoria.tipo_producto });
+    setIsEditModalOpen(true);
+  };
+
+  const handleCreateClick = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateModalChange = (e) => {
+    setNewCategoryData({ ...newCategoryData, [e.target.name]: e.target.value });
+  };
+
+  const handleCreateModalSubmit = (e) => {
+    e.preventDefault();
+
+    if (handleCreateError(newCategoryData)) return; // Maneja el error de creación
+
+    handleCreate(newCategoryData);
+    setNewCategoryData({ nombre: "" });
+    setIsCreateModalOpen(false);
+  };
+
+  const handleEditChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+
+    if (handleEditError(formData)) return; // Maneja el error de edición
+
+    handleUpdate(categoriaToEdit.id, formData);
+    setIsEditModalOpen(false);
+  };
+
+  if (loading) return <p>Cargando categorías...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  const columns = [
+    { header: "ID", key: "id" },
+    { header: "Nombre", key: "nombre" },
+    { header: "Tipo Producto", key: "tipo_producto" },
+  ];
+
+  return (
+    <div className={styles["categoria-container"]}>
+      <Table
+        data={categorias}
+        columns={columns}
+        headerTitle="Categorías"
+        onCreate={handleCreateClick}
+        onEdit={handleUpdateClick}
+        onDelete={handleDeleteClick}
+        showEditAllButton={false}
+        showViewButton={false}
+        showCalendarButton = {false}
+      />
+
+      {/* Modal de Creación */}
+      <Modal
+        isOpen={isCreateModalOpen}
+        onRequestClose={() => setIsCreateModalOpen(false)}
+        contentLabel="Añadir Categoría"
+        ariaHideApp={false}
+        className="formulario-table-modal-form-datos"
+        overlayClassName="formulario-table-overlay"
+      >
+        <h2 className="formulario-table-modal-title">Añadir Categoría</h2>
+        <form onSubmit={handleCreateModalSubmit} className="formulario-table-formulario-table">
+          <div className="formulario-table-formulario-table-datos">
+            <label htmlFor="nombre">Nombre de la Categoría:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              value={newCategoryData.nombre}
+              onChange={handleCreateModalChange}
+              required
+              className="formulario-table-input"
+            />
+            {createError && <span className="error-message">{createError}</span>}
+          </div>
+
+          <div className="formulario-table-field-group">
+                <label htmlFor="tipo_producto">Tipo producto:</label>
+                <select
+                  id="tipo_producto"
+                  name="tipo_producto"
+                  value={newCategoryData.tipo_producto}
+                  onChange={handleCreateModalChange}
+                  required
+                  className="formulario-table-input tipo-cuenta-select"
+                >
+                  <option value="">Selecciona un Tipo de producto</option>
+                  <option value="Cárnico">Cárnico</option>
+                  <option value="No Cárnico">No Cárnico</option>
+                </select>
+              </div>
+          <div className="formulario-table-form-actions">
+            <button type="submit" className="formulario-table-btn-confirm">
+              Crear
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(false)}
+              className="formulario-table-btn-cancel"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal de Edición */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onRequestClose={() => setIsEditModalOpen(false)}
+        contentLabel="Editar Categoría"
+        ariaHideApp={false}
+        className="formulario-table-modal-form-datos"
+        overlayClassName="formulario-table-overlay"
+      >
+        <h2 className="formulario-table-modal-title">Editar Categoría</h2>
+        <form onSubmit={handleEditSubmit} className="formulario-table-formulario-table">
+          <div className="formulario-table-formulario-table-datos">
+            <label htmlFor="nombre">Nombre de la Categoría:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleEditChange}
+              required
+              className="formulario-table-input"
+            />
+            {editError && <span className="error-message">{editError}</span>}
+          </div>
+          <div className="formulario-table-form-actions">
+            <button type="submit" className="formulario-table-btn-confirm">
+              Guardar Cambios
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsEditModalOpen(false)}
+              className="formulario-table-btn-cancel"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal de Eliminación */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={handleDeleteModalClose}
+        contentLabel="Confirmar Eliminación"
+        ariaHideApp={false}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+      >
+        <h2 className="formulario-table-modal-title">Eliminar Categoría</h2>
+        <p>¿Estás seguro de que deseas eliminar esta categoría?</p>
+        {deleteError && <span className="error-message">{deleteError}</span>}
+        <div className="formulario-table-form-actions">
+          <button onClick={confirmDelete} className="formulario-table-btn-confirm">
+            Confirmar
+          </button>
+          <button onClick={handleDeleteModalClose} className="formulario-table-btn-cancel">
+            Cancelar
+          </button>
         </div>
-    );
+      </Modal>
+    </div>
+  );
 };
 
 export default Categorias;

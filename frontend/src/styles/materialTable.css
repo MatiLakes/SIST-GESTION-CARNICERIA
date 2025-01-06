@@ -1,191 +1,440 @@
-/* Tabla general */
-.material-table {
-  width: calc(100% - 320px); /* Resta el ancho de la navbar2 */
-  margin-left: 320px; /* Alinea la tabla después de la barra lateral */
-  padding: 20px; /* Espaciado interno */
-  box-sizing: border-box; /* Incluye el padding en el cálculo del ancho */
-  height: 100vh; /* Usa toda la altura de la ventana */
-  overflow-y: auto; /* Permite el desplazamiento vertical */
-  overflow-x: auto; /* Añade desplazamiento horizontal si es necesario */
-  background-color: rgba(236, 233, 233, 0.3); /* Fondo translúcido */
-  backdrop-filter: blur(10px); /* Efecto de desenfoque */
-  border-radius: 8px; /* Bordes redondeados */
-  border-spacing: 0; /* Elimina el espaciado entre las celdas */
+/* Contenedor principal de la tabla */
+.table-container {
+  margin-left: 320px;
+  margin-top: 120px;
+  padding: 20px;
+  box-sizing: border-box;
+  height: auto;
+  max-height: calc(100vh - 70px);
+  backdrop-filter: blur(100px); /* Efecto de desenfoque */
+  border-radius: 8px;
+  background-color: rgba(246, 251, 255, 0.7); /* Fondo transparente con 70% de opacidad */
+  max-width: 1600px;
+  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.1);
 }
 
-/* Cuando la navbar2 está contraída, ajusta el margen y el ancho de la tabla */
-.navbar2.oculta ~ .material-table {
-  margin-left: 80px; /* Ajusta el margen cuando la barra está contraída */
-  width: calc(100% - 80px); /* Ajusta el ancho de la tabla cuando la barra está contraída */
+
+
+/* Navbar oculta */
+.navbar2.oculta ~ .table-container {
+  margin-left: 140px;
+  margin-right: 50px;
+  max-width: 1800px;
 }
 
-/* Estilo de las celdas de la tabla */
-.material-table .MuiTableCell-root {
-  background-color: rgba(255, 255, 255, 0.6); /* Fondo translúcido para las celdas */
-  color: #333; /* Color de texto oscuro para mejor contraste */
-  border-left: none; /* Elimina el borde izquierdo */
-  border-right: none; /* Elimina el borde derecho */
-  border-top: none; /* Elimina el borde superior */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Línea horizontal inferior */
-  padding: 16px; /* Ajusta el padding si es necesario */
-  transition: none !important; /* Elimina cualquier transición */
+/* Estilo de la tabla */
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;  /* Elimina el scroll dentro de la tabla */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra para la tabla */
 }
 
-/* Estilo del encabezado de la tabla */
-.material-table .MuiTableHead-root {
-  background-color: #000000; /* Fondo sólido oscuro para el encabezado */
-  color: #ffffff; /* Color blanco para el texto */  
+/* Estilo de las celdas */
+.table-container table td,
+.table-container table th {
+  padding: 10px 15px;
+  text-align: left;
+  font-size: 1rem;
+  border-bottom: 1px solid #ddd;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
-/* Estilo para las celdas del encabezado (ID, Nombre, Acciones) */
-.material-table .MuiTableHead-root .MuiTableCell-root {
-  background-color: #333; /* Fondo sólido para el encabezado */
-  color: #fff; /* Texto blanco */
-  font-weight: bold; /* Negrita para mayor visibilidad */
-  border-left: none; /* Elimina el borde izquierdo */
-  border-right: none; /* Elimina el borde derecho */
-  border-top: none; /* Elimina el borde superior */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2); /* Línea horizontal inferior */
-  padding: 16px; /* Ajusta el padding en las celdas del encabezado */
+
+
+/* Estilo de las celdas para valores numéricos */
+.table-container table td.numeric {
+  text-align: right;
+  font-weight: bold;
+  color: #2c3e50;
 }
 
-/* Eliminar el efecto hover en las filas de la tabla */
-.material-table .MuiTableRow-root:hover {
-  background-color: transparent; /* Sin cambio de fondo al pasar el mouse */
+/* Estilo del título */
+.table-titulo {
+  margin-top: 20px;  /* Reduje el margin-top para acercar el título al contenedor */
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+  text-align: center;
 }
 
-/* Asegura que el fondo del contenedor de la tabla sea translúcido */
-.material-table .MuiPaper-root {
-  background-color: transparent; /* Fondo transparente para el contenedor */
-  border-radius: 8px; /* Bordes redondeados */
-}
-
-/* Ajuste adicional para las celdas de la última columna */
-.material-table .MuiTableCell-root:last-child {
-  padding-right: 130px !important; /* Ajusta el espacio hacia la derecha */
-}
-
-/* Estilo personalizado para centrar el título */
-.table-title-formulario {
-  position: fixed;
-  font-size: 30px; /* Puedes ajustar el tamaño de la fuente */
-  color:  black;
-  margin: 0 auto; /* Centrado automático */
-  width: 90%; /* Aseguramos que ocupe el 100% del ancho */
-  margin-top: 100;
-}
-
-/* Estilo del botón "Crear Categoría" */
-.crear-categoria-button {
-  margin-left: 0; /* Ajusta el valor a lo que necesites */
-  background-color: #4CAF50; /* Fondo verde */
-  color: white; /* Texto blanco */
-  padding: 8px 0px; /* Espaciado interno */
-  font-size: 16px; /* Tamaño de la fuente */
-  border-radius: 8px; /* Bordes redondeados */
+/* Contenedor para el buscador y el botón Crear */
+.search-and-create-container {
   display: flex;
-  align-items: center; /* Alinea el texto y el ícono */
-  justify-content: center; /* Centra el contenido */
-  cursor: pointer; /* Cambia el cursor al pasar el mouse */
-  border: none; /* Elimina cualquier borde por defecto */
-  outline: none; /* Elimina el borde de foco */
-  box-shadow: none; /* Elimina cualquier sombra */
-  transition: background-color 0.3s ease; /* Transición suave */
-  top: -20px; /* Mueve el botón 20px hacia arriba */
-  position: relative;
-  left: -40px; /* Ajusta este valor para moverlo más a la izquierda */
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;  /* Reducido el margin-bottom para acercar el buscador */
 }
 
-button.crear-categoria-button:hover {
-  background-color: #4CAF50 !important; /* Mantener el mismo color de fondo */
-  box-shadow: none !important; /* Eliminar cualquier sombra */
-  color: white !important; /* Mantener el texto blanco */
-  outline: none !important; /* Eliminar el borde de foco */
-  pointer-events: none !important; /* Desactiva la interacción en hover */
-  transform: none !important; /* Elimina cualquier transformación */
+/* Estilo del input de búsqueda */
+.search-input {
+  padding: 10px;
+  width: 12%;
+  max-width: 350px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  margin-right: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
+  background-color: rgba(218, 218, 218, 0.767);
+  color: #474747;
 }
 
-/* Eliminar cualquier sombra o borde cuando se hace foco */
-.crear-categoria-button:focus {
-  outline: none !important; /* Eliminar el borde de foco */
-  box-shadow: none !important; /* Eliminar cualquier sombra */
+/* Cambiar color del placeholder */
+.search-input::placeholder {
+  color: #3a3939; /* Cambia este valor al color que prefieras */
 }
 
-
-.crear-categoria-button svg {
-  margin-right: 8px; /* Espaciado entre el ícono y el texto */
-  font-size: 20px; /* Ajusta el tamaño del ícono */
+.search-input:focus {
+  background-color: rgba(218, 218, 218, 0.767);
+  outline: none; /* Eliminar el contorno predeterminado */
 }
 
-/* Estilo para el tooltip siempre abajo con más espacio y fondo oscuro y transparente */
-button[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro con opacidad */
-  color: rgba(252, 250, 250, 0.945); /* Texto blanco con opacidad (ajusta el valor de opacidad entre 0 y 1) */
-  padding: 5px 10px; /* Ajuste de padding */
+.page-input {
+  padding: 10px;
+  width: 60px;
+  text-align: center;
+  margin-right: 10px;
+  margin-top: 10px; /* Añadir margen superior para bajarlo */
+  font-size: 1rem;
+  background-color: white; /* Fondo blanco */
+  color: black; /* Texto negro */
+  border: 1px solid #ccc; /* Borde gris */
   border-radius: 4px; /* Bordes redondeados */
-  font-size: 10px; /* Tamaño de fuente */
-  font-family: 'Arial';
-  top: calc(100% + 10px); /* Da más espacio entre el botón y el tooltip */
-  left: 50%; /* Centra el tooltip horizontalmente */
-  transform: translateX(-50%); /* Ajusta la posición para centrarlo */
-  white-space: nowrap; /* Evita el ajuste de línea */
-  z-index: 10; /* Asegura que el tooltip esté encima de otros elementos */
+  transition: border-color 0.3s ease;
 }
 
-/* Eliminar sombra predeterminada de los íconos en la tabla */
-.material-table .MuiSvgIcon-root {
-  box-shadow: none !important; /* Elimina cualquier sombra */
-  outline: none !important; /* Elimina cualquier borde de enfoque */
+.page-input:focus {
+  background-color: white; /* Fondo blanco */
+  outline: none; /* Eliminar el contorno predeterminado */
 }
 
-/* Eliminar sombra de los íconos en las acciones de la tabla */
-.material-table .MuiTableCell-root .MuiSvgIcon-root {
-  box-shadow: none !important;
-  outline: none !important;
+/* Estilo del botón Crear */
+.create-button-table {
+  padding: 12px 30px;  /* Ajusta el padding si es necesario */
+  font-size: 15px;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 15px;
+  margin-top: -15px;  /* Aumenta el valor negativo para subir el botón */
+  width: auto;
+  min-width: 100px;
+  display: flex;  /* Usamos flexbox para alinear los elementos */
+  align-items: center;  /* Alineación vertical del ícono y el texto */
+  justify-content: center;  /* Alineación horizontal si es necesario */
+  transition: opacity 0.3s ease; /* Efecto al pasar el cursor */
 }
 
-/* Eliminar el efecto hover sobre los botones dentro de la tabla */
-.material-table .MuiTableCell-root button:hover {
-  background-color: transparent !important; /* Sin cambio de fondo al pasar el mouse */
-  box-shadow: none !important; /* Elimina cualquier sombra */
-  color: inherit !important; /* Mantiene el color de texto original */
+/* Estilo del ícono dentro del botón */
+.create-button-table svg {
+  font-size: 1.4rem;  /* Ajusta el tamaño del ícono */
+  margin-right: 8px;  /* Espacio entre el ícono y el texto */
 }
 
-/* Eliminar cualquier sombra o borde cuando se hace foco */
-.material-table .MuiTableCell-root button:focus {
-  outline: none !important; /* Elimina el borde de foco */
-  box-shadow: none !important; /* Elimina cualquier sombra */
+/* Elimina el efecto hover, manteniendo el color del fondo igual */
+.create-button-table:hover {
+  background-color: #d32f2f;
 }
 
-/* Eliminar sombra en la toolbar */
-.material-table .MuiToolbar-root button:hover{
-  box-shadow: none !important; /* Elimina cualquier sombra en los iconos */
-  outline: none !important; /* Elimina el borde de enfoque */
+/* Estilos responsivos */
+
+/* En pantallas más pequeñas */
+@media (max-width: 768px) {
+  .table-container {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    padding: 15px;
+  }
+
+  .table-titulo {
+    font-size: 20px;
+  }
+
+  .table-container table th,
+  .table-container table td {
+    padding: 10px;
+  }
+
+  .table-container table {
+    font-size: 14px;
+  }
+
+  .search-input {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+
+
+  .create-button-table {
+    width: 100%;
+    margin-top: 10px;
+  }
 }
 
-/* Eliminar sombra predeterminada de los iconos en la tabla */
-.material-table .MuiSvgIcon-root {
-  box-shadow: none !important; /* Elimina cualquier sombra en los iconos */
-  outline: none !important; /* Elimina el borde de enfoque */
+/* En pantallas muy pequeñas (móviles) */
+@media (max-width: 480px) {
+  .table-container {
+    padding: 10px;
+  }
+
+  .table-titulo {
+    font-size: 18px;
+  }
+
+  .table-container table td,
+  .table-container table th {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 8px;
+  }
 }
 
-/* Eliminar sombra de los iconos en las acciones de la tabla */
-.material-table .MuiTableCell-root .MuiSvgIcon-root {
-  box-shadow: none !important;
-  outline: none !important;
+/* Estilo cuando no se encuentran resultados */
+.no-results {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+  color: #888;
 }
 
-/* Eliminar sombra de los botones dentro de la tabla */
-.material-table .MuiTableCell-root button:hover {
-  background-color: transparent !important; /* Sin cambio de fondo al pasar el mouse */
-  box-shadow: none !important; /* Elimina cualquier sombra */
-  color: inherit !important; /* Mantiene el color de texto original */
+.paginacion-table {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 50px;
 }
 
-/* Eliminar cualquier sombra o borde cuando se hace foco en los botones dentro de la tabla */
-.material-table .MuiTableCell-root button:focus {
-  outline: none !important; /* Elimina el borde de foco */
-  box-shadow: none !important; /* Elimina cualquier sombra */
+/* Estilo de los botones de paginación */
+.paginacion-table button {
+  padding: 12px 12px;  /* Reducción del padding para hacerlo más compacto */
+  margin: 0 5px;
+  background-color: rgb(138, 63, 2);
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem; /* Tamaño de fuente más pequeño */
+  width: auto; /* Ancho automático para ajustarse al contenido */
+  max-width: 100px;  /* Limita el ancho máximo del botón */
 }
+
+.paginacion-table button:hover {
+  background-color: black
+}
+
+.paginacion-table button:disabled {
+  background-color: #a09f9f;
+  cursor: not-allowed;
+}
+
+.page-input-container {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.page-input {
+  padding: 10px;
+  width: 60px;
+  text-align: center;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.go-to-page-button {
+  padding: 10px 15px;
+  
+  color: rgb(214, 21, 21);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.go-to-page-button:hover {
+  background-color: #000000;
+}
+
+.paginacion-table span {
+  margin: 0 10px;
+  font-size: 1rem;
+}
+
+/* Contenedor de acciones: agrupa los iconos juntos y los alinea a la derecha */
+.acciones-table-container {
+  display: flex;
+  gap: 5px; /* Reduce el espacio entre los iconos */
+  justify-content: flex-end; /* Alinea los botones hacia la derecha */
+  align-items: center; /* Centra los íconos verticalmente */
+  padding: 0;
+  margin: 0;
+  gap: 20px;
+}
+
+/* Estilo para los iconos de editar, eliminar y ver */
+.acciones-table.edit-button,
+.acciones-table.delete-button,
+.acciones-table.view-button {
+  background-color: transparent; /* Sin fondo */
+  color: black; /* Color negro para los iconos */
+  border: none; /* Sin borde */
+  cursor: pointer;
+  padding: 5px; /* Añadido padding para que no haya problemas con el área clickeable */
+  height: 32px; /* Ajusta la altura para que no se distorsionen */
+  width: 32px; /* Establece un ancho fijo para los iconos */
+  line-height: 1; /* Ajuste para evitar cualquier salto de línea */
+  transition: opacity 0.3s ease; /* Efecto al pasar el cursor */
+  font-size: 1.5rem; /* Tamaño de icono más grande */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%; /* Opcional, para dar un estilo circular */
+}
+
+/* Efecto hover para los iconos */
+.acciones-table.edit-button:hover,
+.acciones-table.delete-button:hover,
+.acciones-table.view-button:hover {
+  opacity: 0.7;
+}
+
+/* Colores específicos para cada botón */
+.acciones-table.edit-button {
+  color: black;
+}
+
+.acciones-table.delete-button {
+  color: black;
+}
+
+.acciones-table.view-button {
+ color: black;
+}
+
+/* Color más claro en hover para el ícono de ver */
+.acciones-table.view-button:hover {
+  color: #45a049; /* Un verde más oscuro para el hover */
+}
+
+/* Opcional: color más claro en hover para el ícono de ver */
+.acciones-table.view-button:hover {
+  color: #45a049; /* Un verde más oscuro para el hover */
+}
+.formulario-table-modal-form {
+  max-height: 70vh;  /* Ajusta la altura máxima según sea necesario */
+  overflow-y: auto;  /* Activa el desplazamiento vertical */
+  padding: 20px;
+}
+
+.formulario-table-formulario-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Puedes agregar más estilos si lo necesitas */
+}
+
+
+/* Estilo del botón "Mostrar Todo" */
+.clear-date-filter-button {
+  background-color: #d32f2f; /* Color de fondo verde */
+  color: white; /* Color de texto blanco */
+  padding: 6px 10px; /* Reducción del padding para hacerlo más pequeño */
+  font-size: 0.8rem; /* Tamaño de fuente más pequeño */
+  border-radius: 28px; /* Bordes redondeados */
+  cursor: pointer; /* Cursor de mano */
+  transition: all 0.3s ease; /* Transición suave */
+}
+
+.clear-date-filter-button:hover {
+  background-color: #d32f2f;
+}
+
+.calendar-icon-button {
+  background-color: transparent; /* Fondo transparente */
+  color: black; /* Color negro para los iconos */
+  border: none; /* Sin borde */
+  cursor: pointer;
+  padding: 8px; /* Aumenta el padding para más espacio alrededor */
+  height: 50px; /* Aumenta la altura para acomodar un icono más grande */
+  width: 70px; /* Aumenta el ancho para que el icono tenga más espacio */
+  line-height: 1; /* Ajuste para evitar el salto de línea */
+  transition: opacity 0.3s ease; /* Efecto al pasar el cursor */
+  font-size: 4rem; /* Aumenta el tamaño del icono */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 8px; /* Espacio entre el icono y otros elementos */
+}
+
+/* Contenedor de los filtros de fecha (con el icono de calendario y el botón "Mostrar Todo") */
+.date-filter-container {
+  display: flex;
+  align-items: center; /* Alinea los elementos verticalmente */
+  gap: 8px; /* Espacio entre los botones */
+  justify-content: flex-start; /* Alinea todo a la izquierda */
+}
+
+/* Efecto al pasar el ratón sobre el icono de calendario */
+.calendar-icon-button:hover {
+  opacity: 0.8; /* Efecto al pasar el ratón */
+}
+
+/* Alineación de los botones "Crear", "Editar" y "Calendario" */
+.buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Distribuye los elementos a los extremos */
+  width: 100%; /* Ocupa todo el espacio disponible */
+  gap: 12px; /* Espacio entre los botones */
+}
+
+.buttons-container .create-button-table {
+  margin-left: auto; /* Empuja el botón Crear hacia la derecha */
+}
+
+/* El contenedor del calendario */
+.calendar-overlay {
+  position: absolute;
+  z-index: 999; /* Asegura que el calendario esté sobre la tabla */
+  
+
+  
+  /* Para centrar el calendario en su contenedor */
+  left: 30%; /* Lo coloca al 50% desde el borde izquierdo */
+  transform: translateX(-50%); /* Ajusta el centro para que se alinee perfectamente */
+  top: 4px; /* Ajusta la posición vertical según lo necesites */
+}
+
+/* Botón de filtro de fecha */
+.calendar-icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1000; /* Asegura que el icono esté encima del calendario */
+}
+
+
+/* Cambiar el color de fondo del encabezado */
+.react-datepicker__header {
+  background-color: #d32f2f !important; /* Color de fondo del encabezado */
+  border: none !important; /* Eliminar borde */
+  box-shadow: none !important; /* Eliminar sombra */
+}
+
+/* Cambiar el color del texto del mes/año */
+.react-datepicker__current-month {
+  color: white !important; /* Color del texto del mes/año */
+}
+
+

@@ -10,7 +10,6 @@ export async function createAnimalVaraService(data) {
       varaId: data.varaId,
       fechaLlegada: data.fechaLlegada,
       temperaturaLlegada: data.temperaturaLlegada,
-      recibidoPor: data.recibidoPor,
       precioTotalVara: data.precioTotalVara,
       tipoAnimal: data.tipoAnimal, 
     });
@@ -64,7 +63,19 @@ export async function getAllAnimalVarasService() {
   try {
     const animalVaraRepository = AppDataSource.getRepository(AnimalVara);
     const varas = await animalVaraRepository.find({ relations: ["tipoAnimal"] });
-    return [varas, null];
+
+    // Modificar los datos para incluir solo "nombreLista" del "tipoAnimal"
+    const varasModificadas = varas.map(vara => ({
+      id: vara.id,
+      fechaLlegada: vara.fechaLlegada,
+      temperaturaLlegada: vara.temperaturaLlegada,
+      precioTotalVara: vara.precioTotalVara,
+      tipoAnimal: {
+        nombreLista: vara.tipoAnimal.nombreLista, // Solo incluir "nombreLista"
+      }
+    }));
+
+    return [varasModificadas, null];
   } catch (error) {
     console.error("Error al obtener las varas:", error);
     return [null, "Error interno del servidor"];
@@ -81,7 +92,18 @@ export async function getVarasByFechaService(fecha) {
       relations: ["tipoAnimal"], 
     });
 
-    return [varas, null];
+    // Modificar los datos para incluir solo "nombreLista" del "tipoAnimal"
+    const varasModificadas = varas.map(vara => ({
+      id: vara.id,
+      fechaLlegada: vara.fechaLlegada,
+      temperaturaLlegada: vara.temperaturaLlegada,
+      precioTotalVara: vara.precioTotalVara,
+      tipoAnimal: {
+        nombreLista: vara.tipoAnimal.nombreLista, // Solo incluir "nombreLista"
+      }
+    }));
+
+    return [varasModificadas, null];
   } catch (error) {
     console.error("Error al obtener las varas por fecha:", error.message);
     return [null, "Error interno del servidor."];
@@ -99,7 +121,18 @@ export async function getVaraByIdService(id) {
 
     if (!vara) return [null, "La vara especificada no existe."];
 
-    return [vara, null];
+    // Modificar los datos para incluir solo "nombreLista" del "tipoAnimal"
+    const varaModificada = {
+      id: vara.id,
+      fechaLlegada: vara.fechaLlegada,
+      temperaturaLlegada: vara.temperaturaLlegada,
+      precioTotalVara: vara.precioTotalVara,
+      tipoAnimal: {
+        nombreLista: vara.tipoAnimal.nombreLista, // Solo incluir "nombreLista"
+      }
+    };
+
+    return [varaModificada, null];
   } catch (error) {
     console.error("Error al obtener la vara por ID:", error.message);
     return [null, "Error interno del servidor."];

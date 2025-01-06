@@ -20,11 +20,6 @@ const AnimalVaraSchema = new EntitySchema({
       type: "double precision",
       nullable: false,
     },
-    recibidoPor: {
-      type: "varchar",
-      length: 100,
-      nullable: false,
-    },
     precioTotalVara: {
       type: "int",
       nullable: false,

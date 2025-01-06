@@ -5,6 +5,7 @@ import "@styles/navbar2.css";
 import { useState } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
 import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox } from "react-icons/fa"; // Agregado FaBox para productos
+import { GiMilkCarton } from "react-icons/gi";
 import { ImExit } from "react-icons/im";
 
 const Navbar2 = () => {
@@ -86,11 +87,11 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink
-                    to="/animal-corte/crear-lista"
-                    className={location.pathname === "/animal-corte/crear-lista" ? "active" : ""}
+                    to="/animal-vara/vara"
+                    className={location.pathname === "/animal-vara/vara" ? "active" : ""}
                   >
                     <FaPlus className="nav-icon" />
-                    <span>Crear Lista</span>
+                    <span>Vara</span>
                   </NavLink>
                 </li>
                 <li>
@@ -104,6 +105,7 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink
+<<<<<<< HEAD
                     to="/productos"
                     className={location.pathname === "/productos" ? "active" : ""}
                   >
@@ -113,6 +115,20 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink
+=======
+                  
+                  to="/gestion-proveedores/proveedor"
+                  className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}
+                >
+                  <FaTruck className="nav-icon" />
+                  <span>Gestión de Proveedores</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  
+                  
+>>>>>>> 19b2bccad39c0eed622572d4466b85498eb1e155
                     to="#"
                     onClick={(e) => {
                       e.preventDefault();
@@ -120,8 +136,8 @@ const Navbar2 = () => {
                     }}
                     className={subMenuOpen ? "active" : ""}
                   >
-                    <FaTruck className="nav-icon" />
-                    <span>Gestión de Proveedores</span>
+                    <GiMilkCarton className="nav-icon" />
+                    <span>Gestión de Productos</span>
                   </NavLink>
                 </li>
                 {subMenuOpen && (
@@ -129,18 +145,18 @@ const Navbar2 = () => {
                     <ul>
                       <li>
                         <NavLink
-                          to="/proveedores/categoria"
-                          className={location.pathname === "/proveedores/categoria" ? "active" : ""}
+                          to="/producto/carnico"
+                          className={location.pathname === "/producto/carnico" ? "active" : ""}
                         >
-                          - Categoría
+                          - Cárnico
                         </NavLink>
                       </li>
-                      <li>
-                        <NavLink
-                          to="/gestion-proveedores/proveedor"
-                          className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}
+                       <li>
+                      <NavLink
+                          to="/producto/categoria"
+                          className={location.pathname === "/producto/categoria" ? "active" : ""}
                         >
-                          - Proveedor
+                          - Categoria
                         </NavLink>
                       </li>
                     </ul>

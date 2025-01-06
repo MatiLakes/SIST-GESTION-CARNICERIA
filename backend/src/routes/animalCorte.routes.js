@@ -11,7 +11,7 @@ import {
 const router = Router();
 
 router.post("/", createAnimalCorte);      
-router.patch("/:id", updateAnimalCorte);  
+router.put("/:id", updateAnimalCorte);  
 router.delete("/:id", deleteAnimalCorte); 
 router.get("/", getAllAnimalCortes); 
 router.get("/:id", getAnimalCorteById);

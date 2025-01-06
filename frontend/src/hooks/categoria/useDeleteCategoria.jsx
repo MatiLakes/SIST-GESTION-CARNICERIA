@@ -1,35 +1,27 @@
-import { useState } from 'react';
 import { deleteCategoria } from '@services/categoria.service';
+import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetAlert';
 
-export function useDeleteCategoria() {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
-
-    const deleteCategoriaById = async (id) => {
-        setLoading(true);
-        setError(null);
-        setSuccess(null);
-
+const useDeleteCategoria = (fetchCategorias) => {
+    const handleDelete = async (id) => {
         try {
-            const response = await deleteCategoria(id);
-            // Aquí verificamos la respuesta para asegurarnos que está bien estructurada
-            if (response && response.status === 200) {
-                setSuccess("Categoría eliminada con éxito");
+            const result = await deleteDataAlert(); // Mostrar alerta para confirmar la eliminación
+            if (result && result.isConfirmed) {
+                const response = await deleteCategoria(id); // Eliminar la categoría directamente
+                if (response.status >= 400) { // Verificar si hubo un error con la eliminación
+                    return showErrorAlert('Error', response.data?.message || 'Error desconocido');
+                }
+                showSuccessAlert('¡Eliminado!', 'La categoría ha sido eliminada correctamente.');
+                fetchCategorias(); // Actualizamos la lista de categorías después de la eliminación
             } else {
-                setError("No se pudo eliminar la categoría.");
+                showErrorAlert('Cancelado', 'La operación ha sido cancelada.');
             }
         } catch (error) {
-            // Si el error tiene una respuesta del servidor, mostramos su mensaje
-            if (error.response && error.response.data) {
-                setError(error.response.data.message || "Error al eliminar la categoría");
-            } else {
-                setError("Error al eliminar la categoría");
-            }
-        } finally {
-            setLoading(false);
+            console.error('Error al eliminar la categoría:', error);
+            showErrorAlert('Error de referencia', 'La categoría no puede eliminarse porque está siendo utilizada en otra parte.');
         }
     };
 
-    return { deleteCategoriaById, loading, error, success };
-}
+    return { handleDelete };
+};
+
+export { useDeleteCategoria };
