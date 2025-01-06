@@ -14,7 +14,6 @@ const Pedidos = () => {
   const { create } = useCreatePedido(fetchPedidos);
   const { remove } = useDeletePedido(fetchPedidos);
   const { edit } = useEditPedido(fetchPedidos);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentPedido, setCurrentPedido] = useState(null);

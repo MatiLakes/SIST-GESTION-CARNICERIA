@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList } from "react-icons/fa";
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox } from "react-icons/fa"; // Agregado FaBox para productos
 import { ImExit } from "react-icons/im";
 
 const Navbar2 = () => {
@@ -100,6 +100,15 @@ const Navbar2 = () => {
                   >
                     <FaClipboardList className="nav-icon" />
                     <span>Pedidos</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/productos"
+                    className={location.pathname === "/productos" ? "active" : ""}
+                  >
+                    <FaBox className="nav-icon" />
+                    <span>Productos</span>
                   </NavLink>
                 </li>
                 <li>
