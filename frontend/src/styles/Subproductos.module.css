@@ -1,0 +1,236 @@
+/* Contenedor principal */
+.container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 60px; /* Ajuste inicial para la navbar cerrada */
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+  }
+  
+  /* Título */
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: black; /* Color del título */
+  }
+  
+  /* Botón para crear un nuevo subproducto */
+  .createButton {
+    padding: 10px 15px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .createButton:hover {
+    background-color: #b71c1c;
+  }
+  
+  /* Tabla */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .table td {
+    position: relative; /* Necesario para manejar límites del hover */
+    overflow: hidden; /* Previene que el hover se extienda fuera */
+    text-align: center; /* Centra los elementos en la celda */
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  .table th {
+    background-color: #f4f4f4;
+  }
+  
+  .table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Botones de acciones */
+  .iconButton {
+    background: none;
+    border: none;
+    color: black;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin: 0; /* Elimina márgenes adicionales */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: inline-block; /* Asegura que el botón respete los límites */
+    width: 100%; /* Opcional: si deseas que ocupe toda la celda */
+  }
+  
+  .iconButton:hover {
+    color: red;
+  }
+  
+  .detailButton {
+    background-color: #008cba;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .detailButton:hover {
+    background-color: #007bb5;
+  }
+  
+  .editButton {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .editButton:hover {
+    background-color: #b71c1c;
+  }
+  
+  .deleteButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .deleteButton:hover {
+    background-color: #d32f2f;
+  }
+  
+  .modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modalContent {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh; /* Limita la altura para permitir la scrollbar */
+    overflow-y: auto; /* Agrega una barra de desplazamiento vertical si es necesario */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .formGroup {
+    flex: 1; /* Permite que los inputs ocupen el mismo ancho */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formGroup label {
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .formGroup input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  color: black;
+}
+  
+  .rowGroup {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* Espaciado entre los inputs */
+    margin-bottom: 15px; /* Separación entre filas */
+  }
+  
+  .rowGroup .formGroup {
+    flex: 1;
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .saveButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .saveButton:hover {
+    background-color: darkred;
+  }
+  
+  .cancelButton {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cancelButton:hover {
+    background-color: darkred;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .modalContent {
+      width: 90%;
+    }
+  
+    .table th,
+    .table td {
+      font-size: 0.9rem;
+    }
+  
+    .createButton {
+      font-size: 0.9rem;
+      padding: 8px 15px;
+    }
+  
+    .saveButton,
+    .cancelButton {
+      font-size: 0.9rem;
+      padding: 8px 15px;
+    }
+  }
+  

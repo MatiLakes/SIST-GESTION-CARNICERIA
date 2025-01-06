@@ -114,6 +114,15 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink
+                    to="/subproductos"
+                    className={location.pathname === "/subproductos" ? "active" : ""}
+                  >
+                    <FaBox className="nav-icon" />
+                    <span>Subproductos</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                   
                   to="/gestion-proveedores/proveedor"
                   className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}

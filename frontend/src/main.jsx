@@ -13,6 +13,7 @@ import Pedidos from "@pages/Pedidos";
 import Productos from './pages/Productos'; // Importar la página de productos
 import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
 import AnimalVara from '@pages/AnimalVara';
+import Subproductos from '@pages/Subproductos';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -79,6 +80,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: '/subproductos', // Nueva ruta para Subproductos
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Subproductos />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: '/pedidos',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
@@ -88,6 +97,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+
   {
     path: '/users',
     element: (
