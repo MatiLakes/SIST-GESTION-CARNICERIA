@@ -116,15 +116,6 @@ const Navbar2 = () => {
                 <NavLink
                   
                   
-                    to="/productos"
-                    className={location.pathname === "/productos" ? "active" : ""}
-                  >
-                    <FaBox className="nav-icon" />
-                    <span>Productos</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
                     to="#"
                     onClick={(e) => {
                       e.preventDefault();

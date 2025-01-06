@@ -8,7 +8,7 @@ import {
   getAllProductosCarnicos,
   getProductoCarnicoById,
   updateProductoCarnico,
-} from "../controllers/producto.controller.js"; 
+} from "../controllers/productoCarnico.controller.js"; 
 
 const router = Router();
 
