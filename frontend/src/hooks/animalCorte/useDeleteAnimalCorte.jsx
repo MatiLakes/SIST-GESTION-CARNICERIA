@@ -17,7 +17,7 @@ const useDeleteAnimalCorte = (fetchAnimalCortes) => {
       }
     } catch (error) {
       console.error('Error al eliminar el AnimalCorte:', error);
-      showErrorAlert('Error de referencia', 'El AnimalCorte no puede eliminarse porque está siendo utilizado en otra parte.');
+      showErrorAlert('Error de referencia', 'La lista de precio no puede eliminarse porque está siendo utilizado en otra parte.');
     }
   };
 

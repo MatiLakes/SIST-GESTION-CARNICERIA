@@ -1,12 +1,12 @@
 import axios from './root.service.js'; // Asegúrate de que apunta a tu configuración base de Axios
 
 // Obtener todos los proveedores
-export async function getProveedores() {
+export async function getAllProveedoresService() {
     try {
-        const response = await axios.get('/proveedor/obtener');
+        const response = await axios.get('/proveedor/');
         console.log('Proveedores obtenidos:', response.data);
         if (response.status === 200) {
-            return response.data.data.data; // Asegúrate de que la API devuelva estos datos
+            return response.data.data; // Asegúrate de que la API devuelva estos datos
         } else {
             console.error("Error inesperado en la respuesta:", response);
             return null;
@@ -18,9 +18,9 @@ export async function getProveedores() {
 }
 
 // Crear un nuevo proveedor
-export async function createProveedor(proveedor) {
+export async function createProveedorService(proveedor) {
     try {
-        const response = await axios.post('/proveedor/crear', proveedor); // Ruta ajustada para crear
+        const response = await axios.post('/proveedor/', proveedor); // Ruta ajustada para crear
         if (response.status === 201) {
             return response.data.data; // Ajusta según la estructura de tu API
         } else {
@@ -34,9 +34,9 @@ export async function createProveedor(proveedor) {
 }
 
 // Actualizar un proveedor existente
-export async function updateProveedor(id, proveedor) {
+export async function updateProveedorService(id, proveedor) {
     try {
-        const response = await axios.put(`/proveedor/actualizar/${id}`, proveedor); // Ruta ajustada para actualizar
+        const response = await axios.put(`/proveedor/${id}`, proveedor); // Ruta ajustada para actualizar
         if (response.status === 200) {
             return response.data; // Retorna la respuesta completa si el status es 200
         } else {
@@ -49,9 +49,9 @@ export async function updateProveedor(id, proveedor) {
 }
 
 // Eliminar un proveedor
-export async function deleteProveedor(id) {
+export async function deleteProveedorService(id) {
     try {
-        const response = await axios.delete(`/proveedor/eliminar/${id}`); // Ruta ajustada para eliminar
+        const response = await axios.delete(`/proveedor/${id}`); // Ruta ajustada para eliminar
         console.log('Proveedor eliminado:', response);
         if (response.status === 200) {
             return response.data; // Devuelve los datos si la eliminación fue exitosa

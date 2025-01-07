@@ -1,189 +1,110 @@
+"use strict";
 import { AppDataSource } from "../config/configDb.js";
 import Proveedor from "../entity/proveedor.entity.js";
-import { In, Not } from "typeorm";
 
-export async function crearProveedorService(body) {
+// Crear proveedor
+export async function createProveedorService(data) {
   try {
     const proveedorRepository = AppDataSource.getRepository(Proveedor);
 
-    // Verificar si el proveedor ya existe
-    const existingProveedor = await proveedorRepository.findOne({
-      where: { nombre: body.nombre },
-    });
+    // Verificar si ya existe un proveedor con el mismo nombre
+    const existing = await proveedorRepository.findOneBy({ nombre: data.nombre });
+    if (existing) return [null, "Ya existe un proveedor con este nombre."];
 
-    if (existingProveedor) {
-      return [null, "Ya existe un proveedor con el mismo nombre"];
-    }
-
-    // Crear el proveedor con los datos proporcionados
+    // Crear el nuevo proveedor
     const nuevoProveedor = proveedorRepository.create({
-      ...body,
+      nombre: data.nombre,
+      direccion: data.direccion,
+      banco: data.banco,
+      numeroCuenta: data.numeroCuenta,
+      tipoCuenta: data.tipoCuenta,
+      idEncargado: data.idEncargado,
+      nombreEncargado: data.nombreEncargado,
+      movilEncargado: data.movilEncargado,
+      telefonoEncargado: data.telefonoEncargado,
+      idRepartidor: data.idRepartidor,
+      nombreRepartidor: data.nombreRepartidor,
+      movilRepartidor: data.movilRepartidor,
+      telefonoRepartidor: data.telefonoRepartidor,
     });
 
-    // Guardar el nuevo proveedor en la base de datos
-    await proveedorRepository.save(nuevoProveedor);
-
-    return [nuevoProveedor, null];
+    // Guardar el proveedor en la base de datos
+    const proveedorGuardado = await proveedorRepository.save(nuevoProveedor);
+    return [proveedorGuardado, null];
   } catch (error) {
-    console.error("Error al crear el proveedor:", error);
+    console.error("Error al crear proveedor:", error);
     return [null, "Error interno del servidor"];
   }
 }
 
-export async function obtenerProveedoresService() {
+// Actualizar proveedor
+export async function updateProveedorService(id, data) {
+  try {
+    const proveedorRepository = AppDataSource.getRepository(Proveedor);
+
+    // Buscar el proveedor por ID
+    const proveedor = await proveedorRepository.findOneBy({ id });
+    if (!proveedor) return [null, "Proveedor no encontrado."];
+
+    // Actualizar los campos del proveedor con los nuevos valores
+    Object.keys(data).forEach((key) => {
+      if (data[key] !== undefined) proveedor[key] = data[key];
+    });
+
+    // Guardar el proveedor actualizado en la base de datos
+    const proveedorActualizado = await proveedorRepository.save(proveedor);
+    return [proveedorActualizado, null];
+  } catch (error) {
+    console.error("Error al actualizar proveedor:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+// Eliminar proveedor
+export async function deleteProveedorService(id) {
+  try {
+    const proveedorRepository = AppDataSource.getRepository(Proveedor);
+
+    // Buscar el proveedor por ID
+    const proveedor = await proveedorRepository.findOneBy({ id });
+    if (!proveedor) return [null, "Proveedor no encontrado."];
+
+    // Eliminar el proveedor
+    await proveedorRepository.remove(proveedor);
+    return ["Proveedor eliminado correctamente.", null];
+  } catch (error) {
+    console.error("Error al eliminar proveedor:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+
+// Obtener todos los proveedores
+export async function getAllProveedoresService() {
   try {
     const proveedorRepository = AppDataSource.getRepository(Proveedor);
 
     // Obtener todos los proveedores
-    const proveedoresFound = await proveedorRepository.find();
-
-    if (!proveedoresFound || proveedoresFound.length === 0) return [null, "No se encontraron proveedores"];
-
-    // Formato de respuesta con los proveedores
-    const responseData = {
-      status: "Success",
-      message: "Proveedores obtenidos correctamente",
-      data: proveedoresFound.map(proveedor => {
-        const proveedorData = {
-          id: proveedor.id,
-          nombre: proveedor.nombre,
-          direccion: proveedor.direccion,
-          banco: proveedor.banco,
-          numeroCuenta: proveedor.numeroCuenta,
-          tipoCuenta: proveedor.tipoCuenta,
-          createdAt: proveedor.createdAt.toISOString(),
-          updatedAt: proveedor.updatedAt.toISOString(),
-          idEncargado: proveedor.idEncargado,
-          nombreEncargado: proveedor.nombreEncargado,
-          movilEncargado: proveedor.movilEncargado,
-          telefonoEncargado: proveedor.telefonoEncargado,
-          idRepartidor: proveedor.idRepartidor,
-          nombreRepartidor: proveedor.nombreRepartidor,
-          movilRepartidor: proveedor.movilRepartidor,
-          telefonoRepartidor: proveedor.telefonoRepartidor,
-        };
-
-        return proveedorData;
-      }),
-    };
-
-    return [responseData, null];
+    const proveedores = await proveedorRepository.find();
+    return [proveedores, null];
   } catch (error) {
-    console.error("Error al obtener los proveedores:", error);
+    console.error("Error al obtener proveedores:", error);
     return [null, "Error interno del servidor"];
   }
 }
 
-export async function obtenerProveedorService(id) {
+// Obtener proveedor por ID
+export async function getProveedorByIdService(id) {
   try {
     const proveedorRepository = AppDataSource.getRepository(Proveedor);
 
     // Buscar el proveedor por ID
-    const proveedorFound = await proveedorRepository.findOne({
-      where: { id },
-    });
+    const proveedor = await proveedorRepository.findOneBy({ id });
 
-    if (!proveedorFound) return [null, "Proveedor no encontrado"];
+    if (!proveedor) return [null, "Proveedor no encontrado."];
 
-    // Formato de respuesta
-    const responseData = {
-      status: "Success",
-      message: "Proveedor obtenido correctamente",
-      data: {
-        id: proveedorFound.id,
-        nombre: proveedorFound.nombre,
-        direccion: proveedorFound.direccion,
-        banco: proveedorFound.banco,
-        numeroCuenta: proveedorFound.numeroCuenta,
-        tipoCuenta: proveedorFound.tipoCuenta,
-        createdAt: proveedorFound.createdAt.toISOString(),
-        updatedAt: proveedorFound.updatedAt.toISOString(),
-        idEncargado: proveedorFound.idEncargado,
-        nombreEncargado: proveedorFound.nombreEncargado,
-        movilEncargado: proveedorFound.movilEncargado,
-        telefonoEncargado: proveedorFound.telefonoEncargado,
-        idRepartidor: proveedorFound.idRepartidor,
-        nombreRepartidor: proveedorFound.nombreRepartidor,
-        movilRepartidor: proveedorFound.movilRepartidor,
-        telefonoRepartidor: proveedorFound.telefonoRepartidor,
-      },
-    };
-
-    return [responseData, null];
+    return [proveedor, null];
   } catch (error) {
-    console.error("Error al obtener el proveedor:", error);
-    return [null, "Error interno del servidor"];
-  }
-}
-
-export async function actualizarProveedorService(id, body) {
-  try {
-    const proveedorRepository = AppDataSource.getRepository(Proveedor);
-
-    // Buscar el proveedor por ID
-    const proveedorFound = await proveedorRepository.findOneBy({ id });
-
-    if (!proveedorFound) return [null, "Proveedor no encontrado"];
-
-    // Si el nombre no cambia, no verificamos si ya existe otro proveedor con ese nombre
-    if (proveedorFound.nombre.trim().toLowerCase() !== body.nombre.trim().toLowerCase()) {
-      const existingProveedor = await proveedorRepository.findOne({
-        where: { nombre: body.nombre, id: Not(id) },
-      });
-
-      if (existingProveedor) {
-        return [null, "Ya existe un proveedor con el mismo nombre"];
-      }
-    }
-
-    // Actualizar el proveedor
-    const updatedProveedor = Object.assign(proveedorFound, body);
-
-    // Guardar el proveedor actualizado
-    await proveedorRepository.save(updatedProveedor);
-
-    const responseData = {
-      status: "Success",
-      message: "Proveedor actualizado correctamente",
-      data: {
-        id: updatedProveedor.id,
-        nombre: updatedProveedor.nombre,
-        direccion: updatedProveedor.direccion,
-        banco: updatedProveedor.banco,
-        numeroCuenta: updatedProveedor.numeroCuenta,
-        tipoCuenta: updatedProveedor.tipoCuenta,
-        idEncargado: updatedProveedor.idEncargado,
-        nombreEncargado: updatedProveedor.nombreEncargado,
-        movilEncargado: updatedProveedor.movilEncargado,
-        telefonoEncargado: updatedProveedor.telefonoEncargado,
-        idRepartidor: updatedProveedor.idRepartidor,
-        nombreRepartidor: updatedProveedor.nombreRepartidor,
-        movilRepartidor: updatedProveedor.movilRepartidor,
-        telefonoRepartidor: updatedProveedor.telefonoRepartidor,
-        createdAt: updatedProveedor.createdAt.toISOString(),
-        updatedAt: updatedProveedor.updatedAt.toISOString(),
-      },
-    };
-
-    return [responseData, null];
-  } catch (error) {
-    console.error("Error al actualizar el proveedor:", error);
-    return [null, "Error interno del servidor"];
-  }
-}
-
-export async function eliminarProveedorService(id) {
-  try {
-    const proveedorRepository = AppDataSource.getRepository(Proveedor);
-
-    const proveedorFound = await proveedorRepository.findOneBy({ id });
-    if (!proveedorFound) return [null, "Proveedor no encontrado"];
-
-    // Eliminar el proveedor
-    await proveedorRepository.remove(proveedorFound);
-    return [null, null];
-  } catch (error) {
-    console.error("Error al eliminar el proveedor:", error);
+    console.error("Error al obtener proveedor por ID:", error.message);
     return [null, "Error interno del servidor"];
   }
 }

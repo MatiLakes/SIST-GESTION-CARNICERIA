@@ -43,7 +43,7 @@ const Categorias = () => {
   };
 
   const confirmDelete = () => {
-    if (handleDeleteError(categoriaToDelete)) return; // Maneja el error de eliminación
+    if (handleDeleteError(categoriaToDelete)); // Maneja el error de eliminación
 
     handleDelete(categoriaToDelete.id);
     setIsDeleteModalOpen(false);

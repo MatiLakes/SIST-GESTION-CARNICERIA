@@ -1,6 +1,6 @@
 // En el archivo del hook (useGetProveedor.jsx)
 import { useState, useEffect } from 'react';
-import { getProveedores } from '@services/proveedor.service';  // Asegúrate de que el path es correcto
+import { getAllProveedoresService } from '@services/proveedor.service';  // Asegúrate de que el path es correcto
 
 export function useGetProveedor() {  // Exportación estándar
     const [proveedores, setProveedores] = useState([]);
@@ -12,7 +12,7 @@ export function useGetProveedor() {  // Exportación estándar
         setError(null);
 
         try {
-            const response = await getProveedores();  // Llamada a la API para obtener los proveedores
+            const response = await getAllProveedoresService();  // Llamada a la API para obtener los proveedores
             console.log("Respuesta completa de la API:", response);  // Verificar la respuesta de la API
             if (response && Array.isArray(response)) {
                 setProveedores(response);  // Establecemos los proveedores obtenidos en el estado

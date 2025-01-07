@@ -1,4 +1,4 @@
-import { deleteProveedor } from '@services/proveedor.service'; // Asegúrate de que el servicio esté correctamente importado
+import { deleteProveedorService } from '@services/proveedor.service'; // Asegúrate de que el servicio esté correctamente importado
 import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetAlert';
 
 const useDeleteProveedor = (fetchProveedores) => {
@@ -6,7 +6,7 @@ const useDeleteProveedor = (fetchProveedores) => {
         try {
             const result = await deleteDataAlert(); // Mostrar alerta para confirmar la eliminación
             if (result && result.isConfirmed) {
-                const response = await deleteProveedor(id); // Llamamos al servicio para eliminar el proveedor
+                const response = await deleteProveedorService(id); // Llamamos al servicio para eliminar el proveedor
                 if (response.status >= 400) { // Verificar si hubo un error con la eliminación
                     return showErrorAlert('Error', response.data?.message || 'Error desconocido');
                 }

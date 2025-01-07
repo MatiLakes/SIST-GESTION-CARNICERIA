@@ -128,6 +128,15 @@
     animation-delay: 1.5s;    
     
 }
+.navbar2 li:nth-child(7) {
+    animation-delay: 1.8s;    
+    
+}
+.navbar2 li:nth-child(8) {
+    animation-delay: 2.1s;    
+    
+}
+
 
 
 /* Estilos para pantallas pequeñas */

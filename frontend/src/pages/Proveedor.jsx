@@ -85,7 +85,7 @@ const Proveedores = () => {
       telefonoRepartidor: proveedor.telefonoRepartidor
     });
     setIsEditModalOpen(true);
-  };
+  }
 
   const handleCreateClick = () => {
     setIsCreateModalOpen(true);
@@ -93,87 +93,71 @@ const Proveedores = () => {
 
   const validateFields = (data) => {
     // Validación de nombre (solo letras y mínimo 3 caracteres)
-    const nombreRegex = /^[a-zA-Z\s]+$/;
+    const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     if (!nombreRegex.test(data.nombre) || data.nombre.length < 3) {
       Swal.fire("Error", "El nombre solo puede contener letras y debe tener al menos 3 caracteres.", "error");
       return false;
     }
-
+  
     // Validación de direccion (máximo 50 caracteres y mínimo 3 caracteres)
     if (data.direccion.length < 3 || data.direccion.length > 50) {
       Swal.fire("Error", "La dirección debe tener entre 3 y 50 caracteres.", "error");
       return false;
     }
-
+  
     // Validación de banco (máximo 20 caracteres y mínimo 3 caracteres)
     if (data.banco.length < 3 || data.banco.length > 20) {
       Swal.fire("Error", "El banco debe tener entre 3 y 20 caracteres.", "error");
       return false;
     }
-
+  
     // Validación de numeroCuenta (solo números)
     const cuentaRegex = /^[0-9]+$/;
     if (!cuentaRegex.test(data.numeroCuenta)) {
       Swal.fire("Error", "El número de cuenta solo puede contener números.", "error");
       return false;
     }
-
+  
     // Validación de nombreEncargado (solo letras y mínimo 3 caracteres)
     if (!nombreRegex.test(data.nombreEncargado) || data.nombreEncargado.length < 3) {
       Swal.fire("Error", "El nombre del encargado solo puede contener letras y debe tener al menos 3 caracteres.", "error");
       return false;
     }
-
+  
     // Validación de movilEncargado (debe tener 9 dígitos)
     const movilEncargadoRegex = /^[0-9]{9}$/;
     if (!movilEncargadoRegex.test(data.movilEncargado)) {
       Swal.fire("Error", "El móvil del encargado debe tener 9 dígitos.", "error");
       return false;
     }
-
-    // Validación de telefonoEncargado (debe ser un número válido)
-    const telefonoEncargadoRegex = /^[0-9]+$/;
+  
+    // Validación de telefonoEncargado (debe tener 9 dígitos)
+    const telefonoEncargadoRegex = /^[0-9]{9}$/;
     if (!telefonoEncargadoRegex.test(data.telefonoEncargado)) {
-      Swal.fire("Error", "El teléfono del encargado debe ser un número válido.", "error");
+      Swal.fire("Error", "El teléfono del encargado debe tener 9 dígitos.", "error");
       return false;
     }
-
+  
     // Validación de movilRepartidor (debe tener 9 dígitos)
     const movilRepartidorRegex = /^[0-9]{9}$/;
     if (!movilRepartidorRegex.test(data.movilRepartidor)) {
       Swal.fire("Error", "El móvil del repartidor debe tener 9 dígitos.", "error");
       return false;
     }
-
+  
     // Validación de telefonoRepartidor (debe ser un número válido)
     const telefonoRepartidorRegex = /^[0-9]+$/;
     if (!telefonoRepartidorRegex.test(data.telefonoRepartidor)) {
       Swal.fire("Error", "El teléfono del repartidor debe ser un número válido.", "error");
       return false;
     }
-
+  
     return true;
   };
-
   const handleCreateModalChange = (e) => {
-    const { name, value } = e.target;
-
-    // Manejo de campos booleanos (estadoEncargado o estadoRepartidor)
-    if (name === "estadoEncargado" || name === "estadoRepartidor") {
-      const booleanValue = value === "true"; // Convertir "true"/"false" a booleano
-
-      setNewProveedorData((prevData) => ({
-        ...prevData,
-        [name]: booleanValue, // Actualiza el estado con el valor booleano
-      }));
-    } else {
-      // Actualización de otros valores (sin contacto)
-      setNewProveedorData((prevData) => ({
-        ...prevData,
-        [name]: value, // Actualiza el valor del campo
-      }));
-    }
+    setNewProveedorData({ ...newProveedorData, [e.target.name]: e.target.value });
   };
+
 
   const handleCreateModalSubmit = (e) => {
     e.preventDefault();
@@ -698,7 +682,7 @@ const Proveedores = () => {
                   type="submit"
                   className="formulario-table-btn-confirm"
                 >
-                  Crear Proveedor
+                  Actualizar Proveedor
                 </button>
               </div>
             </>

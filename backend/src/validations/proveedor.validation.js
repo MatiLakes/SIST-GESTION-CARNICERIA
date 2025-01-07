@@ -41,11 +41,7 @@ const proveedorSchema = Joi.object({
       "string.valid": "El tipo de cuenta debe ser uno de los siguientes: 'Cuenta corriente', 'Cuenta vista', 'Cuenta de ahorro'",
       "any.required": "El tipo de cuenta es obligatorio",
     }),
-  idEncargado: Joi.string()
-    .optional()
-    .messages({
-      "string.base": "El ID del encargado debe ser un texto",
-    }),
+
   nombreEncargado: Joi.string()
     .max(255)
     .optional()
@@ -53,25 +49,23 @@ const proveedorSchema = Joi.object({
       "string.base": "El nombre del encargado debe ser un texto",
       "string.max": "El nombre del encargado no puede tener más de {#limit} caracteres",
     }),
-  estadoEncargado: Joi.string()
-    .valid("Activo", "Inactivo")
+
+  movilEncargado: Joi.string()
+    .max(50)
     .optional()
     .messages({
-      "string.base": "El estado del encargado debe ser un texto",
-      "string.valid": "El estado del encargado debe ser 'Activo' o 'Inactivo'",
+      "string.base": "El móvil del encargado debe ser un texto",
+      "string.max": "El móvil del encargado no puede tener más de {#limit} caracteres",
     }),
-  contactosEncargado: Joi.array()
-    .items(Joi.string().email().optional())
+
+  telefonoEncargado: Joi.string()
+    .max(50)
     .optional()
     .messages({
-      "array.base": "Los contactos del encargado deben ser un arreglo",
-      "array.items": "Cada contacto del encargado debe ser una cadena de texto válida",
+      "string.base": "El teléfono del encargado debe ser un texto",
+      "string.max": "El teléfono del encargado no puede tener más de {#limit} caracteres",
     }),
-  idRepartidor: Joi.string()
-    .optional()
-    .messages({
-      "string.base": "El ID del repartidor debe ser un texto",
-    }),
+
   nombreRepartidor: Joi.string()
     .max(255)
     .optional()
@@ -79,27 +73,24 @@ const proveedorSchema = Joi.object({
       "string.base": "El nombre del repartidor debe ser un texto",
       "string.max": "El nombre del repartidor no puede tener más de {#limit} caracteres",
     }),
-  estadoRepartidor: Joi.string()
-    .valid("Activo", "Inactivo")
+
+  movilRepartidor: Joi.string()
+    .max(50)
     .optional()
     .messages({
-      "string.base": "El estado del repartidor debe ser un texto",
-      "string.valid": "El estado del repartidor debe ser 'Activo' o 'Inactivo'",
+      "string.base": "El móvil del repartidor debe ser un texto",
+      "string.max": "El móvil del repartidor no puede tener más de {#limit} caracteres",
     }),
-  contactosRepartidor: Joi.array()
-    .items(Joi.string().email().optional())
+
+  telefonoRepartidor: Joi.string()
+    .max(50)
     .optional()
     .messages({
-      "array.base": "Los contactos del repartidor deben ser un arreglo",
-      "array.items": "Cada contacto del repartidor debe ser una cadena de texto válida",
+      "string.base": "El teléfono del repartidor debe ser un texto",
+      "string.max": "El teléfono del repartidor no puede tener más de {#limit} caracteres",
     }),
-  categorias: Joi.array()
-    .items(Joi.number().integer().positive())
-    .optional()
-    .messages({
-      "array.base": "Las categorías deben ser un arreglo",
-      "array.items": "Cada categoría debe ser un número entero positivo",
-    }),
+
+
 })
   .unknown(false)
   .messages({
@@ -115,24 +106,13 @@ export const proveedorUpdateBodyValidation = {
 };
 
 export const proveedorQueryValidation = Joi.object({
-  id: Joi.number()
-    .integer()
-    .positive()
-    .required()
-    .messages({
-      "number.base": "El ID debe ser un número entero",
-      "number.integer": "El ID debe ser un número entero",
-      "number.positive": "El ID debe ser un número positivo",
-      "any.required": "El ID es obligatorio",
-    }),
   nombre: Joi.string().optional(),
   direccion: Joi.string().optional(),
   banco: Joi.string().optional(),
   numeroCuenta: Joi.string().optional(),
   tipoCuenta: Joi.string().optional(),
-  categorias: Joi.array().items(Joi.number().integer().positive()).optional(),
 })
-  .unknown(false)
+  .unknown(true)
   .messages({
     "object.unknown": "No se permiten propiedades adicionales.",
   });

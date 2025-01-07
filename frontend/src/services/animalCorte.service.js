@@ -64,18 +64,22 @@ export async function updateAnimalCorteService(id, animalCorte) {
   }
 }
 
-// Eliminar un AnimalCorte
+
+
+// Eliminar una categoría
 export async function deleteAnimalCorteService(id) {
   try {
-    const response = await axios.delete(`/animal-corte/${id}`);
-    if (response.status === 200) {
-      return [response.data.message, null];
-    } else {
-      console.error("Error inesperado en la respuesta:", response);
-      return [null, "Error inesperado en la respuesta"];
-    }
+      const response = await axios.delete(`/animal-corte/${id}`);
+      console.log('Respuesta al eliminar Animal corte', response);
+      if (response.status === 200) {
+          return response.data;
+      } else {
+          console.error("Error inesperado en la respuesta:", response);
+          return null;
+      }
   } catch (error) {
-    console.error("Error al eliminar el AnimalCorte:", error.response?.data || error.message);
-    return [null, error.response?.data || error.message];
+      console.error("Error al eliminar la categoría:", error.response?.data || error.message, error);
+      return null;
   }
 }
+
