@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import "@styles/materialTable.css";
-import Navbar2 from "../components/Navbar2";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoAddSharp } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
-import { FcCalendar } from "react-icons/fc";
-import DatePicker from "react-datepicker";
+import 'bootstrap-icons/font/bootstrap-icons.css'; // Importación de Bootstrap Icons
+import DatePicker, { registerLocale } from "react-datepicker";
+import { es } from 'date-fns/locale'; // <-- Idioma español
 import "react-datepicker/dist/react-datepicker.css";
+
+// Registra el idioma español
+registerLocale('es', es);
 
 const Table = ({
   data,
@@ -28,7 +31,7 @@ const Table = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState(data);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(8);
+  const [rowsPerPage] = useState(7);
   const [pageInput, setPageInput] = useState(currentPage);
   const [editAll, setEditAll] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -60,46 +63,44 @@ const Table = ({
     }
   };
 
+  // Filtrar datos por fecha
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    if (date) {
+      // Convierte la fecha seleccionada en formato ISO y extrae solo la parte de la fecha
+      const selectedDateString = date.toISOString().split('T')[0];
 
+      // Filtra los datos, comparando solo la parte de la fecha (yyyy-MM-dd)
+      const filteredByDate = data.filter((row) => {
+        // Define un arreglo con las propiedades de fecha de cada fila
+        const datesToCheck = [
+          row.fechaLlegada,
+          row.fecha_llegada,
+          row.fecha_vencimiento,
+          row.otraFecha // Añadir otras fechas si es necesario
+        ];
 
-// Filtrar datos por fecha
-const handleDateChange = (date) => {
-  setSelectedDate(date);
-  if (date) {
-    // Convierte la fecha seleccionada en formato ISO y extrae solo la parte de la fecha
-    const selectedDateString = date.toISOString().split('T')[0];
-
-    // Filtra los datos, comparando solo la parte de la fecha (yyyy-MM-dd)
-    const filteredByDate = data.filter((row) => {
-      // Define un arreglo con las propiedades de fecha de cada fila
-      const datesToCheck = [
-        row.fechaLlegada,
-        row.fecha_llegada,
-        row.fecha_vencimiento,
-        row.otraFecha // Añadir otras fechas si es necesario
-      ];
-
-      // Recorre las fechas y verifica si alguna de ellas es válida y coincide con la fecha seleccionada
-      return datesToCheck.some(date => {
-        // Verifica si la fecha es válida antes de convertirla
-        const parsedDate = new Date(date);
-        return !isNaN(parsedDate) && parsedDate.toISOString().split('T')[0] === selectedDateString;
+        // Recorre las fechas y verifica si alguna de ellas es válida y coincide con la fecha seleccionada
+        return datesToCheck.some(date => {
+          // Verifica si la fecha es válida antes de convertirla
+          const parsedDate = new Date(date);
+          return !isNaN(parsedDate) && parsedDate.toISOString().split('T')[0] === selectedDateString;
+        });
       });
-    });
 
-    setFilteredData(filteredByDate);
-  } else {
-    setFilteredData(data); // Mostrar todos los datos si no hay fecha seleccionada
-  }
-  setCurrentPage(1); // Resetear a la primera página cuando se aplica un filtro de fecha
-};
+      setFilteredData(filteredByDate);
+    } else {
+      setFilteredData(data); // Mostrar todos los datos si no hay fecha seleccionada
+    }
+    setCurrentPage(1); // Resetear a la primera página cuando se aplica un filtro de fecha
+  };
 
-const handleClearDateFilter = () => {
-  setSelectedDate(null);
-  setFilteredData(data); // Mostrar todos los datos
-  setShowClearButton(false); // Ocultar el botón "Mostrar Todo"
-  setShowDatePicker(false); // Ocultar el calendario
-};
+  const handleClearDateFilter = () => {
+    setSelectedDate(null);
+    setFilteredData(data); // Mostrar todos los datos
+    setShowClearButton(false); // Ocultar el botón "Mostrar Todo"
+    setShowDatePicker(false); // Ocultar el calendario
+  };
 
   // Manejo de cambios en las celdas de la tabla
   const handleCellChange = (value, rowIndex, columnKey) => {
@@ -153,7 +154,6 @@ const handleClearDateFilter = () => {
 
   return (
     <div>
-      <Navbar2 />
       <div className="table-container">
         <h1 className="table-titulo">{headerTitle}</h1>
         <div className="search-and-create-container">
@@ -173,7 +173,7 @@ const handleClearDateFilter = () => {
                 }}
                 className="calendar-icon-button"
               >
-                <FcCalendar /> {/* Icono de calendario */}
+                <i className="bi bi-calendar3 calendar-icon"></i> {/* Icono de calendario de Bootstrap */}
               </button>
             )}
             {showDatePicker && (
@@ -184,6 +184,7 @@ const handleClearDateFilter = () => {
                   dateFormat="yyyy/MM/dd"
                   className="date-picker"
                   inline
+                  locale="es"
                 />
               </div>
             )}
@@ -224,7 +225,6 @@ const handleClearDateFilter = () => {
           <tbody>
             {currentRows.length > 0 ? (
               currentRows.map((row, rowIndex) => {
-                // Verifica que row no sea null
                 if (row) {
                   return (
                     <tr key={rowIndex}>
@@ -277,7 +277,7 @@ const handleClearDateFilter = () => {
                     </tr>
                   );
                 }
-                return null; // Si row es null, no renderiza esta fila
+                return null;
               })
             ) : (
               <tr>
@@ -322,8 +322,3 @@ const handleClearDateFilter = () => {
 };
 
 export default Table;
-
-
-
-
-

@@ -1,19 +1,37 @@
-/* Contenedor principal de la tabla */
-.table-container {
-  margin-left: 320px;
-  margin-top: 120px;
-  padding: 20px;
-  box-sizing: border-box;
-  height: auto;
-  max-height: calc(100vh - 70px);
-  backdrop-filter: blur(100px); /* Efecto de desenfoque */
-  border-radius: 8px;
-  background-color: rgba(246, 251, 255, 0.7); /* Fondo transparente con 70% de opacidad */
-  max-width: 1600px;
-  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.1);
+:root {
+  --navbar-width: 320px;
+  --navbar-collapsed-width: 80px;
+  --transition-speed: 0.3s;
 }
 
+/* Contenedor principal de la tabla */
+.table-container {
+  width: calc(100% - var(--navbar-width));
+  margin-left: var(--navbar-width);
+  margin-top: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  min-height: calc(100vh - 9vh);
+  height: auto;
+  background-color: #ffffff;
+  position: relative;
+  top: 9vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 1600px;
+  position: relative; /* Añadir posicionamiento relativo */
+  top: 4vh; /* Ajustar a la altura del navbar superior */
+  left: 10px; /* Mover 10px a la derecha */
+}
 
+/* Cuando la navbar está contraída */
+body[data-navbar-collapsed="true"] .table-container {
+  width: calc(100% - var(--navbar-collapsed-width));
+  margin-left: var(--navbar-collapsed-width);
+  max-width: 1800px;
+}
 
 /* Navbar oculta */
 .navbar2.oculta ~ .table-container {
@@ -25,24 +43,33 @@
 /* Estilo de la tabla */
 .table-container table {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;  /* Elimina el scroll dentro de la tabla */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra para la tabla */
+  background-color: #ffffff;
 }
 
 /* Estilo de las celdas */
 .table-container table td,
 .table-container table th {
-  padding: 10px 15px;
+  padding: 12px 15px;
   text-align: left;
-  font-size: 1rem;
-  border-bottom: 1px solid #ddd;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #e0e0e0;
 }
 
+/* Estilo del encabezado */
+.table-container table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
 
+/* Estilo de las filas */
+.table-container table tr:hover {
+  background-color: #f8f9fa;
+}
 
 /* Estilo de las celdas para valores numéricos */
 .table-container table td.numeric {
@@ -53,11 +80,10 @@
 
 /* Estilo del título */
 .table-titulo {
-  margin-top: 20px;  /* Reduje el margin-top para acercar el título al contenedor */
-  font-size: 24px;
-  font-weight: bold;
-  color: black;
-  text-align: center;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 20px 0;
 }
 
 /* Contenedor para el buscador y el botón Crear */
@@ -66,20 +92,16 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 15px;  /* Reducido el margin-bottom para acercar el buscador */
+  margin-top: 10px; /* Ajustar margen superior */
 }
 
 /* Estilo del input de búsqueda */
 .search-input {
-  padding: 10px;
-  width: 12%;
-  max-width: 350px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  margin-right: 10px;
-  font-size: 1rem;
-  transition: all 0.3s ease-in-out;
-  background-color: rgba(218, 218, 218, 0.767);
-  color: #474747;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 200px;
 }
 
 /* Cambiar color del placeholder */
@@ -113,7 +135,7 @@
 
 /* Estilo del botón Crear */
 .create-button-table {
-  padding: 12px 30px;  /* Ajusta el padding si es necesario */
+  padding: 12px 30px;
   font-size: 15px;
   background-color: #d32f2f;
   color: white;
@@ -121,24 +143,35 @@
   border-radius: 4px;
   cursor: pointer;
   margin-left: 15px;
-  margin-top: -15px;  /* Aumenta el valor negativo para subir el botón */
+  margin-top: -15px;
   width: auto;
   min-width: 100px;
-  display: flex;  /* Usamos flexbox para alinear los elementos */
-  align-items: center;  /* Alineación vertical del ícono y el texto */
-  justify-content: center;  /* Alineación horizontal si es necesario */
-  transition: opacity 0.3s ease; /* Efecto al pasar el cursor */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
 }
 
-/* Estilo del ícono dentro del botón */
 .create-button-table svg {
-  font-size: 1.4rem;  /* Ajusta el tamaño del ícono */
-  margin-right: 8px;  /* Espacio entre el ícono y el texto */
+  font-size: 1.4rem;
+  margin-right: 8px;
 }
 
-/* Elimina el efecto hover, manteniendo el color del fondo igual */
 .create-button-table:hover {
   background-color: #d32f2f;
+}
+
+/* Ajuste del contenedor de botones */
+.buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 12px;
+}
+
+.buttons-container .create-button-table {
+  margin-left: auto;
 }
 
 /* Estilos responsivos */
@@ -146,10 +179,9 @@
 /* En pantallas más pequeñas */
 @media (max-width: 768px) {
   .table-container {
-    margin-left: 0;
-    margin-right: 0;
-    width: 100%;
-    padding: 15px;
+    padding: 10px;
+    margin-left: var(--navbar-collapsed-width);
+    width: calc(100% - var(--navbar-collapsed-width));
   }
 
   .table-titulo {
@@ -169,8 +201,6 @@
     width: 100%;
     margin-bottom: 15px;
   }
-
-
 
   .create-button-table {
     width: 100%;
@@ -219,7 +249,7 @@
 .paginacion-table button {
   padding: 12px 12px;  /* Reducción del padding para hacerlo más compacto */
   margin: 0 5px;
-  background-color: rgb(138, 63, 2);
+  background-color: black;
   color: rgb(255, 255, 255);
   border: none;
   border-radius: 4px;
@@ -273,20 +303,20 @@
 /* Contenedor de acciones: agrupa los iconos juntos y los alinea a la derecha */
 .acciones-table-container {
   display: flex;
-  gap: 5px; /* Reduce el espacio entre los iconos */
-  justify-content: flex-end; /* Alinea los botones hacia la derecha */
-  align-items: center; /* Centra los íconos verticalmente */
+  gap: 15px;
+  justify-content: flex-end;
+  align-items: center;
   padding: 0;
   margin: 0;
-  gap: 20px;
 }
 
 /* Estilo para los iconos de editar, eliminar y ver */
 .acciones-table.edit-button,
 .acciones-table.delete-button,
 .acciones-table.view-button {
+  color: #666;
+  font-size: 1.1rem;
   background-color: transparent; /* Sin fondo */
-  color: black; /* Color negro para los iconos */
   border: none; /* Sin borde */
   cursor: pointer;
   padding: 5px; /* Añadido padding para que no haya problemas con el área clickeable */
@@ -294,7 +324,6 @@
   width: 32px; /* Establece un ancho fijo para los iconos */
   line-height: 1; /* Ajuste para evitar cualquier salto de línea */
   transition: opacity 0.3s ease; /* Efecto al pasar el cursor */
-  font-size: 1.5rem; /* Tamaño de icono más grande */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -343,20 +372,22 @@
   /* Puedes agregar más estilos si lo necesitas */
 }
 
-
-/* Estilo del botón "Mostrar Todo" */
 .clear-date-filter-button {
-  background-color: #d32f2f; /* Color de fondo verde */
-  color: white; /* Color de texto blanco */
-  padding: 6px 10px; /* Reducción del padding para hacerlo más pequeño */
-  font-size: 0.8rem; /* Tamaño de fuente más pequeño */
-  border-radius: 28px; /* Bordes redondeados */
-  cursor: pointer; /* Cursor de mano */
-  transition: all 0.3s ease; /* Transición suave */
-}
+  background-color: #0c0c0c;;
+  color: white;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: inline-block;
 
+  margin-top: -5px;  /* Mueve hacia arriba */
+  margin-left: 10px; /* Mueve hacia la derecha */
+}
 .clear-date-filter-button:hover {
-  background-color: #d32f2f;
+  background-color: #d32f2f
 }
 
 .calendar-icon-button {
@@ -412,7 +443,7 @@
   /* Para centrar el calendario en su contenedor */
   left: 30%; /* Lo coloca al 50% desde el borde izquierdo */
   transform: translateX(-50%); /* Ajusta el centro para que se alinee perfectamente */
-  top: 4px; /* Ajusta la posición vertical según lo necesites */
+  top: 60px; /* Ajusta la posición vertical según lo necesites */
 }
 
 /* Botón de filtro de fecha */
@@ -423,7 +454,6 @@
   position: relative;
   z-index: 1000; /* Asegura que el icono esté encima del calendario */
 }
-
 
 /* Cambiar el color de fondo del encabezado */
 .react-datepicker__header {
@@ -437,4 +467,31 @@
   color: white !important; /* Color del texto del mes/año */
 }
 
+.calendar-icon {
+  color: black;
+  font-size: 40px;
+  position: absolute;
+  z-index: 999;
+  left: 60%;
+  transform: translateX(-50%);
+  top: -0px;
+  transition: color 0.3s ease, top 0.3s ease;
+  background: none; /* Elimina fondo transparente */
+  border: none; /* Asegura que no haya borde */
+  outline: none; /* Elimina el borde azul de enfoque */
+}
+
+button:has(.calendar-icon) {
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+button:has(.calendar-icon):focus {
+  outline: none;
+  box-shadow: none;
+}
 

@@ -2,7 +2,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "@services/auth.service.js";
 import Swal from "sweetalert2";
 import "@styles/navbar2.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
 import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox } from "react-icons/fa"; // Agregado FaBox para productos
 import { ImExit } from "react-icons/im";
@@ -15,6 +15,11 @@ const Navbar2 = () => {
   const userRole = user?.rol;
   const [menuOpen, setMenuOpen] = useState(false);
   const [subMenuOpen, setSubMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Actualizar el atributo data-navbar-collapsed en el body
+    document.body.setAttribute('data-navbar-collapsed', !menuOpen);
+  }, [menuOpen]);
 
   const logoutSubmit = () => {
     try {
@@ -43,13 +48,10 @@ const Navbar2 = () => {
   };
 
   const toggleMenu = () => {
-    setMenuOpen((prevMenuOpen) => {
-      const newMenuOpen = !prevMenuOpen;
-      if (!newMenuOpen) {
-        setSubMenuOpen(false);
-      }
-      return newMenuOpen;
-    });
+    setMenuOpen(prev => !prev);
+    if (subMenuOpen) {
+      setSubMenuOpen(false);
+    }
   };
 
   const toggleSubMenu = () => {

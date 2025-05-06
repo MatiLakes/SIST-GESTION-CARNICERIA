@@ -1,12 +1,11 @@
 /* categoria.module.css */
 
 .categoria-container {
-    background: url('../images/vacabackground.jpg') no-repeat center center/cover; /* Fondo que cubre toda el área */
-    min-height: 100vh;  /* Asegura que el fondo cubra toda la altura de la ventana */
-    height: 100%;  /* Opción adicional para garantizar que se cubra toda la altura */
-    
+    background-color: #f4f6f8; /* Gris claro, estilo moderno de sistemas */
+    min-height: 100vh;
+    height: 100%;
+
     display: flex;
     justify-content: center;
-  
     flex-direction: column;
 }

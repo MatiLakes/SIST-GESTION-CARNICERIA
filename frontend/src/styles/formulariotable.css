@@ -2,7 +2,6 @@
 
 body, .container, .form, input, select, textarea, button, p {
     font-family: 'Poppins', sans-serif;
-   
 }
 
 /* Contenedor del Modal */
@@ -12,257 +11,102 @@ body, .container, .form, input, select, textarea, button, p {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5); /* Fondo translúcido para el overlay */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
 .formulario-table-modal-form {
-    width: 500px; /* Aumenta el ancho del modal */
-    max-width: 800px; /* Aumenta el valor máximo del ancho para no sobrepasar este límite */
-    padding: 40px;
-    background-color: rgba(0, 0, 0, 0.3); /* Fondo transparente */
-    border-radius: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    animation: formulario-table-fadeIn 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    backdrop-filter: blur(10px); /* Desenfoque de fondo */
-    color: #fff; /* Texto blanco para todos los elementos */
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    max-height: 80vh;
 }
 
 /* Título del modal */
 .formulario-table-modal-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
     font-size: 24px;
-    margin-bottom: 15px;
     font-weight: bold;
-    color: #fff; /* Texto blanco para mayor contraste */
 }
 
-/* Estilo de los grupos de campos */
-.formulario-table-formulario-table {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* Estilo para cada campo */
+/* Grupo de campos */
 .formulario-table-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    margin-bottom: 15px;
 }
 
-/* Inputs dentro del formulario */
-.formulario-table-input {
-    padding: 12px;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 12px;
-    outline: none;
-    transition: border 0.3s ease;
-    background-color:rgba(0, 110, 223, 0.14);
-    color: #fff; /* Texto en blanco */
-}
-
-.formulario-table-input::placeholder {
-    color: rgba(255, 255, 255, 0.6); /* Placeholders en blanco */
-}
-
-/* Estilo cuando el input tiene foco */
-.formulario-table-input:focus {
-    border: 2px solid #020202;
-    background-color: rgba(0, 110, 223, 0.14); /* Fondo al hacer foco */
-}
-
-/* Botones dentro del formulario */
-.formulario-table-btn-confirm, .formulario-table-btn-cancel, .formulario-table-btn-eliminar {
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 15px;
-    border: none;
-    color: #fff; /* Texto blanco */
+.formulario-table-form-group label {
+    display: block;
     font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.formulario-table-input,
+.tipo-cuenta-select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #000;
+    background-color: #fff;
+}
+
+.tipo-cuenta-select {
+    appearance: none;
+}
+
+/* Botones */
+.formulario-table-btn-confirm,
+.formulario-table-btn-cancel {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-
-/* Botón de confirmación - Guardar cambios */
+/* Botón Guardar */
 .formulario-table-btn-confirm {
-    background-color: #4CAF50; /* Fondo verde */
-    backdrop-filter: blur(5px); /* Desenfoque del fondo */
+    background-color: red;
+    color: white;
+    border: none;
 }
 
 .formulario-table-btn-confirm:hover {
-    background-color: #45a049; /* Fondo verde más oscuro al pasar el ratón */
-    backdrop-filter: blur(20px); /* Mayor desenfoque al hacer hover */
+    background-color: darkred;
 }
 
-/* Botón de cancelación */
+/* Botón Cancelar */
 .formulario-table-btn-cancel {
-    background-color: #af4c4c; /* Fondo verde */
-    backdrop-filter: blur(5px); /* Desenfoque del fondo */
+    background-color: black;
+    color: white;
+    border: none;
 }
 
 .formulario-table-btn-cancel:hover {
-    background-color: #a04545; /* Fondo verde más oscuro al pasar el ratón */
-    backdrop-filter: blur(20px); /* Mayor desenfoque al hacer hover */
+    background-color: darkred;
 }
 
-/* Animación para el fade-in del modal */
-@keyframes formulario-table-fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-/* Tabla donde el modal se encuentra */
-.formulario-table-material-table {
-    width: 100%;
-    margin-top: 20px;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-/* Estilo de la tabla cuando la navbar está contraída */
-.navbar2.oculta ~ .formulario-table-material-table {
-    margin-left: 80px;
-    width: calc(100% - 80px);
-}
-
-/* Estilo general para la fila seleccionada */
-.formulario-table-material-table .MuiTableRow-root:hover {
-    background-color: rgba(0, 51, 102, 0.1); /* Efecto hover suave para las filas */
-}
-
-/* Estilo para las celdas */
-.formulario-table-material-table .MuiTableCell-root {
-    background-color: rgba(238, 247, 255, 0.3);
-    border: 1px solid #ccc;
-    color: #fff; /* Texto blanco para las celdas */
-}
-
-.formulario-table-material-table .MuiTableCell-root:last-child {
-    padding-right: 130px !important;
-}
-
-/* Efecto en los botones de la tabla */
-.formulario-table-material-table .MuiTableCell-root button {
-    background-color: transparent;
-    color: #007BFF;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.icono-save-form {
-    font-size: 1.5rem; /* Aumenta el tamaño del icono */
-    transform: translateY(6px); /* Mueve el icono hacia abajo sin usar margin-top */
-  }
-
-.icono-cancelar-form {
-    font-size: 1.5rem; /* Tamaño del icono */
-    transform: translateY(4px); /* Desplaza el icono hacia abajo */
-  }  
-
-/* Botón de crear */
-.formulario-table-btn-crear,
-.formulario-table-btn-editar,
-.formulario-table-btn-eliminar {
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 15px;
-    border: none;
-    color: #fff; /* Texto blanco */
-    font-weight: bold;
-    background-color: #45a049; /* Fondo verde */
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    backdrop-filter: blur(5px); /* Desenfoque del fondo */
-}
-
-.formulario-table-btn-crear:hover,
-.formulario-table-btn-editar:hover,
-.formulario-table-btn-eliminar:hover {
-    background-color: #218838; /* Fondo verde más oscuro al pasar el ratón */
-    transform: scale(1.05); /* Efecto de zoom al hacer hover */
-    backdrop-filter: blur(10px); /* Mayor desenfoque al hacer hover */
-}
-
-/* Estilo para el campo select */
-.tipo-cuenta-select {
-    color: white;
-    padding: 8px; /* Espaciado interno */
-
-  }
-  
-  /* Estilo para las opciones dentro del select */
-  .tipo-cuenta-select option {    
-    color: black;  /* Color de texto de las opciones */
-    background-color: rgba(238, 247, 255, 0.3); /* Fondo transparente para el formulario */
-
-
-  }
-
-  
-
-/* Agrupación de los dos campos */
-.formulario-table-form-group {
-    display: grid; /* Usamos grid para una mejor disposición */
-    grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
-    gap: 20px; /* Espacio entre las columnas */
-    justify-items: end; /* Alinea los elementos al final del contenedor */
-    width: 100%; /* Asegura que ocupe todo el ancho disponible */
-    margin-bottom: 20px; /* Espacio inferior entre grupos de campos */
-}
-
-/* Estilo para cada campo (input + label) */
-.formulario-table-field-group {
+/* Contenedor de botones */
+.formulario-table-form-actions {
     display: flex;
-    flex-direction: column; /* Mantiene la disposición vertical de cada campo */
-    width: 100%; /* Asegura que los campos ocupen el 100% del ancho disponible */
+    justify-content: space-between;
+    margin-top: 20px;
 }
 
-/* Estilo para las etiquetas */
-.formulario-table-field-group label {
-    margin-bottom: 5px; /* Espacio entre la etiqueta y el input */
-
- 
-    font-size: 16px;
+/* Animación fade-in */
+@keyframes formulario-table-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* Estilo para los inputs */
-.formulario-table-input {
-    padding: 12px;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 12px;
-    outline: none;
-    transition: border 0.3s ease;
-    background-color: rgba(0, 110, 223, 0.14);
-    
-}
-
-/* Estilo cuando el input tiene foco */
-.formulario-table-input:focus {
-    border: 2px solid #020202;
-    background-color: rgba(0, 110, 223, 0.14); /* Fondo al hacer foco */
-}
-
-.formulario-table-input::placeholder {
-    color: rgba(255, 255, 255, 0.6); /* Placeholders en blanco */
-}
-
-  
