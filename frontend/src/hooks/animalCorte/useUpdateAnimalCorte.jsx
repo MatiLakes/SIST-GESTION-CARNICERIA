@@ -1,14 +1,22 @@
-import { updateAnimalCorteService } from '@services/animalCorte.service.js'; // Asegúrate de que este servicio esté correcto
-import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert'; // Importar las funciones de SweetAlert
+import { updateAnimalCorteService } from '@services/animalCorte.service.js';
+import { showSuccessAlert } from '@helpers/sweetAlert';
 
 const useUpdateAnimalCorte = (fetchAnimalCortes) => {
   const handleUpdate = async (id, animalCorteData) => {
     try {
-      await updateAnimalCorteService(id, animalCorteData); // Actualiza el AnimalCorte
-      fetchAnimalCortes(); // Actualiza la lista de AnimalCortes después de la actualización
-      showSuccessAlert('Lista de precios actualizada con éxito'); // Mensaje de éxito
+      const [_, error] = await updateAnimalCorteService(id, animalCorteData);
+      if (error) {
+        console.error('Error al actualizar la lista de precios:', error);
+        // Propagar todos los errores al componente para que el formulario los muestre
+        throw new Error(error.message || 'Error al actualizar la lista de precios.');
+      }
+      
+      fetchAnimalCortes();
+      showSuccessAlert('¡Actualizado!', 'La lista de precios ha sido editada correctamente');
     } catch (error) {
-      showErrorAlert('Error', 'No se pudo actualizar el AnimalCorte'); // Mensaje de error
+      console.error('Error al actualizar la lista de precios:', error);
+      // Re-lanzar el error para que el componente lo maneje
+      throw error;
     }
   };
 

@@ -60,8 +60,22 @@ body, .container, .form, input, select, textarea, button, p {
     background-color: #fff;
 }
 
-.tipo-cuenta-select {
-    appearance: none;
+/* Quitar color azul al seleccionar los inputs */
+.formulario-table-input:focus,
+.tipo-cuenta-select:focus {
+    outline: none;
+    background-color: #fff;
+    border-color: #ddd;
+    box-shadow: none;
+}
+
+/* Quitar color azul de autofill en Chrome */
+.formulario-table-input:-webkit-autofill,
+.formulario-table-input:-webkit-autofill:hover,
+.formulario-table-input:-webkit-autofill:focus,
+.formulario-table-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #000 !important;
 }
 
 /* Botones */

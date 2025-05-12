@@ -78,7 +78,7 @@ export async function deleteAnimalCorteService(id) {
           return null;
       }
   } catch (error) {
-      console.error("Error al eliminar la categoría:", error.response?.data || error.message, error);
+      console.error("Error al eliminar:", error.response?.data || error.message, error);
       return null;
   }
 }

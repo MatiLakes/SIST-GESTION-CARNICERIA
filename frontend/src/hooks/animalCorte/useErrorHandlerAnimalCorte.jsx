@@ -2,107 +2,147 @@ import { useState } from "react";
 
 // Función para validar el nombre de la lista
 const validateNombreLista = (nombre) => {
-  if (!nombre || nombre.trim() === "") return "El nombre de la lista no puede estar vacío.";
-  if (nombre.length < 3) return "El nombre de la lista debe tener al menos 3 caracteres.";
-  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre)) return "El nombre de la lista solo puede contener letras y espacios.";
+  if (!nombre || nombre.trim() === "") {
+    return {
+      status: "Client error",
+      message: "El nombre de la lista no puede estar vacío.",
+      details: {}
+    };
+  }
+  if (nombre.length < 3) {
+    return {
+      status: "Client error",
+      message: "El nombre de la lista debe tener al menos 3 caracteres.",
+      details: {}
+    };
+  }
+  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre)) {
+    return {
+      status: "Client error",
+      message: "El nombre de la lista solo puede contener letras y espacios.",
+      details: {}
+    };
+  }
+  
   return null;
 };
 
-// Función para validar la cantidad (abastero)
+// Función para validar la cantidad
 const validateCantidad = (cantidad) => {
-  if (cantidad < 0) return "La cantidad no puede ser negativa.";
+  if (cantidad < 0) {
+    return {
+      status: "Client error",
+      message: "La cantidad no puede ser negativa.",
+      details: {}
+    };
+  }
   if (cantidad.toString().includes('.') && cantidad.toString().split('.')[1].length > 2) {
-    return "La cantidad debe tener como máximo 2 decimales.";
+    return {
+      status: "Client error",
+      message: "La cantidad debe tener como máximo 2 decimales.",
+      details: {}
+    };
   }
   return null;
 };
 
 // Función para validar el precio
 const validatePrecio = (precio) => {
-  if (precio < 0) return "El precio no puede ser negativo.";
-  if (!Number.isInteger(precio)) return "El precio debe ser un número entero.";
+  if (precio < 0) {
+    return {
+      status: "Client error",
+      message: "El precio no puede ser negativo.",
+      details: {}
+    };
+  }
+  if (precio.toString().includes('.') && precio.toString().split('.')[1].length > 2) {
+    return {
+      status: "Client error",
+      message: "El precio debe tener como máximo 2 decimales.",
+      details: {}
+    };
+  }
   return null;
 };
 
-// El hook devuelve los errores y las funciones para manejar cada uno de ellos.
 export const useErrorHandlerAnimalCorte = () => {
   const [createError, setCreateError] = useState(null);
   const [editError, setEditError] = useState(null);
-  const [deleteError, setDeleteError] = useState(null);
 
-  // Función para manejar errores de creación de un animal corte
-  const handleCreateError = (newAnimalCorteData) => {
-    const { nombreLista, abastero, precioAbastero } = newAnimalCorteData;
-
-    const errorMessages = {};
-
-    // Validar nombre de la lista
-    const nombreError = validateNombreLista(nombreLista);
-    if (nombreError) errorMessages.nombreLista = nombreError;
-
-    // Validar cantidad
-    const cantidadError = validateCantidad(abastero);
-    if (cantidadError) errorMessages.abastero = cantidadError;
-
-    // Validar precio
-    const precioError = validatePrecio(precioAbastero);
-    if (precioError) errorMessages.precioAbastero = precioError;
-
-    // Si hay errores, los mostramos
-    if (Object.keys(errorMessages).length > 0) {
-      setCreateError(errorMessages);
-      return true; // Retorna true si hay errores
-    }
-
-    setCreateError(null); // Limpiar errores si no hay problemas
-    return false;
-  };
-
-  // Función para manejar errores de edición
-  const handleEditError = (updatedAnimalCorteData) => {
-    const { nombreLista, abastero, precioAbastero } = updatedAnimalCorteData;
-
-    const errorMessages = {};
-
-    // Validar nombre de la lista
-    const nombreError = validateNombreLista(nombreLista);
-    if (nombreError) errorMessages.nombreLista = nombreError;
-
-    // Validar cantidad
-    const cantidadError = validateCantidad(abastero);
-    if (cantidadError) errorMessages.abastero = cantidadError;
-
-    // Validar precio
-    const precioError = validatePrecio(precioAbastero);
-    if (precioError) errorMessages.precioAbastero = precioError;
-
-    // Si hay errores, los mostramos
-    if (Object.keys(errorMessages).length > 0) {
-      setEditError(errorMessages);
-      return true; // Retorna true si hay errores
-    }
-
-    setEditError(null); // Limpiar errores si no hay problemas
-    return false;
-  };
-
-  // Función para manejar errores de eliminación
-  const handleDeleteError = (animalCorteToDelete) => {
-    if (!animalCorteToDelete || !animalCorteToDelete.id) {
-      setDeleteError("No se pudo eliminar el animal/corte. Inténtalo nuevamente.");
+  const handleCreateError = (data) => {
+    const nombreListaError = validateNombreLista(data.nombreLista);
+    if (nombreListaError) {
+      setCreateError(nombreListaError);
       return true;
     }
 
-    setDeleteError(null); // Limpiar error si no hay problemas
+    // Validar cantidades y precios
+    for (const [key, value] of Object.entries(data)) {
+      if (key.startsWith('precio') && value !== "") {
+        const precioError = validatePrecio(parseFloat(value));
+        if (precioError) {
+          setCreateError({
+            ...precioError,
+            message: `Error en ${key}: ${precioError.message}`
+          });
+          return true;
+        }
+      } else if (!key.startsWith('precio') && !key.startsWith('nombre') && value !== "") {
+        const cantidadError = validateCantidad(parseFloat(value));
+        if (cantidadError) {
+          setCreateError({
+            ...cantidadError,
+            message: `Error en ${key}: ${cantidadError.message}`
+          });
+          return true;
+        }
+      }
+    }
+
+    setCreateError(null);
+    return false;
+  };
+
+  const handleEditError = (data) => {
+    const nombreListaError = validateNombreLista(data.nombreLista);
+    if (nombreListaError) {
+      setEditError(nombreListaError);
+      return true;
+    }
+
+    // Validar cantidades y precios
+    for (const [key, value] of Object.entries(data)) {
+      if (key.startsWith('precio') && value !== "") {
+        const precioError = validatePrecio(parseFloat(value));
+        if (precioError) {
+          setEditError({
+            ...precioError,
+            message: `Error en ${key}: ${precioError.message}`
+          });
+          return true;
+        }
+      } else if (!key.startsWith('precio') && !key.startsWith('nombre') && value !== "") {
+        const cantidadError = validateCantidad(parseFloat(value));
+        if (cantidadError) {
+          setEditError({
+            ...cantidadError,
+            message: `Error en ${key}: ${cantidadError.message}`
+          });
+          return true;
+        }
+      }
+    }
+
+    setEditError(null);
     return false;
   };
 
   return {
     createError,
     editError,
-    deleteError,
     handleCreateError,
     handleEditError,
-    handleDeleteError,
+    setCreateError,
+    setEditError
   };
 };

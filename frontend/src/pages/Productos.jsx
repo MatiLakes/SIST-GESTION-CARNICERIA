@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import useGetProductos from "@hooks/productos/useGetProductos.jsx";
 import useCreateProducto from "@hooks/productos/useCreateProducto.jsx";
 import useDeleteProducto from "@hooks/productos/useDeleteProducto.jsx";
@@ -12,13 +11,14 @@ import useFilterProductosByNombre from "@hooks/productos/useFilterProductosByNom
 import useFilterProductosByMarca from "@hooks/productos/useFilterProductosByMarca.jsx";
 import useFilterProductosByTipo from "@hooks/productos/useFilterProductosByTipo.jsx";
 import { descargarExcel } from "@services/producto.service";
+import Table from "../components/Table";
+import Modal from "react-modal";
+import styles from "@styles/categoria.module.css";
+import "@styles/formulariotable.css";
 import Swal from "sweetalert2";
 
-
-import styles from "@styles/Producto.module.css";
-
 const Productos = () => {
-  const { productos, loading: loadingProductos, setProductos, fetchProductos } = useGetProductos();
+  const { productos, loading, setProductos, fetchProductos } = useGetProductos();
   const { marcas, fetchMarcas } = useGetMarcas();
   const { tipos, fetchTipos } = useGetTipos();
   const { filterByNombre } = useFilterProductosByNombre(setProductos);
@@ -33,17 +33,13 @@ const Productos = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentProducto, setCurrentProducto] = useState(null);
-
   const [isModalMarcaOpen, setIsModalMarcaOpen] = useState(false);
   const [isModalTipoOpen, setIsModalTipoOpen] = useState(false);
-
-  const [nombreFiltro, setNombreFiltro] = useState("");
-  const [marcaFiltro, setMarcaFiltro] = useState("");
-  const [tipoFiltro, setTipoFiltro] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productoToDelete, setProductoToDelete] = useState(null);
 
   const stableFetchMarcas = useCallback(fetchMarcas, []);
   const stableFetchTipos = useCallback(fetchTipos, []);
-
 
   useEffect(() => {
     stableFetchMarcas();
@@ -65,6 +61,39 @@ const Productos = () => {
   const openModalTipo = () => setIsModalTipoOpen(true);
   const closeModalTipo = () => setIsModalTipoOpen(false);
 
+  const handleDeleteModalOpen = (producto) => {
+    setProductoToDelete(producto);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+    setProductoToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (productoToDelete) {
+      try {
+        await remove(productoToDelete.id);
+        handleDeleteModalClose();
+        Swal.fire({
+          icon: "success",
+          title: "¡Eliminado!",
+          text: "El producto ha sido eliminado correctamente.",
+          confirmButtonColor: "#000000"
+        });
+      } catch (error) {
+        console.error("Error al eliminar producto:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo eliminar el producto.",
+          confirmButtonColor: "#000000"
+        });
+      }
+    }
+  };
+
   const handleCreateProducto = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -73,12 +102,12 @@ const Productos = () => {
     const precioVenta = parseFloat(formData.get("precioVenta"));
     const precioCompra = parseFloat(formData.get("precioCompra"));
   
-    // Validaciones
     if (stock < 0) {
       Swal.fire({
         icon: "error",
         title: "Error",
         text: "El stock no puede ser negativo.",
+        confirmButtonColor: "#000000"
       });
       return;
     }
@@ -88,6 +117,7 @@ const Productos = () => {
         icon: "error",
         title: "Error",
         text: "El precio de compra no puede ser mayor al precio de venta.",
+        confirmButtonColor: "#000000"
       });
       return;
     }
@@ -109,19 +139,21 @@ const Productos = () => {
   
     try {
       await createProducto(newProducto);
+      closeModal();
       Swal.fire({
         icon: "success",
-        title: "Éxito",
-        text: "Producto creado exitosamente.",
+        title: "¡Éxito!",
+        text: "Producto creado correctamente.",
+        confirmButtonColor: "#000000"
       });
-      closeModal();
     } catch (error) {
+      console.error("Error al crear el producto:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Ocurrió un error al crear el producto.",
+        text: "No se pudo crear el producto.",
+        confirmButtonColor: "#000000"
       });
-      console.error("Error al crear el producto:", error);
     }
   };
 
@@ -142,458 +174,477 @@ const Productos = () => {
     try {
       await edit(currentProducto.id, updatedProducto);
       closeEditModal();
+      Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: "Producto actualizado correctamente.",
+        confirmButtonColor: "#000000"
+      });
     } catch (error) {
       console.error("Error al editar producto:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo actualizar el producto.",
+        confirmButtonColor: "#000000"
+      });
     }
   };
 
-  const handleDeleteProducto = async (id) => {
-    const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "¡No podrás revertir esta acción!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-  
-    if (result.isConfirmed) {
-      try {
-        await remove(id);
-        Swal.fire({
-          icon: "success",
-          title: "Eliminado",
-          text: "El producto ha sido eliminado.",
-        });
-      } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Ocurrió un error al eliminar el producto.",
-        });
-        console.error("Error al eliminar producto:", error);
-      }
-    }
-  };
-  
+  if (loading) return <p>Cargando productos...</p>;
 
-  const handleSearch = () => {
-    filterByNombre(nombreFiltro);
-  };
+  console.log("Lista de productos:", productos);
 
-  const handleFilterByMarca = () => {
-    filterByMarca(marcaFiltro);
-  };
-
-  const handleFilterByTipo = () => {
-    filterByTipo(tipoFiltro);
-  };
-  
-  const resetFilters = () => {
-    setNombreFiltro("");
-    setMarcaFiltro("");
-    setTipoFiltro("");
-    fetchProductos(); // Volver a cargar todos los productos
-  };
-
-
-  if (loadingProductos) return <p className={styles.loading}>Cargando productos...</p>;
+  const columns = [
+    { header: "Nombre", key: "nombre" },
+    { header: "Variante", key: "variante" },
+    { header: "Precio Venta", key: "precioVenta" },
+    { header: "Precio Compra", key: "precioCompra" },
+    { header: "Stock", key: "stock" },
+    { header: "Fecha Vencimiento", key: "fechaVencimiento" },
+    { header: "Tipo", key: "tipo" },
+    { header: "Marca", key: "marca" }
+  ];
 
   return (
-    <div className={styles.container}>
-      <h1>Gestión de Productos</h1>
-      <div>
-      <div className={styles.filters}>
-        <input
-          className={styles.searchInput}
-          type="text"
-          value={nombreFiltro}
-          onChange={(e) => setNombreFiltro(e.target.value)}
-          placeholder="Buscar por nombre"
-        />
-        <button className={styles.searchButton} onClick={handleSearch}>
-          Buscar
-        </button>
+    <div className={styles["categoria-container"]}>
+      <Table
+        data={productos}
+        columns={columns}
+        headerTitle="Productos"
+        onCreate={openModal}
+        onEdit={openEditModal}
+        onDelete={handleDeleteModalOpen}
+        showEditAllButton={false}
+        showViewButton={false}
+        showCalendarButton={false}
+      />
 
-        <select
-          className={styles.filterSelect}
-          value={tipoFiltro}
-          onChange={(e) => setTipoFiltro(e.target.value)}
-        >
-          <option value="">Filtrar por tipo</option>
-          {tipos.map((tipo) => (
-            <option key={tipo.id} value={tipo.nombre}>
-              {tipo.nombre}
-            </option>
-          ))}
-        </select>
-        <button className={styles.filterButton} onClick={handleFilterByTipo}>
-          Filtrar
-        </button>
-
-        <select
-          className={styles.filterSelect}
-          value={marcaFiltro}
-          onChange={(e) => setMarcaFiltro(e.target.value)}
-        >
-          <option value="">Filtrar por marca</option>
-          {marcas.map((marca) => (
-            <option key={marca.id} value={marca.nombre}>
-              {marca.nombre}
-            </option>
-          ))}
-        </select>
-        <button className={styles.filterButton} onClick={handleFilterByMarca}>
-          Filtrar
-        </button>
-
-        <button className={styles.resetButton} onClick={resetFilters}>
-          Resetear Filtros
-        </button>
-      {/* Botón para exportar a Excel */}
-      <button className={styles.exportButton} onClick={descargarExcel}>
-            Exportar a Excel
-        </button>
-    </div>
-    </div>
-      <button className={styles.createButton} onClick={openModal}>
-        Crear nuevo producto
-      </button>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Variante</th>
-            <th>Precio Venta</th>
-            <th>Precio Compra</th>
-            <th>Stock</th>
-            <th>Fecha Vencimiento</th>
-            <th>Tipo</th>
-            <th>Marca</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-        {Array.isArray(productos) && productos.map((producto) => (
-            <tr key={producto.id}>
-              <td>{producto.nombre}</td>
-              <td>{producto.variante}</td>
-              <td>${producto.precioVenta}</td>
-              <td>${producto.precioCompra}</td>
-              <td>{producto.stock}</td>
-              <td>{producto.fechaVencimiento || "N/A"}</td>
-              <td>{producto.tipo.nombre}</td>
-              <td>{producto.marca.nombre}</td>
-              <td>
-                <button
-                  className={styles.iconButton}
-                  onClick={() => openEditModal(producto)}
-                >
-                  <FaEdit className={styles.editIcon} />
-                </button>
-                <button
-                  className={styles.iconButton}
-                  onClick={() =>
-                    handleDeleteProducto(producto.id)
-                  }
-                >
-                  <FaTrash className={styles.deleteIcon} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* Modal para crear producto */}
-      {isModalOpen && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <h2>Crear Nuevo Producto</h2>
-            <form onSubmit={handleCreateProducto}>
-  <div className={styles.formGroup}>
-    <label htmlFor="nombre">Nombre del Producto:</label>
-    <input type="text" id="nombre" name="nombre" required />
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="variante">Variante:</label>
-    <input type="text" id="variante" name="variante" />
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="precioVenta">Precio Venta:</label>
-    <input type="number" id="precioVenta" name="precioVenta" step="0.01" required />
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="precioCompra">Precio Compra:</label>
-    <input type="number" id="precioCompra" name="precioCompra" step="0.01" required />
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="stock">Stock:</label>
-    <input type="number" id="stock" name="stock" required />
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="fechaVencimiento">Fecha de Vencimiento:</label>
-    <input type="date" id="fechaVencimiento" name="fechaVencimiento" />
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="tipo">Tipo:</label>
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <select id="tipo" name="tipo" required>
-        {tipos.map((tipo) => (
-          <option key={tipo.id} value={tipo.id}>
-            {tipo.nombre}
-          </option>
-        ))}
-      </select>
-      <button
-        type="button"
-        className={styles.addButton}
-        onClick={openModalTipo}
+      {/* Modal de Creación */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Crear Producto"
+        ariaHideApp={false}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
       >
-        +
-      </button>
-    </div>
-  </div>
-  <div className={styles.formGroup}>
-    <label htmlFor="marca">Marca:</label>
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <select id="marca" name="marca" required>
-        {marcas.map((marca) => (
-          <option key={marca.id} value={marca.id}>
-            {marca.nombre}
-          </option>
-        ))}
-      </select>
-      <button
-        type="button"
-        className={styles.addButton}
-        onClick={openModalMarca}
-      >
-        +
-      </button>
-    </div>
-  </div>
-  <div className={styles.formActions}>
-    <button type="submit" className={styles.saveButton}>
-      Guardar
-    </button>
-    <button
-      type="button"
-      className={styles.cancelButton}
-      onClick={closeModal}
-    >
-      Cancelar
-    </button>
-  </div>
-</form>
+        <h2 className="formulario-table-modal-title">Crear Nuevo Producto</h2>
+        <form onSubmit={handleCreateProducto} className="formulario-table-formulario-table">
+          <div className="formulario-table-field-group">
+            <label htmlFor="nombre">Nombre del Producto:</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              required
+              className="formulario-table-input"
+            />
           </div>
-        </div>
-      )}
+          <div className="formulario-table-field-group">
+            <label htmlFor="variante">Variante:</label>
+            <input
+              type="text"
+              id="variante"
+              name="variante"
+              className="formulario-table-input"
+            />
+          </div>
+          <div className="formulario-table-field-group">
+            <label htmlFor="precioVenta">Precio Venta:</label>
+            <input
+              type="number"
+              id="precioVenta"
+              name="precioVenta"
+              step="0.01"
+              required
+              className="formulario-table-input"
+            />
+          </div>
+          <div className="formulario-table-field-group">
+            <label htmlFor="precioCompra">Precio Compra:</label>
+            <input
+              type="number"
+              id="precioCompra"
+              name="precioCompra"
+              step="0.01"
+              required
+              className="formulario-table-input"
+            />
+          </div>
+          <div className="formulario-table-field-group">
+            <label htmlFor="stock">Stock:</label>
+            <input
+              type="number"
+              id="stock"
+              name="stock"
+              required
+              className="formulario-table-input"
+            />
+          </div>
+          <div className="formulario-table-field-group">
+            <label htmlFor="fechaVencimiento">Fecha de Vencimiento:</label>
+            <input
+              type="date"
+              id="fechaVencimiento"
+              name="fechaVencimiento"
+              className="formulario-table-input"
+            />
+          </div>
+          <div className="formulario-table-field-group">
+            <label htmlFor="tipo">Tipo:</label>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <select
+                id="tipo"
+                name="tipo"
+                required
+                className="formulario-table-input"
+              >
+                {tipos.map((tipo) => (
+                  <option key={tipo.id} value={tipo.id}>
+                    {tipo.nombre}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="formulario-table-btn-add"
+                onClick={openModalTipo}
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="formulario-table-field-group">
+            <label htmlFor="marca">Marca:</label>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <select
+                id="marca"
+                name="marca"
+                required
+                className="formulario-table-input"
+              >
+                {marcas.map((marca) => (
+                  <option key={marca.id} value={marca.id}>
+                    {marca.nombre}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="formulario-table-btn-add"
+                onClick={openModalMarca}
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="formulario-table-form-actions">
+            <button type="submit" className="formulario-table-btn-confirm">
+              Crear
+            </button>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="formulario-table-btn-cancel"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </Modal>
 
-      {/* Modal para editar producto */}
-{isEditModalOpen && currentProducto && (
-  <div className={styles.modal}>
-    <div className={styles.modalContent}>
-      <h2>Editar Producto</h2>
-      <form onSubmit={handleEditProducto}>
-        <div className={styles.formGroup}>
-          <label htmlFor="nombre">Nombre del Producto:</label>
-          <input
-            type="text"
-            id="nombre"
-            name="nombre"
-            defaultValue={currentProducto.nombre}
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="variante">Variante:</label>
-          <input
-            type="text"
-            id="variante"
-            name="variante"
-            defaultValue={currentProducto.variante}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="precioVenta">Precio Venta:</label>
-          <input
-            type="number"
-            id="precioVenta"
-            name="precioVenta"
-            defaultValue={currentProducto.precioVenta}
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="precioCompra">Precio Compra:</label>
-          <input
-            type="number"
-            id="precioCompra"
-            name="precioCompra"
-            defaultValue={currentProducto.precioCompra}
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="stock">Stock:</label>
-          <input
-            type="number"
-            id="stock"
-            name="stock"
-            defaultValue={currentProducto.stock}
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="fechaVencimiento">Fecha de Vencimiento:</label>
-          <input
-            type="date"
-            id="fechaVencimiento"
-            name="fechaVencimiento"
-            defaultValue={currentProducto.fechaVencimiento || ""}
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="tipo">Tipo:</label>
-          <select
-            id="tipo"
-            name="tipo"
-            defaultValue={currentProducto.tipo.id}
-            required
-          >
-            {tipos.map((tipo) => (
-              <option key={tipo.id} value={tipo.id}>
-                {tipo.nombre}
-              </option>
-            ))}
-          </select>
+      {/* Modal de Edición */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onRequestClose={closeEditModal}
+        contentLabel="Editar Producto"
+        ariaHideApp={false}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+      >
+        <h2 className="formulario-table-modal-title">Editar Producto</h2>
+        {currentProducto && (
+          <form onSubmit={handleEditProducto} className="formulario-table-formulario-table">
+            <div className="formulario-table-field-group">
+              <label htmlFor="nombre">Nombre del Producto:</label>
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                defaultValue={currentProducto.nombre}
+                required
+                className="formulario-table-input"
+              />
+            </div>
+            <div className="formulario-table-field-group">
+              <label htmlFor="variante">Variante:</label>
+              <input
+                type="text"
+                id="variante"
+                name="variante"
+                defaultValue={currentProducto.variante}
+                className="formulario-table-input"
+              />
+            </div>
+            <div className="formulario-table-field-group">
+              <label htmlFor="precioVenta">Precio Venta:</label>
+              <input
+                type="number"
+                id="precioVenta"
+                name="precioVenta"
+                defaultValue={currentProducto.precioVenta}
+                step="0.01"
+                required
+                className="formulario-table-input"
+              />
+            </div>
+            <div className="formulario-table-field-group">
+              <label htmlFor="precioCompra">Precio Compra:</label>
+              <input
+                type="number"
+                id="precioCompra"
+                name="precioCompra"
+                defaultValue={currentProducto.precioCompra}
+                step="0.01"
+                required
+                className="formulario-table-input"
+              />
+            </div>
+            <div className="formulario-table-field-group">
+              <label htmlFor="stock">Stock:</label>
+              <input
+                type="number"
+                id="stock"
+                name="stock"
+                defaultValue={currentProducto.stock}
+                required
+                className="formulario-table-input"
+              />
+            </div>
+            <div className="formulario-table-field-group">
+              <label htmlFor="fechaVencimiento">Fecha de Vencimiento:</label>
+              <input
+                type="date"
+                id="fechaVencimiento"
+                name="fechaVencimiento"
+                defaultValue={currentProducto.fechaVencimiento || ""}
+                className="formulario-table-input"
+              />
+            </div>
+            <div className="formulario-table-field-group">
+              <label htmlFor="tipo">Tipo:</label>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <select
+                  id="tipo"
+                  name="tipo"
+                  defaultValue={currentProducto.tipo.id}
+                  required
+                  className="formulario-table-input"
+                >
+                  {tipos.map((tipo) => (
+                    <option key={tipo.id} value={tipo.id}>
+                      {tipo.nombre}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="formulario-table-btn-add"
+                  onClick={openModalTipo}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="formulario-table-field-group">
+              <label htmlFor="marca">Marca:</label>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <select
+                  id="marca"
+                  name="marca"
+                  defaultValue={currentProducto.marca.id}
+                  required
+                  className="formulario-table-input"
+                >
+                  {marcas.map((marca) => (
+                    <option key={marca.id} value={marca.id}>
+                      {marca.nombre}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="formulario-table-btn-add"
+                  onClick={openModalMarca}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="formulario-table-form-actions">
+              <button type="submit" className="formulario-table-btn-confirm">
+                Guardar
+              </button>
+              <button
+                type="button"
+                onClick={closeEditModal}
+                className="formulario-table-btn-cancel"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      {/* Modal de Eliminación */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={handleDeleteModalClose}
+        contentLabel="Eliminar Producto"
+        ariaHideApp={false}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+      >
+        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar este producto?</h2>
+        <div className="formulario-table-form-actions">
           <button
-            type="button"
-            className={styles.addButton}
-            onClick={openModalTipo}
+            onClick={confirmDelete}
+            className="formulario-table-btn-confirm"
           >
-            +
-          </button>
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="marca">Marca:</label>
-          <select
-            id="marca"
-            name="marca"
-            defaultValue={currentProducto.marca.id}
-            required
-          >
-            {marcas.map((marca) => (
-              <option key={marca.id} value={marca.id}>
-                {marca.nombre}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            className={styles.addButton}
-            onClick={openModalMarca}
-          >
-            +
-          </button>
-        </div>
-        <div className={styles.formActions}>
-          <button type="submit" className={styles.saveButton}>
-            Guardar Cambios
+            Eliminar
           </button>
           <button
-            type="button"
-            className={styles.cancelButton}
-            onClick={closeEditModal}
+            onClick={handleDeleteModalClose}
+            className="formulario-table-btn-cancel"
           >
             Cancelar
           </button>
         </div>
-      </form>
-    </div>
-  </div>
-)}
+      </Modal>
 
       {/* Modal para crear tipo */}
-      {isModalTipoOpen && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <h2>Ingresa un nuevo Tipo</h2>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const tipoNombre = e.target.tipoNombre.value;
-                try {
-                  await createTipo({ nombre: tipoNombre });
-                  closeModalTipo();
-                  fetchTipos(); // Actualiza la lista de tipos
-                } catch (error) {
-                  console.error("Error al crear tipo:", error);
-                }
-              }}
-            >
-              <div className={styles.formGroup}>
-                <label htmlFor="tipoNombre">Nombre del Tipo:</label>
-                <input type="text" id="tipoNombre" name="tipoNombre" required />
-              </div>
-              <div className={styles.formActions}>
-                <button type="submit" className={styles.saveButton}>
-                  Guardar
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={closeModalTipo}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isModalTipoOpen}
+        onRequestClose={closeModalTipo}
+        contentLabel="Crear Tipo"
+        ariaHideApp={false}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+      >
+        <h2 className="formulario-table-modal-title">Crear Nuevo Tipo</h2>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const tipoNombre = e.target.tipoNombre.value;
+            try {
+              await createTipo({ nombre: tipoNombre });
+              closeModalTipo();
+              fetchTipos();
+              Swal.fire({
+                icon: "success",
+                title: "¡Éxito!",
+                text: "Tipo creado correctamente.",
+                confirmButtonColor: "#000000"
+              });
+            } catch (error) {
+              console.error("Error al crear tipo:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se pudo crear el tipo.",
+                confirmButtonColor: "#000000"
+              });
+            }
+          }}
+          className="formulario-table-formulario-table"
+        >
+          <div className="formulario-table-field-group">
+            <label htmlFor="tipoNombre">Nombre del Tipo:</label>
+            <input
+              type="text"
+              id="tipoNombre"
+              name="tipoNombre"
+              required
+              className="formulario-table-input"
+            />
           </div>
-        </div>
-      )}
+          <div className="formulario-table-form-actions">
+            <button type="submit" className="formulario-table-btn-confirm">
+              Crear
+            </button>
+            <button
+              type="button"
+              onClick={closeModalTipo}
+              className="formulario-table-btn-cancel"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Modal para crear marca */}
-      {isModalMarcaOpen && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <h2>Ingresa una nueva Marca</h2>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const marcaNombre = e.target.marcaNombre.value;
-                try {
-                  await createMarca({ nombre: marcaNombre });
-                  closeModalMarca();
-                  fetchMarcas(); // Actualiza la lista de marcas
-                } catch (error) {
-                  console.error("Error al crear marca:", error);
-                }
-              }}
-            >
-              <div className={styles.formGroup}>
-                <label htmlFor="marcaNombre">Nombre de la Marca:</label>
-                <input type="text" id="marcaNombre" name="marcaNombre" required />
-              </div>
-              <div className={styles.formActions}>
-                <button type="submit" className={styles.saveButton}>
-                  Guardar
-                </button>
-                <button
-                  type="button"
-                  className={styles.cancelButton}
-                  onClick={closeModalMarca}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isModalMarcaOpen}
+        onRequestClose={closeModalMarca}
+        contentLabel="Crear Marca"
+        ariaHideApp={false}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+      >
+        <h2 className="formulario-table-modal-title">Crear Nueva Marca</h2>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const marcaNombre = e.target.marcaNombre.value;
+            try {
+              await createMarca({ nombre: marcaNombre });
+              closeModalMarca();
+              fetchMarcas();
+              Swal.fire({
+                icon: "success",
+                title: "¡Éxito!",
+                text: "Marca creada correctamente.",
+                confirmButtonColor: "#000000"
+              });
+            } catch (error) {
+              console.error("Error al crear marca:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "No se pudo crear la marca.",
+                confirmButtonColor: "#000000"
+              });
+            }
+          }}
+          className="formulario-table-formulario-table"
+        >
+          <div className="formulario-table-field-group">
+            <label htmlFor="marcaNombre">Nombre de la Marca:</label>
+            <input
+              type="text"
+              id="marcaNombre"
+              name="marcaNombre"
+              required
+              className="formulario-table-input"
+            />
           </div>
-        </div>
-      )}
+          <div className="formulario-table-form-actions">
+            <button type="submit" className="formulario-table-btn-confirm">
+              Crear
+            </button>
+            <button
+              type="button"
+              onClick={closeModalMarca}
+              className="formulario-table-btn-cancel"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { useGetAnimalCorte } from "@hooks/animalCorte/useGetAnimalCorte";
 import { useCreateAnimalCorte } from "@hooks/animalCorte/useCreateAnimalCorte";
 import { useDeleteAnimalCorte } from "@hooks/animalCorte/useDeleteAnimalCorte";
 import { useUpdateAnimalCorte } from "@hooks/animalCorte/useUpdateAnimalCorte";
+import { useErrorHandlerAnimalCorte } from "@hooks/animalCorte/useErrorHandlerAnimalCorte";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
@@ -16,6 +17,7 @@ const VerAnimalListaCorte = () => {
   const { handleCreate } = useCreateAnimalCorte(fetchAnimalCortes);
   const { handleDelete } = useDeleteAnimalCorte(fetchAnimalCortes);
   const { handleUpdate } = useUpdateAnimalCorte(fetchAnimalCortes);
+  const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerAnimalCorte();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -164,12 +166,17 @@ const VerAnimalListaCorte = () => {
     precioTapaposta: "",
     malaya: "",
     precioMalaya: "" });
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     if (animalCortes && animalCortes[0]) {
       console.log("Datos obtenidos:", animalCortes[0]);
     }
   }, [animalCortes]);
+
+  const handleConfirmation = (callback) => {
+    callback();
+  };
 
   const handleDeleteClick = (animalCorte) => {
     setAnimalCorteToDelete(animalCorte);
@@ -182,9 +189,10 @@ const VerAnimalListaCorte = () => {
   };
 
   const confirmDelete = () => {
-    handleDelete(animalCorteToDelete.id);
-    setIsDeleteModalOpen(false);
-    setAnimalCorteToDelete(null);
+    handleDelete(animalCorteToDelete.id)
+      .then(() => {
+        setIsDeleteModalOpen(false);
+      });
   };
 
   const handleUpdateClick = (animalCorte) => {
@@ -271,64 +279,159 @@ const VerAnimalListaCorte = () => {
 
   const handleCreateModalChange = (e) => {
     setNewAnimalCorteData({ ...newAnimalCorteData, [e.target.name]: e.target.value });
-  };
+  };  
 
   const handleCreateModalSubmit = (e) => {
     e.preventDefault();
-  
-    // Asegúrate de que todos los valores necesarios sean números válidos
+
     const validatedData = { ...newAnimalCorteData };
     for (let key in validatedData) {
       if (validatedData[key] === '') {
-        validatedData[key] = 0; // Si es vacío, asigna 0
+        validatedData[key] = 0;
       }
     }
-  
-    // Validar el campo nombreLista antes de crear
-    if (!validateFields(validatedData)) {
-      return; // Si la validación falla, no continúa con el proceso
-    }
-  
-    handleCreate(validatedData);
-    setNewAnimalCorteData({ nombreLista: "" });
-    setIsCreateModalOpen(false);
+
+    // Usar el hook de manejo de errores
+    const hasErrors = handleCreateError(validatedData);
+    if (hasErrors) {
+      setFormError(createError);
+      return;
+    }    
+
+    setFormError(null);
+    handleCreate(validatedData)
+      .then(() => {
+        // Solo cerramos el modal y reseteamos si la creación fue exitosa
+        setIsCreateModalOpen(false);
+        setFormError(null);
+        setNewAnimalCorteData({
+          nombreLista: "",
+          abastero: "",
+          precioAbastero: "",
+          asadoTira: "",
+          precioAsadoTira: "",
+          asadoCarnicero: "",
+          precioAsadoCarnicero: "",
+          asiento: "",
+          precioAsiento: "",
+          choclillo: "",
+          precioChoclillo: "",
+          cogote: "",
+          precioCogote: "",
+          entraña: "",
+          precioEntraña: "",
+          filete: "",
+          precioFilete: "",
+          ganso: "",
+          precioGanso: "",
+          huachalomo: "",
+          precioHuachalomo: "",
+          lomoLiso: "",
+          precioLomoLiso: "",
+          lomoVetado: "",
+          precioLomoVetado: "",
+          palanca: "",
+          precioPalanca: "",
+          plateada: "",
+          precioPlateada: "",
+          polloBarriga: "",
+          precioPolloBarriga: "",
+          polloGanso: "",
+          precioPolloGanso: "",
+          postaNegra: "",
+          precioPostaNegra: "",
+          postaPaleta: "",
+          precioPostaPaleta: "",
+          postaRosada: "",
+          precioPostaRosada: "",
+          puntaGanso: "",
+          precioPuntaGanso: "",
+          puntaPicana: "",
+          precioPuntaPicana: "",
+          puntaPaleta: "",
+          precioPuntaPaleta: "",
+          sobrecostilla: "",
+          precioSobrecostilla: "",
+          tapabarriga: "",
+          precioTapabarriga: "",
+          tapapecho: "",
+          precioTapapecho: "",
+          huesoCarnudo: "",
+          precioHuesoCarnudo: "",
+          huesoCConCarne: "",
+          precioHuesoCConCarne: "",
+          pataVacuno: "",
+          precioPataVacuno: "",
+          huachalomoOlla: "",
+          precioHuachalomoOlla: "",
+          cazuelaPaleta: "",
+          precioCazuelaPaleta: "",
+          osobuco: "",
+          precioOsobuco: "",
+          lagarto: "",
+          precioLagarto: "",
+          costillaVacuno: "",
+          precioCostillaVacuno: "",
+          tapaposta: "",
+          precioTapaposta: "",
+          malaya: "",
+          precioMalaya: ""
+        });
+      })
+      .catch(error => {
+        const errorMessage = error.message === "Ya existe un tipo de animal con este nombre de lista."
+          ? `Ya existe un tipo de animal con el nombre "${validatedData.nombreLista}"`
+          : "El nombre de la lista ya existe.";
+
+        setFormError({
+          field: 'nombreLista',
+          message: errorMessage
+        });
+      });
   };
 
   const handleEditChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleEditSubmit = (e) => {
+  };  const handleEditSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validar antes de enviar los datos de edición
-    if (!validateFields(formData)) {
-      return; // Si la validación falla, no continúa con el proceso
-    }
-    
-    if (animalCorteToEdit) {
-      handleUpdate(animalCorteToEdit.id, formData);
-      setIsEditModalOpen(false);
-    }
-  };
 
-  const validateFields = (data) => {
-    // Validación de nombreLista (mínimo 3 caracteres y solo letras y espacios)
-    const regex = /^[A-Za-z\s]+$/; // Expresión regular para permitir solo letras y espacios
+    // Validar los datos antes de proceder
+    const validatedData = { ...formData };
+    for (let key in validatedData) {
+      if (validatedData[key] === '') {
+        validatedData[key] = 0;
+      }
+    }
     
-    if (data.nombreLista.length < 3) {
-      Swal.fire("Error", "El nombre de la lista debe tener al menos 3 caracteres.", "error");
-      return false;
+    // Usar el hook de manejo de errores
+    const hasErrors = handleEditError(validatedData);
+    if (hasErrors) {
+      setFormError(editError);
+      return;
     }
-  
-    if (!regex.test(data.nombreLista)) {
-      Swal.fire("Error", "El nombre de la lista solo puede contener letras y espacios.", "error");
-      return false;
+    
+    setFormError("");
+
+    if (animalCorteToEdit) {
+      try {
+        await handleUpdate(animalCorteToEdit.id, validatedData);
+        // Solo cerramos el modal y limpiamos el form si la actualización fue exitosa
+        setIsEditModalOpen(false);
+        setFormData({
+          nombreLista: ""
+        });
+      } catch (error) {
+        const errorData = {
+          status: "Client error",
+          message: error.message === "Ya existe un tipo de animal con este nombre de lista." 
+            ? `Ya existe un tipo de animal con el nombre "${validatedData.nombreLista}"`
+            : "El nombre de la lista de precio está siendo utilizado en otra parte.",
+          details: {}
+        };
+        setFormError(errorData);
+      }
     }
-  
-    return true;
   };
-  
   const handleViewClick = (animalCorte) => {
     setAnimalCorteToView(animalCorte);
     setIsViewModalOpen(true);
@@ -338,6 +441,7 @@ const VerAnimalListaCorte = () => {
     setIsViewModalOpen(false);
     setAnimalCorteToView(null);
   };
+
 
   if (loading) return <p>Cargando cortes de animales...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -364,19 +468,23 @@ const VerAnimalListaCorte = () => {
         showCalendarButton = {false}
       />
 
-      {/* Modal de Creación */}
-      <Modal
+      {/* Modal de Creación */}      <Modal
         isOpen={isCreateModalOpen}
-        onRequestClose={() => setIsCreateModalOpen(false)}
+        onRequestClose={() => {
+          setIsCreateModalOpen(false);
+          setFormError("");
+        }}
         contentLabel="Añadir Corte de Animal"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
       >
         <h2 className="formulario-table-modal-title">Añadir lista de Precios</h2>
+        {formError && <div className="error-message" style={{color: 'red', marginBottom: '10px', textAlign: 'center'}}>
+          {typeof formError === 'object' ? formError.message : formError}
+        </div>}
         <form onSubmit={handleCreateModalSubmit} className="formulario-table-formulario-table">
-        <div className="formulario-table-field-group">
-                <label htmlFor="nombreLista">Nombre de la lista:</label>
+        <div className="formulario-table-field-group">                <label htmlFor="nombreLista">Nombre de la lista:</label>
                 <input
                   type="text"
                   id="nombreLista"
@@ -386,14 +494,19 @@ const VerAnimalListaCorte = () => {
                   required
                   className="formulario-table-input"
                 />
+                {createError?.message && createError.field === 'nombreLista' && (
+                  <div className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    {createError.message}
+                  </div>
+                )}
               </div>
   
               <div className="formulario-table-form-group">
   <div className="formulario-table-field-group">
-    <label htmlFor="cantidadAbastecedor">Cantidad Abastecedor:</label>
+    <label htmlFor="abastero">Cantidad Abastero:</label>
     <input
       type="number"
-      id="cantidadAbastecedor"
+      id="abastero"
       name="abastero"
       value={newAnimalCorteData.abastero || 0} 
       onChange={handleCreateModalChange}
@@ -402,21 +515,31 @@ const VerAnimalListaCorte = () => {
       step="0.1"
       className="formulario-table-input"
     />
+    {createError?.abastero && (
+      <div className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+        {createError.abastero}
+      </div>
+    )}
   </div>
 
   <div className="formulario-table-field-group">
-    <label htmlFor="precioAbastero">Precio Abastecedor:</label>
+    <label htmlFor="precioAbastero">Precio Abastero:</label>
     <input
       type="number"
       id="precioAbastero"
-      name="PrecioAbastero"
-      value={newAnimalCorteData.PrecioAbastero || 0} 
+      name="precioAbastero"
+      value={newAnimalCorteData.precioAbastero || 0} 
       onChange={handleCreateModalChange}
       required
       min="0"
       step="1"
       className="formulario-table-input"
     />
+    {createError?.precioAbastero && (
+      <div className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+        {createError.precioAbastero}
+      </div>
+    )}
   </div>
   </div>
   
@@ -1531,7 +1654,6 @@ const VerAnimalListaCorte = () => {
     </div>
     </div>
     
-    
 
 
 
@@ -1555,19 +1677,23 @@ const VerAnimalListaCorte = () => {
 
 
 
- {/* Modal de Edición */}
-      <Modal
+ {/* Modal de Edición */}      <Modal
         isOpen={isEditModalOpen}
-        onRequestClose={() => setIsEditModalOpen(false)}
+        onRequestClose={() => {
+          setIsEditModalOpen(false);
+          setFormError("");
+        }}
         contentLabel="Añadir Corte de Animal"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
       >
         <h2 className="formulario-table-modal-title">Editar lista de Precios</h2>
+        {formError && <div className="error-message" style={{color: 'red', marginBottom: '10px'}}>
+          {typeof formError === 'object' ? formError.message : formError}
+        </div>}
         <form onSubmit={handleEditSubmit} className="formulario-table-formulario-table">
-        <div className="formulario-table-field-group">
-                <label htmlFor="nombreLista">Nombre de la lista:</label>
+        <div className="formulario-table-field-group">                <label htmlFor="nombreLista">Nombre de la lista:</label>
                 <input
                   type="text"
                   id="nombreLista"
@@ -1577,6 +1703,11 @@ const VerAnimalListaCorte = () => {
                   required
                   className="formulario-table-input"
                 />
+                {editError?.message && editError.field === 'nombreLista' && (
+                  <div className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    {editError.message}
+                  </div>
+                )}
               </div>
   
               <div className="formulario-table-form-group">

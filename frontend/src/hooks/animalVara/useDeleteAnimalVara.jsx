@@ -1,23 +1,20 @@
-import { deleteAnimalVaraService } from '@services/animalVara.service.js'; // Asegúrate de que este servicio esté correcto
-import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetAlert'; // Importar las funciones de SweetAlert
+import { deleteAnimalVaraService } from '@services/animalVara.service.js';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
 const useDeleteAnimalVara = (fetchAnimalVaras) => {
   const handleDelete = async (id) => {
     try {
-      const result = await deleteDataAlert(); // Mostrar alerta para confirmar la eliminación
-      if (result && result.isConfirmed) {
-        const response = await deleteAnimalVaraService(id); // Eliminar el AnimalVara directamente
-        if (response.status >= 400) { // Verificar si hubo un error con la eliminación
-          return showErrorAlert('Error', response.data?.message || 'Error desconocido');
-        }
-        showSuccessAlert('¡Eliminado!', 'La AnimalVara ha sido eliminada correctamente.');
-        fetchAnimalVaras(); // Actualizamos la lista de AnimalVaras después de la eliminación
-      } else {
-        showErrorAlert('Cancelado', 'La operación ha sido cancelada.');
+      const response = await deleteAnimalVaraService(id);
+      if (!response || response.error) {
+        showErrorAlert('Error de referencia', 'La vara no puede eliminarse porque está siendo utilizada en otra parte.');
+        return;
       }
+      
+      showSuccessAlert('¡Eliminado!', 'La vara ha sido eliminada correctamente');
+      fetchAnimalVaras();
     } catch (error) {
-      console.error('Error al eliminar la AnimalVara:', error);
-      showErrorAlert('Error de referencia', 'La AnimalVara no puede eliminarse porque está siendo utilizada en otra parte.');
+      console.error('Error al eliminar la vara:', error);
+      showErrorAlert('Error de referencia', 'La vara no puede eliminarse porque está siendo utilizada en otra parte.');
     }
   };
 

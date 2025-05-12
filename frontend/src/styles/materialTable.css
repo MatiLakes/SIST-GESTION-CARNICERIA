@@ -102,16 +102,19 @@ body[data-navbar-collapsed="true"] .table-container {
   border-radius: 4px;
   font-size: 0.9rem;
   width: 200px;
+  color: black; /* Color del texto negro */
+  background-color: white; /* Fondo blanco para mejor contraste */
 }
 
 /* Cambiar color del placeholder */
 .search-input::placeholder {
-  color: #3a3939; /* Cambia este valor al color que prefieras */
+  color: #3a3939; /* Color oscuro para el placeholder */
 }
 
 .search-input:focus {
-  background-color: rgba(218, 218, 218, 0.767);
-  outline: none; /* Eliminar el contorno predeterminado */
+  background-color: white;
+  outline: none;
+  border-color: #ddd;
 }
 
 .page-input {

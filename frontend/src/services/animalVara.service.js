@@ -69,14 +69,17 @@ export async function deleteAnimalVaraService(id) {
   try {
     const response = await axios.delete(`/animal-vara/${id}`);
     if (response.status === 200) {
-      return [response.data.message, null];
-    } else {
-      console.error("Error inesperado en la respuesta:", response);
-      return [null, "Error inesperado en la respuesta"];
+      return response.data;
     }
+    return null;
   } catch (error) {
-    console.error("Error al eliminar la vara de animal:", error.response?.data || error.message);
-    return [null, error.response?.data || error.message];
+    console.error("Error al eliminar:", error.response?.data || error.message);
+    if (error.response?.status === 400) {
+      return {
+        error: error.response.data.error || 'La vara no puede eliminarse porque está siendo utilizada en registros relacionados'
+      };
+    }
+    return null;
   }
 }
 

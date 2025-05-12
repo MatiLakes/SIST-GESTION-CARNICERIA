@@ -1,22 +1,19 @@
-import { deleteAnimalCorteService } from '@services/animalCorte.service.js'; // Asegúrate de que este servicio esté correcto
-import { showErrorAlert, showSuccessAlert, deleteDataAlert } from '@helpers/sweetAlert'; // Importar las funciones de SweetAlert
+import { deleteAnimalCorteService } from '@services/animalCorte.service.js';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert';
 
 const useDeleteAnimalCorte = (fetchAnimalCortes) => {
   const handleDelete = async (id) => {
     try {
-      const result = await deleteDataAlert(); // Mostrar alerta para confirmar la eliminación
-      if (result && result.isConfirmed) {
-        const response = await deleteAnimalCorteService(id); // Eliminar el AnimalCorte directamente
-        if (response.status >= 400) { // Verificar si hubo un error con la eliminación
-          return showErrorAlert('Error', response.data?.message || 'Error desconocido');
-        }
-        showSuccessAlert('¡Eliminado!', 'El AnimalCorte ha sido eliminado correctamente.');
-        fetchAnimalCortes(); // Actualizamos la lista de AnimalCortes después de la eliminación
-      } else {
-        showErrorAlert('Cancelado', 'La operación ha sido cancelada.');
+      const response = await deleteAnimalCorteService(id);
+      if (!response || response.error) {
+        showErrorAlert('Error de referencia', 'La lista de precio no puede eliminarse porque está siendo utilizado en otra parte.');
+        return;
       }
+      
+      showSuccessAlert('¡Eliminado!', 'La lista de precios ha sido eliminada correctamente');
+      fetchAnimalCortes();
     } catch (error) {
-      console.error('Error al eliminar el AnimalCorte:', error);
+      console.error('Error al eliminar la lista de precios:', error);
       showErrorAlert('Error de referencia', 'La lista de precio no puede eliminarse porque está siendo utilizado en otra parte.');
     }
   };
