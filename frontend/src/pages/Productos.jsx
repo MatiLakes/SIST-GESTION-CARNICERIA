@@ -199,7 +199,7 @@ const Productos = () => {
     { header: "Nombre", key: "nombre" },
     { header: "Variante", key: "variante" },
     { header: "Precio Venta", key: "precioVenta" },
-    { header: "Precio Compra", key: "precioCompra" },
+    { header: "Precio Compra", key: "precioCompra" },    
     { header: "Stock", key: "stock" },
     { header: "Fecha Vencimiento", key: "fechaVencimiento" },
     { header: "Tipo", key: "tipo" },
@@ -217,7 +217,7 @@ const Productos = () => {
         onDelete={handleDeleteModalOpen}
         showEditAllButton={false}
         showViewButton={false}
-        showCalendarButton={false}
+        showCalendarButton={true}
       />
 
       {/* Modal de Creación */}

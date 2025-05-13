@@ -12,7 +12,7 @@
   padding: 20px;
   box-sizing: border-box;
   overflow-x: auto;
-  min-height: calc(100vh - 9vh);
+  min-height: calc(100vh - 13vh);
   height: auto;
   background-color: #ffffff;
   position: relative;
@@ -440,14 +440,17 @@ body[data-navbar-collapsed="true"] .table-container {
 .calendar-overlay {
   position: absolute;
   z-index: 999; /* Asegura que el calendario esté sobre la tabla */
-  
-
-  
-  /* Para centrar el calendario en su contenedor */
-  left: 30%; /* Lo coloca al 50% desde el borde izquierdo */
+  left: 34%; /* Ajusta la posición inicial */
   transform: translateX(-50%); /* Ajusta el centro para que se alinee perfectamente */
   top: 60px; /* Ajusta la posición vertical según lo necesites */
+  transition: left var(--transition-speed) ease; /* Añadir transición suave */
 }
+
+/* Ajuste cuando la navbar está contraída */
+body[data-navbar-collapsed="true"] .calendar-overlay {
+  left: 30%;
+}
+
 
 /* Botón de filtro de fecha */
 .calendar-icon-button {

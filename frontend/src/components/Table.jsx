@@ -77,7 +77,9 @@ const Table = ({
           row.fechaLlegada,
           row.fecha_llegada,
           row.fecha_vencimiento,
-          row.otraFecha // Añadir otras fechas si es necesario
+          row.fechaVencimiento,
+          row.fechaFaena,
+          row.fechaEntrega
         ];
 
         // Recorre las fechas y verifica si alguna de ellas es válida y coincide con la fecha seleccionada
@@ -108,7 +110,6 @@ const Table = ({
     updatedData[rowIndex][columnKey] = value;
     setFilteredData(updatedData);
   };
-
   const formatObject = (obj) => {
     if (Array.isArray(obj)) {
       return obj.map((item, index) => (
@@ -117,6 +118,18 @@ const Table = ({
         </div>
       ));
     } else if (typeof obj === "object" && obj !== null) {
+      // Si el objeto tiene una propiedad nombre, mostrar solo el nombre
+      if (obj.nombre !== undefined) {
+        return obj.nombre;
+      }
+      // Si es una cadena que contiene id: y nombre:, extraer solo el nombre
+      if (typeof obj.toString === 'function') {
+        const str = obj.toString();
+        if (str.includes('id:') && str.includes('nombre:')) {
+          const match = str.match(/nombre:\s*([^,}]+)/);
+          if (match) return match[1].trim();
+        }
+      }
       return Object.entries(obj)
         .map(([key, value]) => `${key}: ${value}`)
         .join(", ");

@@ -1,10 +1,12 @@
 /* Contenedor principal */
 .container {
+    background-color: #f4f6f8; /* Gris claro, estilo moderno de sistemas */
+    min-height: 100vh;
+    height: 100%;
+
     display: flex;
+    justify-content: center;
     flex-direction: column;
-    margin-left: 60px; /* Ajuste inicial para la navbar cerrada */
-    transition: margin-left 0.3s ease;
-    padding: 20px;
   }
   
   /* Título */
