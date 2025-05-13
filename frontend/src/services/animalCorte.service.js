@@ -64,8 +64,6 @@ export async function updateAnimalCorteService(id, animalCorte) {
   }
 }
 
-
-
 // Eliminar una categoría
 export async function deleteAnimalCorteService(id) {
   try {
@@ -82,4 +80,24 @@ export async function deleteAnimalCorteService(id) {
       return null;
   }
 }
+
+export const descargarExcel = async () => {
+  try {
+    const response = await axios.get("/animal-corte/exportar/excel", {
+      responseType: "blob", // Importante para manejar archivos binarios
+    });
+
+    // Crear URL para el blob y descargar
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "lista-cortes.xlsx");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (error) {
+    console.error("Error al descargar el archivo Excel:", error);
+    throw new Error("Error al descargar el archivo Excel");
+  }
+};
 

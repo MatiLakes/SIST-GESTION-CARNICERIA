@@ -239,6 +239,26 @@ body[data-navbar-collapsed="true"] .table-container {
   background-color: #d32f2f;
 }
 
+/* Estilo del botón Excel */
+.excel-button-table {
+  font-size: 15px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: auto;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  /* Ajustes de posición */
+  padding: 12px 12px; /* Mismo padding que los botones de paginación */
+  margin-right: auto; /* Empuja los otros elementos a la derecha */
+}
+
+
+
 /* Ajuste del contenedor de botones */
 .buttons-container {
   display: flex;
@@ -438,7 +458,6 @@ body[data-navbar-collapsed="true"] .table-container {
   }
 }
 
-
 /* Estilo cuando no se encuentran resultados */
 .no-results {
   text-align: center;
@@ -449,9 +468,16 @@ body[data-navbar-collapsed="true"] .table-container {
 
 .paginacion-table {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* Cambiado de flex-end a space-between */
   align-items: center;
   margin-top: 50px;
+  width: 100%; /* Asegura que ocupe todo el ancho */
+}
+
+/* Contenedor para los botones de paginación */
+.pagination-buttons {
+  display: flex;
+  align-items: center;
 }
 
 /* Estilo de los botones de paginación */
@@ -656,7 +682,6 @@ body[data-navbar-collapsed="true"] .table-container {
 body[data-navbar-collapsed="true"] .calendar-overlay {
   left: 30%;
 }
-
 
 /* Botón de filtro de fecha */
 .calendar-icon-button {

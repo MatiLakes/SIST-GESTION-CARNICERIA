@@ -196,7 +196,7 @@ const handleEditSubmit = (e) => {
     if (error) return <p>Error: {error}</p>;
 
     return (
-        <div className={styles["categoria-container"]}>
+        <div className={styles["categoria-container"]}>            
             <Table
                 data={varasData}
                 columns={columns}
@@ -206,7 +206,9 @@ const handleEditSubmit = (e) => {
                 onDelete={handleDeleteClick}
                 showEditAllButton={false}
                 showViewButton={false}
-                showCalendarButton = {true}
+                showCalendarButton={true}
+                showExcelButton={true}
+                entidad="animal-vara"
                 customFormat={(value) => (value?.nombreLista ? value.nombreLista : value)}
             />
 

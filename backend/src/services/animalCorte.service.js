@@ -1,6 +1,7 @@
 "use strict";
 import AnimalCorte from "../entity/AnimalCortes.entity.js";
 import { AppDataSource } from "../config/configDb.js";
+import ExcelJS from "exceljs";
 
 export async function createAnimalCorteService(data) {
     try {
@@ -136,7 +137,7 @@ export async function getAllAnimalCortesService() {
     }
   }
 
-  export async function getAnimalCorteByIdService(id) {
+export async function getAnimalCorteByIdService(id) {
     try {
       const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
   
@@ -149,4 +150,176 @@ export async function getAllAnimalCortesService() {
       console.error("Error al obtener AnimalCorte por ID:", error.message);
       return [null, "Error interno del servidor"];
     }
-  }
+}
+
+export const animalCorteService = {
+    async generarExcelAnimalCortes() {
+        try {
+            const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
+            const animalCortes = await animalCorteRepository.find();
+
+            // Crear el workbook y la hoja
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet("Lista de Cortes");            // Definir las columnas
+            worksheet.columns = [
+                { header: "ID", key: "id", width: 10 },
+                { header: "Nombre Lista", key: "nombreLista", width: 30 },
+                { header: "Abastero", key: "abastero", width: 15 },
+                { header: "Precio Abastero", key: "precioAbastero", width: 15 },
+                { header: "Asado Tira", key: "asadoTira", width: 15 },
+                { header: "Precio Asado Tira", key: "precioAsadoTira", width: 15 },
+                { header: "Asado Carnicero", key: "asadoCarnicero", width: 15 },
+                { header: "Precio Asado Carnicero", key: "precioAsadoCarnicero", width: 15 },
+                { header: "Asiento", key: "asiento", width: 15 },
+                { header: "Precio Asiento", key: "precioAsiento", width: 15 },
+                { header: "Choclillo", key: "choclillo", width: 15 },
+                { header: "Precio Choclillo", key: "precioChoclillo", width: 15 },
+                { header: "Cogote", key: "cogote", width: 15 },
+                { header: "Precio Cogote", key: "precioCogote", width: 15 },
+                { header: "Entraña", key: "entraña", width: 15 },
+                { header: "Precio Entraña", key: "precioEntraña", width: 15 },
+                { header: "Filete", key: "filete", width: 15 },
+                { header: "Precio Filete", key: "precioFilete", width: 15 },
+                { header: "Ganso", key: "ganso", width: 15 },
+                { header: "Precio Ganso", key: "precioGanso", width: 15 },
+                { header: "Huachalomo", key: "huachalomo", width: 15 },
+                { header: "Precio Huachalomo", key: "precioHuachalomo", width: 15 },
+                { header: "Lomo Liso", key: "lomoLiso", width: 15 },
+                { header: "Precio Lomo Liso", key: "precioLomoLiso", width: 15 },
+                { header: "Lomo Vetado", key: "lomoVetado", width: 15 },
+                { header: "Precio Lomo Vetado", key: "precioLomoVetado", width: 15 },
+                { header: "Palanca", key: "palanca", width: 15 },
+                { header: "Precio Palanca", key: "precioPalanca", width: 15 },
+                { header: "Plateada", key: "plateada", width: 15 },
+                { header: "Precio Plateada", key: "precioPlateada", width: 15 },
+                { header: "Pollo Barriga", key: "polloBarriga", width: 15 },
+                { header: "Precio Pollo Barriga", key: "precioPolloBarriga", width: 15 },
+                { header: "Pollo Ganso", key: "polloGanso", width: 15 },
+                { header: "Precio Pollo Ganso", key: "precioPolloGanso", width: 15 },
+                { header: "Posta Negra", key: "postaNegra", width: 15 },
+                { header: "Precio Posta Negra", key: "precioPostaNegra", width: 15 },
+                { header: "Posta Paleta", key: "postaPaleta", width: 15 },
+                { header: "Precio Posta Paleta", key: "precioPostaPaleta", width: 15 },
+                { header: "Posta Rosada", key: "postaRosada", width: 15 },
+                { header: "Precio Posta Rosada", key: "precioPostaRosada", width: 15 },
+                { header: "Punta Ganso", key: "puntaGanso", width: 15 },
+                { header: "Precio Punta Ganso", key: "precioPuntaGanso", width: 15 },
+                { header: "Punta Picana", key: "puntaPicana", width: 15 },
+                { header: "Precio Punta Picana", key: "precioPuntaPicana", width: 15 },
+                { header: "Punta Paleta", key: "puntaPaleta", width: 15 },
+                { header: "Precio Punta Paleta", key: "precioPuntaPaleta", width: 15 },
+                { header: "Sobrecostilla", key: "sobrecostilla", width: 15 },
+                { header: "Precio Sobrecostilla", key: "precioSobrecostilla", width: 15 },
+                { header: "Tapabarriga", key: "tapabarriga", width: 15 },
+                { header: "Precio Tapabarriga", key: "precioTapabarriga", width: 15 },
+                { header: "Tapapecho", key: "tapapecho", width: 15 },
+                { header: "Precio Tapapecho", key: "precioTapapecho", width: 15 },
+                { header: "Hueso Carnudo", key: "huesoCarnudo", width: 15 },
+                { header: "Precio Hueso Carnudo", key: "precioHuesoCarnudo", width: 15 },
+                { header: "Hueso Con Carne", key: "huesoCConCarne", width: 15 },
+                { header: "Precio Hueso Con Carne", key: "precioHuesoCConCarne", width: 15 },
+                { header: "Pata Vacuno", key: "pataVacuno", width: 15 },
+                { header: "Precio Pata Vacuno", key: "precioPataVacuno", width: 15 },
+                { header: "Huachalomo Olla", key: "huachalomoOlla", width: 15 },
+                { header: "Precio Huachalomo Olla", key: "precioHuachalomoOlla", width: 15 },
+                { header: "Cazuela Paleta", key: "cazuelaPaleta", width: 15 },
+                { header: "Precio Cazuela Paleta", key: "precioCazuelaPaleta", width: 15 },
+                { header: "Osobuco", key: "osobuco", width: 15 },
+                { header: "Precio Osobuco", key: "precioOsobuco", width: 15 },
+                { header: "Lagarto", key: "lagarto", width: 15 },
+                { header: "Precio Lagarto", key: "precioLagarto", width: 15 },
+                { header: "Costilla Vacuno", key: "costillaVacuno", width: 15 },
+                { header: "Precio Costilla Vacuno", key: "precioCostillaVacuno", width: 15 },
+                { header: "Tapaposta", key: "tapaposta", width: 15 },
+                { header: "Precio Tapaposta", key: "precioTapaposta", width: 15 },
+                { header: "Malaya", key: "malaya", width: 15 },
+                { header: "Precio Malaya", key: "precioMalaya", width: 15 }
+            ];            // Agregar las filas
+            animalCortes.forEach((corte) => {
+                worksheet.addRow({
+                    id: corte.id,
+                    nombreLista: corte.nombreLista || "N/A",
+                    abastero: corte.abastero || "N/A",
+                    precioAbastero: corte.precioAbastero || "N/A",
+                    asadoTira: corte.asadoTira || "N/A",
+                    precioAsadoTira: corte.precioAsadoTira || "N/A",
+                    asadoCarnicero: corte.asadoCarnicero || "N/A",
+                    precioAsadoCarnicero: corte.precioAsadoCarnicero || "N/A",
+                    asiento: corte.asiento || "N/A",
+                    precioAsiento: corte.precioAsiento || "N/A",
+                    choclillo: corte.choclillo || "N/A",
+                    precioChoclillo: corte.precioChoclillo || "N/A",
+                    cogote: corte.cogote || "N/A",
+                    precioCogote: corte.precioCogote || "N/A",
+                    entraña: corte.entraña || "N/A",
+                    precioEntraña: corte.precioEntraña || "N/A",
+                    filete: corte.filete || "N/A",
+                    precioFilete: corte.precioFilete || "N/A",
+                    ganso: corte.ganso || "N/A",
+                    precioGanso: corte.precioGanso || "N/A",
+                    huachalomo: corte.huachalomo || "N/A",
+                    precioHuachalomo: corte.precioHuachalomo || "N/A",
+                    lomoLiso: corte.lomoLiso || "N/A",
+                    precioLomoLiso: corte.precioLomoLiso || "N/A",
+                    lomoVetado: corte.lomoVetado || "N/A",
+                    precioLomoVetado: corte.precioLomoVetado || "N/A",
+                    palanca: corte.palanca || "N/A",
+                    precioPalanca: corte.precioPalanca || "N/A",
+                    plateada: corte.plateada || "N/A",
+                    precioPlateada: corte.precioPlateada || "N/A",
+                    polloBarriga: corte.polloBarriga || "N/A",
+                    precioPolloBarriga: corte.precioPolloBarriga || "N/A",
+                    polloGanso: corte.polloGanso || "N/A",
+                    precioPolloGanso: corte.precioPolloGanso || "N/A",
+                    postaNegra: corte.postaNegra || "N/A",
+                    precioPostaNegra: corte.precioPostaNegra || "N/A",
+                    postaPaleta: corte.postaPaleta || "N/A",
+                    precioPostaPaleta: corte.precioPostaPaleta || "N/A",
+                    postaRosada: corte.postaRosada || "N/A",
+                    precioPostaRosada: corte.precioPostaRosada || "N/A",
+                    puntaGanso: corte.puntaGanso || "N/A",
+                    precioPuntaGanso: corte.precioPuntaGanso || "N/A",
+                    puntaPicana: corte.puntaPicana || "N/A",
+                    precioPuntaPicana: corte.precioPuntaPicana || "N/A",
+                    puntaPaleta: corte.puntaPaleta || "N/A",
+                    precioPuntaPaleta: corte.precioPuntaPaleta || "N/A",
+                    sobrecostilla: corte.sobrecostilla || "N/A",
+                    precioSobrecostilla: corte.precioSobrecostilla || "N/A",
+                    tapabarriga: corte.tapabarriga || "N/A",
+                    precioTapabarriga: corte.precioTapabarriga || "N/A",
+                    tapapecho: corte.tapapecho || "N/A",
+                    precioTapapecho: corte.precioTapapecho || "N/A",
+                    huesoCarnudo: corte.huesoCarnudo || "N/A",
+                    precioHuesoCarnudo: corte.precioHuesoCarnudo || "N/A",
+                    huesoCConCarne: corte.huesoCConCarne || "N/A",
+                    precioHuesoCConCarne: corte.precioHuesoCConCarne || "N/A",
+                    pataVacuno: corte.pataVacuno || "N/A",
+                    precioPataVacuno: corte.precioPataVacuno || "N/A",
+                    huachalomoOlla: corte.huachalomoOlla || "N/A",
+                    precioHuachalomoOlla: corte.precioHuachalomoOlla || "N/A",
+                    cazuelaPaleta: corte.cazuelaPaleta || "N/A",
+                    precioCazuelaPaleta: corte.precioCazuelaPaleta || "N/A",
+                    osobuco: corte.osobuco || "N/A",
+                    precioOsobuco: corte.precioOsobuco || "N/A",
+                    lagarto: corte.lagarto || "N/A",
+                    precioLagarto: corte.precioLagarto || "N/A",
+                    costillaVacuno: corte.costillaVacuno || "N/A",
+                    precioCostillaVacuno: corte.precioCostillaVacuno || "N/A",
+                    tapaposta: corte.tapaposta || "N/A",
+                    precioTapaposta: corte.precioTapaposta || "N/A",
+                    malaya: corte.malaya || "N/A",
+                    precioMalaya: corte.precioMalaya || "N/A"
+                });
+            });
+
+            // Estilizar la cabecera
+            worksheet.getRow(1).font = { bold: true };
+
+            // Retornar el workbook
+            return workbook;
+        } catch (error) {
+            console.error("Error al generar el Excel de lista de cortes:", error);
+            throw new Error("No se pudo generar el archivo Excel de lista de cortes.");
+        }
+    }
+};

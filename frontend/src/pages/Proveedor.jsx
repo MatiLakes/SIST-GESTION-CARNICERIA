@@ -245,7 +245,7 @@ const Proveedores = () => {
         onDelete={handleDeleteClick}
         showEditAllButton={false}
         showViewButton={false}
-        showCalendarButton = {false}
+        entidad="proveedores"
       />
 
       {/* Modal de Creación */}

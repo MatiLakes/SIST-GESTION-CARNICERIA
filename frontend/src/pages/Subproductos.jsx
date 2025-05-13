@@ -164,8 +164,9 @@ const Subproductos = () => {
         onCreate={openModal}
         onEdit={openEditModal}
         onDelete={handleDelete}
-        onView={handleViewDetails}
         showEditAllButton={false}
+        showViewButton={false}
+        entidad="subproductos"
       />
 
       {/* Modal para creación */}

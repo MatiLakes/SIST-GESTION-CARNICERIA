@@ -10,7 +10,6 @@ import useCreateTipo from "@hooks/productos/useCreateTipo.jsx";
 import useFilterProductosByNombre from "@hooks/productos/useFilterProductosByNombre.jsx";
 import useFilterProductosByMarca from "@hooks/productos/useFilterProductosByMarca.jsx";
 import useFilterProductosByTipo from "@hooks/productos/useFilterProductosByTipo.jsx";
-import { descargarExcel } from "@services/producto.service";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
@@ -218,6 +217,7 @@ const Productos = () => {
         showEditAllButton={false}
         showViewButton={false}
         showCalendarButton={true}
+        entidad="productos"
       />
 
       {/* Modal de Creación */}

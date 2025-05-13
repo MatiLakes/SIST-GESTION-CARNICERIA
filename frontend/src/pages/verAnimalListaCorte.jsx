@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+  import React, { useEffect, useState } from "react";
 import { useGetAnimalCorte } from "@hooks/animalCorte/useGetAnimalCorte";
 import { useCreateAnimalCorte } from "@hooks/animalCorte/useCreateAnimalCorte";
 import { useDeleteAnimalCorte } from "@hooks/animalCorte/useDeleteAnimalCorte";
@@ -459,13 +459,15 @@ const VerAnimalListaCorte = () => {
         onCreate={handleCreateClick}
         onEdit={handleUpdateClick}
         onDelete={handleDeleteClick}
-        onView={handleViewClick} // Pasa la función onView
+        onView={handleViewClick}
         showEditAllButton={false}
         showEditButton={true}
         showDeleteButton={true}
         showCreateButton={true}
-        showViewButton={true} // Asegúrate de mostrar el botón de "Ver"
-        showCalendarButton = {false}
+        showViewButton={true}
+        showCalendarButton={false}
+        showExcelButton={true}
+        entidad="animal-corte"
       />
 
       {/* Modal de Creación */}      <Modal

@@ -78,7 +78,7 @@ export const deleteProducto = async (id) => {
 
 export const descargarExcel = async () => {
     try {
-      const response = await axiosInstance.get("http://localhost:3050/api/productos/exportar/excel", {
+      const response = await axiosInstance.get("/productos/exportar/excel", {
         responseType: "blob", // Necesario para manejar archivos
       });
   

@@ -136,6 +136,7 @@ const Pedidos = () => {
         onDelete={handleDeleteModalOpen}
         showEditAllButton={false}
         showViewButton={false}
+        entidad="pedidos"
       />
 
       {/* Modal de Creación */}

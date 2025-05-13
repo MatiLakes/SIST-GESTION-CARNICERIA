@@ -4,10 +4,12 @@ import { AiTwotoneDelete } from "react-icons/ai";
 import { MdOutlineEdit } from "react-icons/md";
 import { IoAddSharp } from "react-icons/io5";
 import { FaRegEye } from "react-icons/fa";
+import { FaFileExcel } from "react-icons/fa6"; // Importar ícono de Excel
 import 'bootstrap-icons/font/bootstrap-icons.css'; // Importación de Bootstrap Icons
 import DatePicker, { registerLocale } from "react-datepicker";
 import { es } from 'date-fns/locale'; // <-- Idioma español
 import "react-datepicker/dist/react-datepicker.css";
+import { descargarExcel } from "@services/excel.service";
 
 // Registra el idioma español
 registerLocale('es', es);
@@ -25,8 +27,10 @@ const Table = ({
   showDeleteButton = true,
   showEditAllButton = true,
   showViewButton = true,
-  customFormat = null, // Nueva prop para formatear datos de forma personalizada
   showCalendarButton = true, // Prop para controlar la visibilidad del botón de calendario
+  showExcelButton = true, // Nueva prop para controlar la visibilidad del botón de exportar a Excel
+  entidad = "", // Nueva prop para identificar la entidad
+  customFormat = null, // Nueva prop para formatear datos de forma personalizada
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState(data);
@@ -214,8 +218,7 @@ const Table = ({
               </button>
             )}
           </div>
-          <div className="buttons-container">
-            {showCreateButton && (
+          <div className="buttons-container">            {showCreateButton && (
               <button onClick={onCreate} className="create-button-table">
                 <IoAddSharp /> Crear
               </button>
@@ -302,37 +305,45 @@ const Table = ({
                   No se encontraron resultados.
                 </td>
               </tr>
-            )}
-          </tbody>
+            )}          </tbody>
         </table>
-        {totalPages > 1 && (
-          <div className="paginacion-table">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="pagina-button"
+        <div className="paginacion-table">          {showExcelButton && entidad && (
+            <button 
+              onClick={() => descargarExcel(entidad)} 
+              className="excel-button-table"
             >
-              Anterior
+              Exportar Excel
             </button>
-            <input
-              type="number"
-              value={pageInput}
-              onChange={handlePageInputChange}
-              onBlur={goToPage}
-              className="page-input"
-              min="1"
-              max={totalPages}
-            />
-            <span>de {totalPages}</span>
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="pagina-button"
-            >
-              Siguiente
-            </button>
-          </div>
-        )}
+          )}
+          {totalPages > 1 && (
+            <div className="pagination-buttons">
+              <button
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="pagina-button"
+              >
+                Anterior
+              </button>
+              <input
+                type="number"
+                value={pageInput}
+                onChange={handlePageInputChange}
+                onBlur={goToPage}
+                className="page-input"
+                min="1"
+                max={totalPages}
+              />
+              <span>de {totalPages}</span>
+              <button
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="pagina-button"
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
