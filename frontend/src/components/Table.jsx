@@ -148,8 +148,12 @@ const Table = ({
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    // Asegurarse de que el número de página esté dentro de los límites
+    const validPage = Math.max(1, Math.min(pageNumber, totalPages));
+    setCurrentPage(validPage);
+    setPageInput(validPage);
+  };
 
   const handlePageInputChange = (event) => {
     const page = Math.max(

@@ -4,9 +4,9 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState, useEffect } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox } from "react-icons/fa"; // Agregado FaBox para productos
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
-import { GiMilkCarton } from 'react-icons/gi';
+import { GiMilkCarton } from "react-icons/gi";
 
 const Navbar2 = () => {
   const navigate = useNavigate();
@@ -17,8 +17,7 @@ const Navbar2 = () => {
   const [subMenuOpen, setSubMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Actualizar el atributo data-navbar-collapsed en el body
-    document.body.setAttribute('data-navbar-collapsed', !menuOpen);
+    document.body.setAttribute("data-navbar-collapsed", !menuOpen);
   }, [menuOpen]);
 
   const logoutSubmit = () => {
@@ -48,7 +47,7 @@ const Navbar2 = () => {
   };
 
   const toggleMenu = () => {
-    setMenuOpen(prev => !prev);
+    setMenuOpen((prev) => !prev);
     if (subMenuOpen) {
       setSubMenuOpen(false);
     }
@@ -70,106 +69,47 @@ const Navbar2 = () => {
             {userRole === "administrador" && (
               <>
                 <li>
-                  <NavLink
-                    to="/home"
-                    className={location.pathname === "/home" ? "active" : ""}
-                  >
+                  <NavLink to="/home" className={location.pathname === "/home" ? "active" : ""}>
                     <FaHome className="nav-icon" />
                     <span>Inicio</span>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/animal-corte/listas-precios"
-                    className={location.pathname === "/animal-corte/listas-precios" ? "active" : ""}
-                  >
+                  <NavLink to="/animal-corte/listas-precios" className={location.pathname === "/animal-corte/listas-precios" ? "active" : ""}>
                     <FaListAlt className="nav-icon" />
                     <span>Listas de Precios</span>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/animal-vara/vara"
-                    className={location.pathname === "/animal-vara/vara" ? "active" : ""}
-                  >
+                  <NavLink to="/animal-vara/vara" className={location.pathname === "/animal-vara/vara" ? "active" : ""}>
                     <FaPlus className="nav-icon" />
                     <span>Vara</span>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/pedidos"
-                    className={location.pathname === "/pedidos" ? "active" : ""}
-                  >
+                  <NavLink to="/pedidos" className={location.pathname === "/pedidos" ? "active" : ""}>
                     <FaClipboardList className="nav-icon" />
                     <span>Pedidos</span>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/productos"
-                    className={location.pathname === "/productos" ? "active" : ""}
-                  >
+                  <NavLink to="/productos" className={location.pathname === "/productos" ? "active" : ""}>
                     <FaBox className="nav-icon" />
                     <span>Productos</span>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/subproductos"
-                    className={location.pathname === "/subproductos" ? "active" : ""}
-                  >
+                  <NavLink to="/subproductos" className={location.pathname === "/subproductos" ? "active" : ""}>
                     <FaBox className="nav-icon" />
                     <span>Subproductos</span>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                  
-                  to="/gestion-proveedores/proveedor"
-                  className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}
-                >
-                  <FaTruck className="nav-icon" />
-                  <span>Gestión de Proveedores</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  
-                  
-                    to="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      toggleSubMenu();
-                    }}
-                    className={subMenuOpen ? "active" : ""}
-                  >
-                    <GiMilkCarton className="nav-icon" />
-                    <span>Gestión de Productos</span>
+                  <NavLink to="/gestion-proveedores/proveedor" className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}>
+                    <FaTruck className="nav-icon" />
+                    <span>Gestión de Proveedores</span>
                   </NavLink>
                 </li>
-                {subMenuOpen && (
-                  <div className={`nav-submenu ${subMenuOpen ? "activado" : "oculta"}`}>
-                    <ul>
-                      <li>
-                        <NavLink
-                          to="/producto/carnico"
-                          className={location.pathname === "/producto/carnico" ? "active" : ""}
-                        >
-                          - Cárnico
-                        </NavLink>
-                      </li>
-                       <li>
-                      <NavLink
-                          to="/producto/categoria"
-                          className={location.pathname === "/producto/categoria" ? "active" : ""}
-                        >
-                          - Categoria
-                        </NavLink>
-                      </li>
-                    </ul>
-                  </div>
-                )}
               </>
             )}
             <li className="logout-item">

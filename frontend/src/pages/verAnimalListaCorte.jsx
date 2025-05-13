@@ -455,7 +455,7 @@ const VerAnimalListaCorte = () => {
       <Table
         data={animalCortes && animalCortes[0] ? animalCortes[0] : []}
         columns={columns}
-        headerTitle="Listas de precios"
+        headerTitle="Listas de Precios"
         onCreate={handleCreateClick}
         onEdit={handleUpdateClick}
         onDelete={handleDeleteClick}

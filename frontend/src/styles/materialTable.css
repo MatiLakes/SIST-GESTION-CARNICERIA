@@ -1,35 +1,39 @@
+/* Importar fuente para los títulos */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+
 :root {
   --navbar-width: 320px;
   --navbar-collapsed-width: 80px;
   --transition-speed: 0.3s;
+  --table-padding: 20px;
+  --table-mobile-padding: 10px;
 }
 
 /* Contenedor principal de la tabla */
 .table-container {
   width: calc(100% - var(--navbar-width));
-  margin-left: var(--navbar-width);
+  margin-left: calc(var(--navbar-width) + 10px);
   margin-top: 0;
-  padding: 20px;
+  padding: var(--table-padding);
   box-sizing: border-box;
   overflow-x: auto;
   min-height: calc(100vh - 13vh);
   height: auto;
   background-color: #ffffff;
   position: relative;
-  top: 9vh;
+  top: 4vh;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  max-width: 1600px;
-  position: relative; /* Añadir posicionamiento relativo */
-  top: 4vh; /* Ajustar a la altura del navbar superior */
-  left: 10px; /* Mover 10px a la derecha */
+  max-width: 1800px;
+  transition: all var(--transition-speed) ease;
+  -webkit-overflow-scrolling: touch; /* Mejora el scroll en iOS */
 }
 
 /* Cuando la navbar está contraída */
 body[data-navbar-collapsed="true"] .table-container {
   width: calc(100% - var(--navbar-collapsed-width));
-  margin-left: var(--navbar-collapsed-width);
+  margin-left: calc(var(--navbar-collapsed-width) + 20px);
   max-width: 1800px;
 }
 
@@ -44,8 +48,12 @@ body[data-navbar-collapsed="true"] .table-container {
 .table-container table {
   width: 100%;
   min-width: 800px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilo de las celdas */
@@ -59,16 +67,65 @@ body[data-navbar-collapsed="true"] .table-container {
 
 /* Estilo del encabezado */
 .table-container table th {
-  background-color: #f5f5f5;
-  font-weight: 600;
-  color: #333;
+  background-color: #000000;
+  font-weight: 700;
+  color: #f8f8f8;
   text-transform: uppercase;
   font-size: 0.8rem;
+  padding: 16px 15px;
+  border-bottom: none;
 }
 
-/* Estilo de las filas */
+/* Estilo de las filas y animación de selección */
+.table-container table tr {
+  position: relative;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
 .table-container table tr:hover {
-  background-color: #f8f9fa;
+  background-color: #fafafa;
+  transform: scale(1.002);
+}
+
+.table-container table tr:active {
+  background-color: #e9ecef;
+  transform: scale(0.998);
+}
+
+.table-container table tr.selected {
+  background-color: #e3f2fd;
+}
+
+.table-container table tr.selected td {
+  border-color: #90caf9;
+}
+
+.table-container table tr.Mui-selected,
+.table-container table tr.Mui-selected:hover {
+  background-color: rgba(25, 118, 210, 0.08);
+  transform: scale(1.002);
+}
+
+.table-container table tr.Mui-selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: #1976d2;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
 
 /* Estilo de las celdas para valores numéricos */
@@ -80,10 +137,28 @@ body[data-navbar-collapsed="true"] .table-container {
 
 /* Estilo del título */
 .table-titulo {
-  font-size: 2rem;
-  font-weight: 500;
-  color: #333;
-  margin: 0 0 20px 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+  padding: 12px 0;
+  text-align: left;
+  position: relative;
+  border-bottom: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-titulo::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 80px;
+  height: 2px;
+  background-color: #d32f2f;
 }
 
 /* Contenedor para el buscador y el botón Crear */
@@ -180,58 +255,189 @@ body[data-navbar-collapsed="true"] .table-container {
 /* Estilos responsivos */
 
 /* En pantallas más pequeñas */
-@media (max-width: 768px) {
+/* Tablets y pantallas medianas */
+@media (max-width: 1024px) {
   .table-container {
-    padding: 10px;
+    padding: calc(var(--table-padding) * 0.75);
     margin-left: var(--navbar-collapsed-width);
     width: calc(100% - var(--navbar-collapsed-width));
+    font-size: 0.95rem;
+  }
+
+  .search-and-create-container {
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    width: 250px;
+  }
+
+  .create-button-table {
+    margin-left: auto;
+  }
+
+  /* Mejorar legibilidad de la tabla */
+  .table-container table {
+    min-width: 700px;
+  }
+}
+
+/* Tablets pequeñas y móviles grandes */
+@media (max-width: 768px) {
+  .table-container {
+    padding: var(--table-mobile-padding);
+    margin: 0;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .table-titulo {
-    font-size: 20px;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 15px;
   }
 
-  .table-container table th,
-  .table-container table td {
-    padding: 10px;
+  .search-and-create-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 5px;
   }
 
-  .table-container table {
-    font-size: 14px;
+  .search-input {
+    width: calc(100% - 120px);
+    margin: 0;
+  }
+
+  .create-button-table {
+    width: auto;
+    margin: 0;
+  }
+
+  .buttons-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* Ajuste de iconos de acciones */
+  .acciones-table-container {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  /* Mejorar paginación en móviles */
+  .paginacion-table {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  /* Ajustar tamaño de los botones de acción */
+  .acciones-table.edit-button,
+  .acciones-table.delete-button,
+  .acciones-table.view-button {
+    padding: 8px;
+    margin: 0;
+  }
+}
+
+/* Dispositivos móviles */
+@media (max-width: 480px) {
+  .table-container {
+    padding: calc(var(--table-mobile-padding) / 2);
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  .table-titulo {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+
+  /* Layout de búsqueda y botones */
+  .search-and-create-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
   .search-input {
     width: 100%;
-    margin-bottom: 15px;
+    font-size: 0.9rem;
+    padding: 10px;
   }
 
   .create-button-table {
     width: 100%;
-    margin-top: 10px;
-  }
-}
-
-/* En pantallas muy pequeñas (móviles) */
-@media (max-width: 480px) {
-  .table-container {
+    font-size: 0.9rem;
     padding: 10px;
+    margin: 5px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  .table-titulo {
-    font-size: 18px;
+  /* Ajustes de la tabla */
+  .table-container table {
+    min-width: 500px;
+    font-size: 0.85rem;
   }
 
   .table-container table td,
   .table-container table th {
-    padding: 8px;
-    font-size: 12px;
+    padding: 8px 6px;
+    white-space: nowrap;
   }
 
-  .search-input {
-    width: 100%;
-    padding: 8px;
+  /* Botones de acciones más compactos */
+  .acciones-table-container {
+    gap: 4px;
+  }
+
+  .acciones-table.edit-button,
+  .acciones-table.delete-button,
+  .acciones-table.view-button {
+    padding: 6px;
+    font-size: 0.9rem;
+    height: 24px;
+    width: 24px;
+  }
+
+  /* Paginación más compacta */
+  .paginacion-table {
+    margin-top: 15px;
+    padding: 5px 0;
+  }
+
+  .paginacion-table button {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .page-input {
+    width: 35px;
+    padding: 4px;
+    font-size: 0.85rem;
+    margin: 0 4px;
+  }
+
+  .calendar-overlay {
+    left: 50%;
+  }
+
+  .calendar-icon {
+    font-size: 1.5rem;
   }
 }
+
 
 /* Estilo cuando no se encuentran resultados */
 .no-results {
