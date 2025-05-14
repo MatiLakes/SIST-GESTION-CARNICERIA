@@ -298,7 +298,7 @@ const handleEditSubmit = (e) => {
                 onRequestClose={() => setIsEditModalOpen(false)}
                 contentLabel="Editar Vara"
                 ariaHideApp={false}
-                className="formulario-table-modal-form-datos"
+                className="formulario-table-modal-form"
                 overlayClassName="formulario-table-overlay"
             >
                 <h2 className="formulario-table-modal-title">Editar Vara</h2>
