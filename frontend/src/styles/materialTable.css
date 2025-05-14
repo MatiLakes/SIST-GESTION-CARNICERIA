@@ -79,7 +79,6 @@ body[data-navbar-collapsed="true"] .table-container {
 /* Estilo de las filas y animación de selección */
 .table-container table tr {
   position: relative;
-  transition: all 0.2s ease;
   cursor: pointer;
   background-color: #ffffff;
 }

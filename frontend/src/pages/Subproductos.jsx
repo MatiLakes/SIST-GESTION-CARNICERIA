@@ -160,12 +160,13 @@ const Subproductos = () => {
       <Table
         data={subproductos}
         columns={columns}
-        headerTitle="Subproductos"
+        headerTitle="Subproductos"        
         onCreate={openModal}
         onEdit={openEditModal}
         onDelete={handleDelete}
+        onView={handleViewDetails}
         showEditAllButton={false}
-        showViewButton={false}
+        showViewButton={true}
         entidad="subproductos"
       />
 
