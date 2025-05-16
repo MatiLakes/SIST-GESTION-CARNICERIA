@@ -216,117 +216,99 @@ const Subproductos = () => {
         </form>
       </Modal>
 
-      {/* Modal de Edición */}
-      <Modal
+      {/* Modal de Edición */}      <Modal
         isOpen={isEditModalOpen}
         onRequestClose={closeEditModal}
         contentLabel="Editar Subproducto"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <h2 className="formulario-table-modal-title">Editar Subproducto</h2>
         {currentSubproducto && (
-          <form
-            onSubmit={handleEditSubproducto}
-            className="formulario-table-formulario-table"
-          >
-            {/* Los mismos campos que el modal de creación pero con valores por defecto */}
-            <div className="formulario-table-field-group">
-              <label htmlFor="fechaFaena">Fecha Faena:</label>
+          <form onSubmit={handleEditSubproducto} className="modal-crear-formulario">
+            <div className="modal-crear-header">
+              <h2 className="modal-crear-titulo">Editar Subproducto</h2>
+              <button type="button" onClick={closeEditModal} className="modal-crear-cerrar">×</button>
+              <button type="submit" className="modal-boton-crear">Guardar</button>
+            </div>
+
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Fecha Faena:</label>
               <input
                 type="date"
                 id="fechaFaena"
                 name="fechaFaena"
                 defaultValue={currentSubproducto.fechaFaena}
                 required
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="numeroAnimalesFaenados">Animales Faenados:</label>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Animales Faenados:</label>
               <input
                 type="number"
                 id="numeroAnimalesFaenados"
                 name="numeroAnimalesFaenados"
                 defaultValue={currentSubproducto.numeroAnimalesFaenados}
                 required
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="fechaEntrega">Fecha Entrega:</label>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Fecha Entrega:</label>
               <input
                 type="date"
                 id="fechaEntrega"
                 name="fechaEntrega"
                 defaultValue={currentSubproducto.fechaEntrega}
                 required
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
 
-            {[
-              "guata",
-              "corazon",
-              "cabezas",
-              "lenguas",
-              "chunchul",
-              "higado",
-              "rinon",
-              "patas",
-              "charcha",
-            ].map((item) => (
-              <div key={item} className="formulario-table-field-group">
-                <label htmlFor={`${item}Decomisados`}>
-                  Decomisados ({item}):
-                </label>
-                <input
-                  type="number"
-                  id={`${item}Decomisados`}
-                  name={`${item}Decomisados`}
-                  defaultValue={currentSubproducto[`${item}Decomisados`]}
-                  required
-                  className="formulario-table-input"
-                />
-                <label htmlFor={`${item}Entregados`}>Entregados ({item}):</label>
-                <input
-                  type="number"
-                  id={`${item}Entregados`}
-                  name={`${item}Entregados`}
-                  defaultValue={currentSubproducto[`${item}Entregados`]}
-                  required
-                  className="formulario-table-input"
-                />
-                <label htmlFor={`${item}Precio`}>Precio ({item}):</label>
-                <input
-                  type="number"
-                  id={`${item}Precio`}
-                  name={`precio${item.charAt(0).toUpperCase() + item.slice(1)}`}
-                  defaultValue={
-                    currentSubproducto[
-                      `precio${item.charAt(0).toUpperCase() + item.slice(1)}`
-                    ]
-                  }
-                  required
-                  className="formulario-table-input"
-                />
+            {["guata", "corazon", "cabezas", "lenguas", "chunchul", "higado", "rinon", "patas", "charcha"].map((item) => (
+              <div key={item} className="subproducto-fila">
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">{item.charAt(0).toUpperCase() + item.slice(1)}</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo">
+                    <label>Decomisados</label>
+                    <input
+                      type="number"
+                      id={`${item}Decomisados`}
+                      name={`${item}Decomisados`}
+                      defaultValue={currentSubproducto[`${item}Decomisados`]}
+                      required
+                      className="formulario-input"
+                    />
+                  </div>
+                  <div className="input-grupo">
+                    <label>Entregados</label>
+                    <input
+                      type="number"
+                      id={`${item}Entregados`}
+                      name={`${item}Entregados`}
+                      defaultValue={currentSubproducto[`${item}Entregados`]}
+                      required
+                      className="formulario-input"
+                    />
+                  </div>
+                  <div className="input-grupo">
+                    <label>Precio</label>
+                    <input
+                      type="number"
+                      id={`${item}Precio`}
+                      name={`precio${item.charAt(0).toUpperCase() + item.slice(1)}`}
+                      defaultValue={currentSubproducto[`precio${item.charAt(0).toUpperCase() + item.slice(1)}`]}
+                      required
+                      className="formulario-input"
+                    />
+                  </div>
+                </div>
               </div>
-            ))}
-
-            <div className="formulario-table-form-actions">
-              <button type="submit" className="formulario-table-btn-confirm">
-                Guardar Cambios
-              </button>
-              <button
-                type="button"
-                onClick={closeEditModal}
-                className="formulario-table-btn-cancel"
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
+            ))}          </form>
         )}
       </Modal>
 
@@ -338,20 +320,20 @@ const Subproductos = () => {
         ariaHideApp={false}
         className="modal-detalles"
         overlayClassName="modal-overlay"
-        closeTimeoutMS={300}
-      >        <div className="modal-detalles-header">          
-          <h2 className="modal-detalles-titulo">Detalles del Subproducto ID: {subproductoToView?.id}</h2>
-          <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
-          <button
-            onClick={() => {
-              openEditModal(subproductoToView);
-              handleViewModalClose();
-            }}
-            className="modal-detalles-editar"
-          >
-            <MdOutlineEdit size={24} />
-          </button>
-        </div>        {subproductoToView && (
+        closeTimeoutMS={300}      >        <div className="modal-crear-formulario">
+          <div className="modal-detalles-header">          
+            <h2 className="modal-detalles-titulo">Detalles del Subproducto ID: {subproductoToView?.id}</h2>
+            <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
+            <button
+              onClick={() => {
+                openEditModal(subproductoToView);
+                handleViewModalClose();
+              }}
+              className="modal-detalles-editar"
+            >
+              <MdOutlineEdit size={24} />
+            </button>
+          </div>          {subproductoToView && (
           <div className="modal-detalles-contenido">
             <div className="datos-grid">{[
                 "guata",
@@ -373,11 +355,11 @@ const Subproductos = () => {
                       ${subproductoToView[`precio${item.charAt(0).toUpperCase() + item.slice(1)}`] || 0}
                     </span>
                   </span>
-                </div>
-              ))}
+                </div>              ))}
             </div>
           </div>
         )}
+        </div>
       </Modal>
 
       {/* Modal de Eliminación */}      <Modal
@@ -389,7 +371,7 @@ const Subproductos = () => {
         overlayClassName="formulario-table-overlay"
         
       >
-        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar esta lista?</h2>
+        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar?</h2>
         <div className="formulario-table-form-actions">
           <button
             onClick={confirmDelete}

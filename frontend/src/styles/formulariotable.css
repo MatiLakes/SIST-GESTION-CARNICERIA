@@ -97,7 +97,7 @@ body, .container, .form, input, select, textarea, button, p {
 }
 
 .formulario-table-btn-confirm:hover {
-    background-color: darkred;
+    background-color: red;
 }
 
 /* Botón Cancelar */
@@ -108,7 +108,7 @@ body, .container, .form, input, select, textarea, button, p {
 }
 
 .formulario-table-btn-cancel:hover {
-    background-color: darkred;
+    background-color: black;
 }
 
 /* Contenedor de botones */
