@@ -1,14 +1,15 @@
-  import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetAnimalCorte } from "@hooks/animalCorte/useGetAnimalCorte";
 import { useCreateAnimalCorte } from "@hooks/animalCorte/useCreateAnimalCorte";
 import { useDeleteAnimalCorte } from "@hooks/animalCorte/useDeleteAnimalCorte";
 import { useUpdateAnimalCorte } from "@hooks/animalCorte/useUpdateAnimalCorte";
+import { MdOutlineEdit } from "react-icons/md";
 import { useErrorHandlerAnimalCorte } from "@hooks/animalCorte/useErrorHandlerAnimalCorte";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
 import "@styles/formulariotable.css";
-import "@styles/modaldatos.css";
+import "@styles/modalDetalles.css";
 
 import Swal from "sweetalert2";
 
@@ -480,6 +481,7 @@ const VerAnimalListaCorte = () => {
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
+        closeTimeoutMS={300}
       >
         <h2 className="formulario-table-modal-title">Añadir lista de Precios</h2>
         {formError && <div className="error-message" style={{color: 'red', marginBottom: '10px', textAlign: 'center'}}>
@@ -547,10 +549,10 @@ const VerAnimalListaCorte = () => {
   
     <div className="formulario-table-form-group">
     <div className="formulario-table-field-group">
-    <label htmlFor="cantidadAsadoTira">Cantidad Asado Tira:</label>
+    <label htmlFor="CantidadAsadoTira">Cantidad Asado Tira:</label>
     <input
     type="number"
-    id="cantidadAsadoTira"
+    id="CantidadAsadoTira"
     name="asadoTira"
     value={newAnimalCorteData.asadoTira || 0} 
     onChange={handleCreateModalChange}
@@ -1689,6 +1691,7 @@ const VerAnimalListaCorte = () => {
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
+        closeTimeoutMS={300}
       >
         <h2 className="formulario-table-modal-title">Editar lista de Precios</h2>
         {formError && <div className="error-message" style={{color: 'red', marginBottom: '10px'}}>
@@ -1714,10 +1717,10 @@ const VerAnimalListaCorte = () => {
   
               <div className="formulario-table-form-group">
   <div className="formulario-table-field-group">
-    <label htmlFor="cantidadAbastecedor">Cantidad Abastecedor:</label>
+    <label htmlFor="CantidadAbastecedor">Cantidad Abastecedor:</label>
     <input
       type="number"
-      id="cantidadAbastecedor"
+      id="CantidadAbastecedor"
       name="abastero"
       value={formData.abastero || 0} 
       onChange={handleEditChange}
@@ -1746,10 +1749,10 @@ const VerAnimalListaCorte = () => {
   
     <div className="formulario-table-form-group">
     <div className="formulario-table-field-group">
-    <label htmlFor="cantidadAsadoTira">Cantidad Asado Tira:</label>
+    <label htmlFor="CantidadAsadoTira">Cantidad Asado Tira:</label>
     <input
     type="number"
-    id="cantidadAsadoTira"
+    id="CantidadAsadoTira"
     name="asadoTira"
     value={formData.asadoTira || 0} 
     onChange={handleEditChange}
@@ -2888,14 +2891,14 @@ const VerAnimalListaCorte = () => {
 
 
 
-      {/* Modal de Eliminación */}
-      <Modal
+      {/* Modal de Eliminación */}      <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        contentLabel="Eliminar Proveedor"
+        contentLabel="Eliminar"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
+        
       >
         <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar esta lista?</h2>
         <div className="formulario-table-form-actions">
@@ -2914,130 +2917,244 @@ const VerAnimalListaCorte = () => {
         </div>
       </Modal>
 
-      {/* Modal de Ver Detalles */}
-     {/* Modal de Ver Detalles */}
-<Modal
-  isOpen={isViewModalOpen}
-  onRequestClose={handleViewModalClose}
-  contentLabel="Ver Detalles"
-  ariaHideApp={false}
-  className={`modal ${isViewModalOpen ? 'open' : ''}`}
->
-  <div className="modal-content">
-  <h2>Detalles: {animalCorteToView?.nombreLista}</h2>
-    {animalCorteToView && (
-      <div className="modal-details" style={{ maxHeight: '540px', overflowY: 'auto' }}>
-        <p><strong>Cantidad Abastero:</strong> {animalCorteToView.abastero}</p>
-        <p><strong>Precio Abastero:</strong> {animalCorteToView.precioAbastero}</p>
-        
-        <p><strong>Cantidad Asado Tira:</strong> {animalCorteToView.asadoTira}</p>
-        <p><strong>Precio Asado Tira:</strong> {animalCorteToView.precioAsadoTira}</p>
-        
-        <p><strong>Cantidad Asado Carnicero:</strong> {animalCorteToView.asadoCarnicero}</p>
-        <p><strong>Precio Asado Carnicero:</strong> {animalCorteToView.precioAsadoCarnicero}</p>
-        
-        <p><strong>Cantidad Asiento:</strong> {animalCorteToView.asiento}</p>
-        <p><strong>Precio Asiento:</strong> {animalCorteToView.precioAsiento}</p>
-        
-        <p><strong>Cantidad Choclillo:</strong> {animalCorteToView.choclillo}</p>
-        <p><strong>Precio Choclillo:</strong> {animalCorteToView.precioChoclillo}</p>
-        
-        <p><strong>Cantidad Cogote:</strong> {animalCorteToView.cogote}</p>
-        <p><strong>Precio Cogote:</strong> {animalCorteToView.precioCogote}</p>
-        
-        <p><strong>Cantidad Entraña:</strong> {animalCorteToView.entraña}</p>
-        <p><strong>Precio Entraña:</strong> {animalCorteToView.precioEntraña}</p>
-        
-        <p><strong>Cantidad Filete:</strong> {animalCorteToView.filete}</p>
-        <p><strong>Precio Filete:</strong> {animalCorteToView.precioFilete}</p>
-        
-        <p><strong>Cantidad Ganso:</strong> {animalCorteToView.ganso}</p>
-        <p><strong>Precio Ganso:</strong> {animalCorteToView.precioGanso}</p>
-        
-        <p><strong>Cantidad Huachalomo:</strong> {animalCorteToView.huachalomo}</p>
-        <p><strong>Precio Huachalomo:</strong> {animalCorteToView.precioHuachalomo}</p>
-        
-        <p><strong>Cantidad Lomo Liso:</strong> {animalCorteToView.lomoLiso}</p>
-        <p><strong>Precio Lomo Liso:</strong> {animalCorteToView.precioLomoLiso}</p>
-        
-        <p><strong>Cantidad Lomo Vetado:</strong> {animalCorteToView.lomoVetado}</p>
-        <p><strong>Precio Lomo Vetado:</strong> {animalCorteToView.precioLomoVetado}</p>
-        
-        <p><strong>Cantidad Palanca:</strong> {animalCorteToView.palanca}</p>
-        <p><strong>Precio Palanca:</strong> {animalCorteToView.precioPalanca}</p>
-        
-        <p><strong>Cantidad Plateada:</strong> {animalCorteToView.plateada}</p>
-        <p><strong>Precio Plateada:</strong> {animalCorteToView.precioPlateada}</p>
-        
-        <p><strong>Cantidad Pollo Barriga:</strong> {animalCorteToView.polloBarriga}</p>
-        <p><strong>Precio Pollo Barriga:</strong> {animalCorteToView.precioPolloBarriga}</p>
-        
-        <p><strong>Cantidad Pollo Ganso:</strong> {animalCorteToView.polloGanso}</p>
-        <p><strong>Precio Pollo Ganso:</strong> {animalCorteToView.precioPolloGanso}</p>
-        
-        <p><strong>Cantidad Posta Negra:</strong> {animalCorteToView.postaNegra}</p>
-        <p><strong>Precio Posta Negra:</strong> {animalCorteToView.precioPostaNegra}</p>
-        
-        <p><strong>Cantidad Posta Paleta:</strong> {animalCorteToView.postaPaleta}</p>
-        <p><strong>Precio Posta Paleta:</strong> {animalCorteToView.precioPostaPaleta}</p>
-        
-        <p><strong>Cantidad Posta Rosada:</strong> {animalCorteToView.postaRosada}</p>
-        <p><strong>Precio Posta Rosada:</strong> {animalCorteToView.precioPostaRosada}</p>
-        
-        <p><strong>Cantidad Punta Ganso:</strong> {animalCorteToView.puntaGanso}</p>
-        <p><strong>Precio Punta Ganso:</strong> {animalCorteToView.precioPuntaGanso}</p>
-        
-        <p><strong>Cantidad Punta Picana:</strong> {animalCorteToView.puntaPicana}</p>
-        <p><strong>Precio Punta Picana:</strong> {animalCorteToView.precioPuntaPicana}</p>
-        
-        <p><strong>Cantidad Punta Paleta:</strong> {animalCorteToView.puntaPaleta}</p>
-        <p><strong>Precio Punta Paleta:</strong> {animalCorteToView.precioPuntaPaleta}</p>
-        
-        <p><strong>Cantidad Sobrecostilla:</strong> {animalCorteToView.sobrecostilla}</p>
-        <p><strong>Precio Sobrecostilla:</strong> {animalCorteToView.precioSobrecostilla}</p>
-        
-        <p><strong>Cantidad Tapabarriga:</strong> {animalCorteToView.tapabarriga}</p>
-        <p><strong>Precio Tapabarriga:</strong> {animalCorteToView.precioTapabarriga}</p>
-        
-        <p><strong>Cantidad Tapapecho:</strong> {animalCorteToView.tapapecho}</p>
-        <p><strong>Precio Tapapecho:</strong> {animalCorteToView.precioTapapecho}</p>
-        
-        <p><strong>Cantidad Hueso Carnudo:</strong> {animalCorteToView.huesoCarnudo}</p>
-        <p><strong>Precio Hueso Carnudo:</strong> {animalCorteToView.precioHuesoCarnudo}</p>
-        
-        <p><strong>Cantidad Hueso C/ Carne:</strong> {animalCorteToView.huesoCConCarne}</p>
-        <p><strong>Precio Hueso C/ Carne:</strong> {animalCorteToView.precioHuesoCConCarne}</p>
-        
-        <p><strong>Cantidad Pata Vacuno:</strong> {animalCorteToView.pataVacuno}</p>
-        <p><strong>Precio Pata Vacuno:</strong> {animalCorteToView.precioPataVacuno}</p>
-        
-        <p><strong>Cantidad Huachalomo Olla:</strong> {animalCorteToView.huachalomoOlla}</p>
-        <p><strong>Precio Huachalomo Olla:</strong> {animalCorteToView.precioHuachalomoOlla}</p>
-        
-        <p><strong>Cantidad Cazuela Paleta:</strong> {animalCorteToView.cazuelaPaleta}</p>
-        <p><strong>Precio Cazuela Paleta:</strong> {animalCorteToView.precioCazuelaPaleta}</p>
-        
-        <p><strong>Cantidad Osobuco:</strong> {animalCorteToView.osobuco}</p>
-        <p><strong>Precio Osobuco:</strong> {animalCorteToView.precioOsobuco}</p>
-        
-        <p><strong>Cantidad Lagarto:</strong> {animalCorteToView.lagarto}</p>
-        <p><strong>Precio Lagarto:</strong> {animalCorteToView.precioLagarto}</p>
-        
-        <p><strong>Cantidad Costilla Vacuno:</strong> {animalCorteToView.costillaVacuno}</p>
-        <p><strong>Precio Costilla Vacuno:</strong> {animalCorteToView.precioCostillaVacuno}</p>
-        
-        <p><strong>Cantidad Tapaposta:</strong> {animalCorteToView.tapaposta}</p>
-        <p><strong>Precio Tapaposta:</strong> {animalCorteToView.precioTapaposta}</p>
-
-        <p><strong>Cantidad Malaya:</strong> {animalCorteToView.malaya}</p>
-        <p><strong>Precio Malaya:</strong> {animalCorteToView.precioMalaya}</p>
-      </div>
-    )}
-    <div className="modal-actions">
-      <button className="cancel" onClick={handleViewModalClose}>Cerrar</button>
-    </div>
-  </div>
-</Modal>
+      {/* Modal de Ver Detalles */}      <Modal
+        isOpen={isViewModalOpen}
+        onRequestClose={handleViewModalClose}
+        contentLabel="Ver Detalles"
+        ariaHideApp={false}
+        className="modal-detalles"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
+      >
+        <div className="modal-detalles-header">          <h2 className="modal-detalles-titulo"> Detalles: {animalCorteToView?.nombreLista}</h2>
+          <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
+          <button
+            onClick={() => {
+              handleUpdateClick(animalCorteToView);
+              handleViewModalClose();
+            }}
+            className="modal-detalles-editar"
+          >
+            <MdOutlineEdit size={24} />
+          </button>
+        </div>
+        {animalCorteToView && (
+        <div className="modal-detalles-contenido">
+          <div className="datos-grid">            <div className="dato-item">
+              <span className="dato-label">Abastero</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.abastero} cant.</span>
+                <span className="precio">${animalCorteToView.precioAbastero}</span>
+              </span>
+            </div><div className="dato-item">
+              <span className="dato-label">Asado Tira</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.asadoTira} cant.</span>
+                <span className="precio">${animalCorteToView.precioAsadoTira}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Asado Carnicero</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.asadoCarnicero} cant.</span>
+                <span className="precio">${animalCorteToView.precioAsadoCarnicero}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Asiento</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.asiento} cant.</span>
+                <span className="precio">${animalCorteToView.precioAsiento}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Choclillo</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.choclillo} cant</span>
+                <span className="precio">${animalCorteToView.precioChoclillo}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Cogote</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.cogote} cant.</span>
+                <span className="precio">${animalCorteToView.precioCogote}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Entraña</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.entraña} cant.</span>
+                <span className="precio">${animalCorteToView.precioEntraña}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Filete</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.filete} cant.</span>
+                <span className="precio">${animalCorteToView.precioFilete}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Ganso</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.ganso} cant.</span>
+                <span className="precio">${animalCorteToView.precioGanso}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Huachalomo</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.huachalomo} cant.</span>
+                <span className="precio">${animalCorteToView.precioHuachalomo}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Lomo Liso</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.lomoLiso} cant.</span>
+                <span className="precio">${animalCorteToView.precioLomoLiso}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Lomo Vetado</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.lomoVetado} cant.</span>
+                <span className="precio">${animalCorteToView.precioLomoVetado}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Palanca</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.palanca} cant.</span>
+                <span className="precio">${animalCorteToView.precioPalanca}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Plateada</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.plateada} cant.</span>
+                <span className="precio">${animalCorteToView.precioPlateada}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Pollo Barriga</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.polloBarriga} cant.</span>
+                <span className="precio">${animalCorteToView.precioPolloBarriga}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Pollo Ganso</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.polloGanso} cant.</span>
+                <span className="precio">${animalCorteToView.precioPolloGanso}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Posta Negra</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.postaNegra} cant.</span>
+                <span className="precio">${animalCorteToView.precioPostaNegra}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Posta Paleta</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.postaPaleta} cant.</span>
+                <span className="precio">${animalCorteToView.precioPostaPaleta}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Posta Rosada</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.postaRosada} cant.</span>
+                <span className="precio">${animalCorteToView.precioPostaRosada}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Punta Ganso</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.puntaGanso} cant.</span>
+                <span className="precio">${animalCorteToView.precioPuntaGanso}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Punta Picana</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.puntaPicana} cant.</span>
+                <span className="precio">${animalCorteToView.precioPuntaPicana}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Punta Paleta</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.puntaPaleta} cant.</span>
+                <span className="precio">${animalCorteToView.precioPuntaPaleta}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Sobrecostilla</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.sobrecostilla} cant.</span>
+                <span className="precio">${animalCorteToView.precioSobrecostilla}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Tapabarriga</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.tapabarriga} cant.</span>
+                <span className="precio">${animalCorteToView.precioTapabarriga}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Tapapecho</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.tapapecho} cant.</span>
+                <span className="precio">${animalCorteToView.precioTapapecho}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Hueso Carnudo</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.huesoCarnudo} cant.</span>
+                <span className="precio">${animalCorteToView.precioHuesoCarnudo}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Hueso con Carne</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.huesoCConCarne} cant.</span>
+                <span className="precio">${animalCorteToView.precioHuesoCConCarne}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Pata Vacuno</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.pataVacuno} cant.</span>
+                <span className="precio">${animalCorteToView.precioPataVacuno}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Huachalomo Olla</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.huachalomoOlla} cant.</span>
+                <span className="precio">${animalCorteToView.precioHuachalomoOlla}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Cazuela Paleta</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.cazuelaPaleta} cant.</span>
+                <span className="precio">${animalCorteToView.precioCazuelaPaleta}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Osobuco</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.osobuco} cant.</span>
+                <span className="precio">${animalCorteToView.precioOsobuco}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Lagarto</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.lagarto} cant.</span>
+                <span className="precio">${animalCorteToView.precioLagarto}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Costilla Vacuno</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.costillaVacuno} cant.</span>
+                <span className="precio">${animalCorteToView.precioCostillaVacuno}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Tapaposta</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.tapaposta} cant.</span>
+                <span className="precio">${animalCorteToView.precioTapaposta}</span>
+              </span>
+            </div>            <div className="dato-item">
+              <span className="dato-label">Malaya</span>
+              <span className="dato-value">
+                <span className="Cantidad">{animalCorteToView.malaya} cant.</span>
+                <span className="precio">${animalCorteToView.precioMalaya}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        )}
+      </Modal>
     </div>
   );
 };

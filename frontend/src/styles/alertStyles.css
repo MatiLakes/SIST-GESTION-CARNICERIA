@@ -12,66 +12,66 @@ body, .container, .form, input, select, textarea, button, p {
 }
 
 .swal2-popup {
-    background-color: #5a5a5a; /* Color oscuro sólido */
-    border-radius: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra suave */   
+    background-color: #ffffff; /* Fondo blanco */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     align-items: center;
-    backdrop-filter: blur(10px); /* Desenfoque de fondo */
-    color: #fff; /* Texto blanco */
+    color: #000000; /* Texto negro */
     font-size: 16px;
-    font-family: 'Poppins', sans-serif; /* Usar la fuente Poppins */
+    font-family: 'Poppins', sans-serif;
+    border: 2px solid #000000; /* Borde negro */
 }
 
 /* Estilo del título del modal */
 .swal2-title {
     font-size: 24px;
     margin-bottom: 15px;
-    font-weight: bold;
-    color: #fff;
+    font-weight: 600;
+    color: #000000; /* Texto negro */
+    padding: 0 20px;
 }
 
 /* Estilo del contenido del modal */
 .swal2-content {
-    color: #fff; /* Texto blanco para el contenido */
+    color: #000000; /* Texto negro */
+    padding: 0 20px;
 }
 
 /* Estilos de los botones */
 .swal2-confirm {
-    padding: 12px;
+    padding: 12px 24px;
     font-size: 16px;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
-    background-color: #4CAF50; /* Fondo verde */
+    background-color: #020202; /* Botón rojo */
     border: none;
-    color: #fff;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    backdrop-filter: blur(5px);
+    color: #ffffff;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .swal2-confirm:hover {
-    background-color: #45a049;
-    backdrop-filter: blur(20px);
+    background-color: #000000; /* Rojo más oscuro al hover */
+    transform: translateY(-1px);
 }
 
 .swal2-cancel {
-    padding: 12px;
+    padding: 12px 24px;
     font-size: 16px;
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
-    background-color: #af4c4c; /* Fondo rojo */
+    background-color: #000000; /* Fondo negro */
     border: none;
-    color: #fff;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    backdrop-filter: blur(5px);
+    color: #ffffff; /* Texto blanco */
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
 .swal2-cancel:hover {
-    background-color: #a04545;
-    backdrop-filter: blur(20px);
+    background-color: #333333; /* Negro más claro al hover */
+    transform: translateY(-1px);
 }
 
 

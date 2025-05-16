@@ -1,0 +1,290 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal-overlay.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+
+.modal-overlay.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
+.modal-detalles {
+  position: fixed;
+  top: 100px;
+  right: 0;
+  width: 800px;
+  height: calc(100vh - 108px);
+  background: white;
+  z-index: 1000;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 30px 0 0 30px;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.modal-detalles.ReactModal__Content--after-open {
+  transform: translateX(0);
+}
+
+.modal-detalles.ReactModal__Content--before-close {
+  transform: translateX(100%);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.modal-detalles-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+  border-bottom: 1px solid #e0e0e0;
+  background: white;
+  position: relative;
+}
+
+.modal-detalles-header::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 80px;
+  height: 2px;
+  background-color: #d32f2f;
+}
+
+.modal-detalles-titulo {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-detalles-editar {
+  background: none;
+  color: #666;
+  border: none;
+  padding: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  position: absolute;
+  right: 25px;
+  top: calc(30% - 2px);
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+}
+
+
+.modal-detalles-estado {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+
+
+.modal-detalles-cerrar {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: #7e7e7e;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
+
+.modal-detalles-contenido {
+  padding: 0;
+}
+
+.modal-detalles-seccion {
+  margin: 0;
+}
+
+.modal-detalles-datos {
+  display: flex;
+  padding: 20px;
+}
+
+.datos-grupo {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.datos-grupo:first-child {
+  border-right: 1px solid #e0e0e0;
+}
+
+.datos-titulo {
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.datos-fila {
+  margin-bottom: 12px;
+}
+
+.dato-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1.9px solid #c0bfbf;
+  background-color: white;
+}
+
+.dato-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dato-label {
+  color: black;
+  font-size: 14px;
+  flex: 1;
+}
+
+.dato-value {
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  flex: 1;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dato-value .cantidad {
+  color: #333;
+  font-weight: normal;
+}
+
+.dato-value .precio {
+  color: #333;
+  font-weight: 600;
+}
+
+.seccion-titulo {
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.datos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.datos-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.datos-etiqueta {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 0;
+}
+
+.datos-valor {
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.datos-icono {
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+
+
+.sin-datos {
+  color: #727272;
+  font-size: 14px;
+  text-align: center;
+  padding: 16px;
+}
+
+.modal-detalles-tabs {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+  background: white;
+  position: sticky;
+  top: 64px;
+  z-index: 1;
+}
+
+.modal-detalles-tab {
+  padding: 12px 20px;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+}
+
+

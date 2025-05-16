@@ -584,15 +584,8 @@ body[data-navbar-collapsed="true"] .table-container {
  color: black;
 }
 
-/* Color más claro en hover para el ícono de ver */
-.acciones-table.view-button:hover {
-  color: #45a049; /* Un verde más oscuro para el hover */
-}
 
-/* Opcional: color más claro en hover para el ícono de ver */
-.acciones-table.view-button:hover {
-  color: #45a049; /* Un verde más oscuro para el hover */
-}
+c
 .formulario-table-modal-form {
   max-height: 70vh;  /* Ajusta la altura máxima según sea necesario */
   overflow-y: auto;  /* Activa el desplazamiento vertical */

@@ -105,7 +105,7 @@ const Productos = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "El stock no puede ser negativo.",
+        text: "La cantidad no puede ser negativa.",
         confirmButtonColor: "#000000"
       });
       return;
@@ -199,7 +199,7 @@ const Productos = () => {
     { header: "Variante", key: "variante" },
     { header: "Precio Venta", key: "precioVenta" },
     { header: "Precio Compra", key: "precioCompra" },    
-    { header: "Stock", key: "stock" },
+    { header: "Cant", key: "stock" },
     { header: "Fecha Vencimiento", key: "fechaVencimiento" },
     { header: "Tipo", key: "tipo" },
     { header: "Marca", key: "marca" }
@@ -271,9 +271,8 @@ const Productos = () => {
               required
               className="formulario-table-input"
             />
-          </div>
-          <div className="formulario-table-field-group">
-            <label htmlFor="stock">Stock:</label>
+          </div>          <div className="formulario-table-field-group">
+            <label htmlFor="stock">Cantidad:</label>
             <input
               type="number"
               id="stock"
@@ -411,8 +410,8 @@ const Productos = () => {
                 className="formulario-table-input"
               />
             </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="stock">Stock:</label>
+            <div className="formulario-table-field-group">              
+              <label htmlFor="stock">Cantidad:</label>
               <input
                 type="number"
                 id="stock"

@@ -246,8 +246,11 @@ const Table = ({
             {currentRows.length > 0 ? (
               currentRows.map((row, rowIndex) => {
                 if (row) {
-                  return (
-                    <tr key={rowIndex}>
+                  return (                    <tr 
+                      key={rowIndex} 
+                      onClick={() => onView && onView(row)}
+                      style={{ cursor: onView ? 'pointer' : 'default' }}
+                    >
                       {columns.map((col) => {
                         const cellValue = row[col.key];
                         return (
@@ -256,17 +259,17 @@ const Table = ({
                               <input
                                 type="text"
                                 value={cellValue || ""}
-                                onChange={(e) =>
-                                  handleCellChange(e.target.value, rowIndex, col.key)
-                                }
+                                onChange={(e) => {
+                                  e.stopPropagation(); // Evitar que el clic se propague a la fila
+                                  handleCellChange(e.target.value, rowIndex, col.key);
+                                }}
                               />
                             ) : (
                               formatData(cellValue || "No disponible")
                             )}
                           </td>
                         );
-                      })}
-                      <td>
+                      })}                      <td onClick={(e) => e.stopPropagation()}>
                         <div className="acciones-table-container">
                           {showEditButton && (
                             <button
