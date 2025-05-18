@@ -142,10 +142,9 @@ const Table = ({
     }
     return obj || "No disponible";
   };
-
-  const formatData = (value) => {
+  const formatData = (value, key) => {
     // Usa la función personalizada si está definida, de lo contrario usa la genérica
-    return customFormat ? customFormat(value) : formatObject(value);
+    return customFormat ? customFormat(value, key) : formatObject(value);
   };
 
   // Paginación de la tabla
@@ -263,9 +262,8 @@ const Table = ({
                                   e.stopPropagation(); // Evitar que el clic se propague a la fila
                                   handleCellChange(e.target.value, rowIndex, col.key);
                                 }}
-                              />
-                            ) : (
-                              formatData(cellValue || "No disponible")
+                              />                            ) : (
+                              formatData(cellValue || "No disponible", col.key)
                             )}
                           </td>
                         );

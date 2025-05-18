@@ -4,9 +4,10 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState, useEffect } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox } from "react-icons/fa";
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { GiMilkCarton } from "react-icons/gi";
+import { GiCow } from "react-icons/gi";
 
 const Navbar2 = () => {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink to="/animal-vara/vara" className={location.pathname === "/animal-vara/vara" ? "active" : ""}>
-                    <FaPlus className="nav-icon" />
+                    <GiCow className="nav-icon" />
                     <span>Vara</span>
                   </NavLink>
                 </li>
@@ -90,6 +91,18 @@ const Navbar2 = () => {
                   <NavLink to="/pedidos" className={location.pathname === "/pedidos" ? "active" : ""}>
                     <FaClipboardList className="nav-icon" />
                     <span>Pedidos</span>
+                  </NavLink>
+                </li>
+                 <li>
+                  <NavLink to="/pagos-pendientes" className={location.pathname === "/pagos-pendientes" ? "active" : ""}>
+                    <FaMoneyBillWave className="nav-icon" />
+                    <span>Pagos Pendientes</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/clientes" className={location.pathname === "/clientes" ? "active" : ""}>
+                    <FaUserFriends className="nav-icon" />
+                    <span>Clientes</span>
                   </NavLink>
                 </li>
                 <li>
@@ -100,7 +113,7 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink to="/subproductos" className={location.pathname === "/subproductos" ? "active" : ""}>
-                    <FaBox className="nav-icon" />
+                    <FaShoppingBasket  className="nav-icon" />
                     <span>Subproductos</span>
                   </NavLink>
                 </li>

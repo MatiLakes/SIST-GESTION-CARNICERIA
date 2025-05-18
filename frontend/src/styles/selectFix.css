@@ -1,0 +1,30 @@
+/* Estilos para mejorar la apariencia del selector de clientes */
+select option {
+  padding: 10px;
+  white-space: normal;
+  min-height: 25px;
+  font-size: 14px;
+}
+
+/* Forzar compatibilidad con navegadores que usan un menú desplegable nativo */
+@-moz-document url-prefix() {
+  select {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+/* Aplicar a todos los navegadores */
+select::-ms-expand {
+  display: none;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6' viewBox='0 0 8 6'%3E%3Cpath fill='%23333' d='M0 0l4 6 4-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 8px 6px;
+}

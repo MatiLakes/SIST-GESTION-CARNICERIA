@@ -10,6 +10,8 @@ import productoRoutes from "./producto.routes.js";
 import tipoProductoRoutes from "./tipoProducto.routes.js"; 
 import marcaProductoRoutes from "./marcaProducto.routes.js"; 
 import subproductoRoutes from "./subproducto.routes.js";
+import pagoPendienteRoutes from "./pagoPendiente.routes.js";
+import clienteRoutes from "./cliente.routes.js";
 
 const router = Router();
 
@@ -24,6 +26,7 @@ router
   .use("/tipos-productos", tipoProductoRoutes)
   .use("/marcas-productos", marcaProductoRoutes)
   .use("/subproductos", subproductoRoutes)
-
+  .use("/pagos-pendientes", pagoPendienteRoutes)
+  .use("/clientes", clienteRoutes);
 
 export default router;

@@ -14,6 +14,9 @@ import Productos from './pages/Productos'; // Importar la página de productos
 import VerAnimalListaCorte from '@pages/verAnimalListaCorte';
 import AnimalVara from '@pages/AnimalVara';
 import Subproductos from '@pages/Subproductos';
+import PagosPendientes from './pages/PagosPendientes';
+import Clientes from './pages/Clientes';
+
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -67,6 +70,22 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Subproductos />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/pagos-pendientes',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <PagosPendientes />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/clientes',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Clientes />
           </ProtectedRoute>
         ),
       },
