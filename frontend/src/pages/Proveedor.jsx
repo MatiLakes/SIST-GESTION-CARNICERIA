@@ -246,6 +246,7 @@ const Proveedores = () => {
         showEditAllButton={false}
         showViewButton={false}
         entidad="proveedores"
+        showCalendarButton={false}
       />
 
       {/* Modal de Creación */}

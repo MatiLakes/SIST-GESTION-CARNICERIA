@@ -14,6 +14,8 @@ import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
 import "@styles/formulariotable.css";
+import "@styles/modalDetalles.css";
+import "@styles/modalCrear.css";
 import Swal from "sweetalert2";
 
 const Productos = () => {
@@ -199,15 +201,14 @@ const Productos = () => {
     { header: "Variante", key: "variante" },
     { header: "Precio Venta", key: "precioVenta" },
     { header: "Precio Compra", key: "precioCompra" },    
-    { header: "Cant", key: "stock" },
+    { header: "Cant kg", key: "stock" },
     { header: "Fecha Vencimiento", key: "fechaVencimiento" },
     { header: "Tipo", key: "tipo" },
     { header: "Marca", key: "marca" }
   ];
 
   return (
-    <div className={styles["categoria-container"]}>
-      <Table
+    <div className={styles["categoria-container"]}>      <Table
         data={productos}
         columns={columns}
         headerTitle="Productos"
@@ -218,280 +219,282 @@ const Productos = () => {
         showViewButton={false}
         showCalendarButton={true}
         entidad="productos"
-      />
-
-      {/* Modal de Creación */}
+        customFormat={(value, key) => {
+          if ((key === "precioVenta" || key === "precioCompra") && (typeof value === "number" || !isNaN(parseFloat(value)))) {
+            return `$${parseFloat(value).toLocaleString('es-CL')}`;
+          }
+          if (key === "tipo" || key === "marca") {
+            return value?.nombre || '';
+          }
+          return value?.nombreLista ? value.nombreLista : value;
+        }}
+      />      {/* Modal de Creación */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Crear Producto"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <h2 className="formulario-table-modal-title">Crear Nuevo Producto</h2>
-        <form onSubmit={handleCreateProducto} className="formulario-table-formulario-table">
-          <div className="formulario-table-field-group">
-            <label htmlFor="nombre">Nombre del Producto:</label>
+        <form onSubmit={handleCreateProducto} className="modal-crear-formulario">
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Crear Nuevo Producto</h2>
+            <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
+            <button type="submit" className="modal-boton-crear">Guardar</button>
+          </div>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Nombre del Producto:</label>
             <input
               type="text"
               id="nombre"
               name="nombre"
               required
-              className="formulario-table-input"
-            />
-          </div>
-          <div className="formulario-table-field-group">
-            <label htmlFor="variante">Variante:</label>
+              className="formulario-input"
+            />          </div>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Variante:</label>
             <input
               type="text"
               id="variante"
               name="variante"
-              className="formulario-table-input"
+              className="formulario-input"
             />
           </div>
-          <div className="formulario-table-field-group">
-            <label htmlFor="precioVenta">Precio Venta:</label>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Precio Venta:</label>
             <input
               type="number"
               id="precioVenta"
               name="precioVenta"
-              step="0.01"
               required
-              className="formulario-table-input"
+              className="formulario-input"
             />
           </div>
-          <div className="formulario-table-field-group">
-            <label htmlFor="precioCompra">Precio Compra:</label>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Precio Compra:</label>
             <input
               type="number"
               id="precioCompra"
               name="precioCompra"
-              step="0.01"
               required
-              className="formulario-table-input"
+              className="formulario-input"
             />
-          </div>          <div className="formulario-table-field-group">
-            <label htmlFor="stock">Cantidad:</label>
+          </div>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Cantidad de kg:</label>
             <input
               type="number"
               id="stock"
               name="stock"
               required
-              className="formulario-table-input"
+              className="formulario-input"
             />
           </div>
-          <div className="formulario-table-field-group">
-            <label htmlFor="fechaVencimiento">Fecha de Vencimiento:</label>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
             <input
               type="date"
               id="fechaVencimiento"
               name="fechaVencimiento"
-              className="formulario-table-input"
+              className="formulario-input"
             />
           </div>
-          <div className="formulario-table-field-group">
-            <label htmlFor="tipo">Tipo:</label>
-            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-              <select
-                id="tipo"
-                name="tipo"
-                required
-                className="formulario-table-input"
-              >
-                {tipos.map((tipo) => (
-                  <option key={tipo.id} value={tipo.id}>
-                    {tipo.nombre}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                className="formulario-table-btn-add"
-                onClick={openModalTipo}
-              >
-                +
-              </button>
+          <div style={{ display: 'flex', gap: '1rem', width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Tipo</span>
+              </div>
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>                  
+                  <select
+                    id="tipo"
+                    name="tipo"
+                    required
+                    className="formulario-input"
+                    style={{ minWidth: '180px' }}
+                  >
+                    <option value="">Seleccione un Tipo</option>
+                    {tipos.map((tipo) => (
+                      <option key={tipo.id} value={tipo.id}>
+                        {tipo.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="input-grupo">
+                  <button
+                    type="button"
+                    className="modal-boton-anadir"
+                    onClick={openModalTipo}
+                  >
+                    Añadir
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="formulario-table-field-group">
-            <label htmlFor="marca">Marca:</label>
-            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-              <select
-                id="marca"
-                name="marca"
-                required
-                className="formulario-table-input"
-              >
-                {marcas.map((marca) => (
-                  <option key={marca.id} value={marca.id}>
-                    {marca.nombre}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                className="formulario-table-btn-add"
-                onClick={openModalMarca}
-              >
-                +
-              </button>
+            
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '332.3px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Marca</span>
+              </div>
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>                  
+                  <select
+                    id="marca"
+                    name="marca"
+                    required
+                    className="formulario-input"
+                    style={{ minWidth: '180px' }}
+                  >
+                    <option value="">Seleccione una Marca</option>
+                    {marcas.map((marca) => (
+                      <option key={marca.id} value={marca.id}>
+                        {marca.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="input-grupo">
+                  <button
+                    type="button"
+                    className="modal-boton-anadir"
+                    onClick={openModalMarca}
+                  >
+                    Añadir
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="formulario-table-form-actions">
-            <button type="submit" className="formulario-table-btn-confirm">
-              Crear
-            </button>
-            <button
-              type="button"
-              onClick={closeModal}
-              className="formulario-table-btn-cancel"
-            >
-              Cancelar
-            </button>
           </div>
         </form>
-      </Modal>
-
-      {/* Modal de Edición */}
+      </Modal>      {/* Modal de Edición */}
       <Modal
         isOpen={isEditModalOpen}
         onRequestClose={closeEditModal}
         contentLabel="Editar Producto"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <h2 className="formulario-table-modal-title">Editar Producto</h2>
         {currentProducto && (
-          <form onSubmit={handleEditProducto} className="formulario-table-formulario-table">
-            <div className="formulario-table-field-group">
-              <label htmlFor="nombre">Nombre del Producto:</label>
+          <form onSubmit={handleEditProducto} className="modal-crear-formulario">
+            <div className="modal-crear-header">
+              <h2 className="modal-crear-titulo">Editar Producto</h2>
+              <button type="button" onClick={closeEditModal} className="modal-crear-cerrar">×</button>
+              <button type="submit" className="modal-boton-crear">Guardar</button>
+            </div>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Nombre del Producto:</label>
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
                 defaultValue={currentProducto.nombre}
                 required
-                className="formulario-table-input"
-              />
-            </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="variante">Variante:</label>
+                className="formulario-input"
+              />            </div>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Variante:</label>
               <input
                 type="text"
                 id="variante"
                 name="variante"
                 defaultValue={currentProducto.variante}
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="precioVenta">Precio Venta:</label>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Precio Venta:</label>
               <input
                 type="number"
                 id="precioVenta"
                 name="precioVenta"
                 defaultValue={currentProducto.precioVenta}
-                step="0.01"
                 required
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="precioCompra">Precio Compra:</label>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Precio Compra:</label>
               <input
                 type="number"
                 id="precioCompra"
                 name="precioCompra"
                 defaultValue={currentProducto.precioCompra}
-                step="0.01"
                 required
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
-            <div className="formulario-table-field-group">              
-              <label htmlFor="stock">Cantidad:</label>
+            <div className="formulario-grupo">              
+              <label className="formulario-etiqueta">Cantidad de kg:</label>
               <input
                 type="number"
                 id="stock"
                 name="stock"
                 defaultValue={currentProducto.stock}
                 required
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="fechaVencimiento">Fecha de Vencimiento:</label>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
               <input
                 type="date"
                 id="fechaVencimiento"
                 name="fechaVencimiento"
                 defaultValue={currentProducto.fechaVencimiento || ""}
-                className="formulario-table-input"
+                className="formulario-input"
               />
             </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="tipo">Tipo:</label>
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <select
-                  id="tipo"
-                  name="tipo"
-                  defaultValue={currentProducto.tipo.id}
-                  required
-                  className="formulario-table-input"
-                >
-                  {tipos.map((tipo) => (
-                    <option key={tipo.id} value={tipo.id}>
-                      {tipo.nombre}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="formulario-table-btn-add"
-                  onClick={openModalTipo}
-                >
-                  +
-                </button>
+            <div style={{ display: 'flex', gap: '1rem', width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Tipo</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>                    <select
+                      id="tipo"
+                      name="tipo"
+                      defaultValue={currentProducto.tipo.id}
+                      required
+                      className="formulario-input"
+                      style={{ minWidth: '220px' }}
+                    >
+                      {tipos.map((tipo) => (
+                        <option key={tipo.id} value={tipo.id}>
+                          {tipo.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="formulario-table-field-group">
-              <label htmlFor="marca">Marca:</label>
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <select
-                  id="marca"
-                  name="marca"
-                  defaultValue={currentProducto.marca.id}
-                  required
-                  className="formulario-table-input"
-                >
-                  {marcas.map((marca) => (
-                    <option key={marca.id} value={marca.id}>
-                      {marca.nombre}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="formulario-table-btn-add"
-                  onClick={openModalMarca}
-                >
-                  +
-                </button>
+              
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Marca</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>                    <select
+                      id="marca"
+                      name="marca"
+                      defaultValue={currentProducto.marca.id}
+                      required
+                      className="formulario-input"
+                      style={{ minWidth: '220px' }}
+                    >
+                      {marcas.map((marca) => (
+                        <option key={marca.id} value={marca.id}>
+                          {marca.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="formulario-table-form-actions">
-              <button type="submit" className="formulario-table-btn-confirm">
-                Guardar
-              </button>
-              <button
-                type="button"
-                onClick={closeEditModal}
-                className="formulario-table-btn-cancel"
-              >
-                Cancelar
-              </button>
             </div>
           </form>
         )}
@@ -521,18 +524,16 @@ const Productos = () => {
             Cancelar
           </button>
         </div>
-      </Modal>
-
-      {/* Modal para crear tipo */}
+      </Modal>      {/* Modal para crear tipo */}
       <Modal
         isOpen={isModalTipoOpen}
         onRequestClose={closeModalTipo}
         contentLabel="Crear Tipo"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <h2 className="formulario-table-modal-title">Crear Nuevo Tipo</h2>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -557,43 +558,34 @@ const Productos = () => {
               });
             }
           }}
-          className="formulario-table-formulario-table"
+          className="modal-crear-formulario"
         >
-          <div className="formulario-table-field-group">
-            <label htmlFor="tipoNombre">Nombre del Tipo:</label>
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Crear Nuevo Tipo</h2>
+            <button type="button" onClick={closeModalTipo} className="modal-crear-cerrar">×</button>
+            <button type="submit" className="modal-boton-crear">Crear</button>
+          </div>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Nombre del Tipo:</label>
             <input
               type="text"
               id="tipoNombre"
               name="tipoNombre"
               required
-              className="formulario-table-input"
+              className="formulario-input"
             />
           </div>
-          <div className="formulario-table-form-actions">
-            <button type="submit" className="formulario-table-btn-confirm">
-              Crear
-            </button>
-            <button
-              type="button"
-              onClick={closeModalTipo}
-              className="formulario-table-btn-cancel"
-            >
-              Cancelar
-            </button>
-          </div>
         </form>
-      </Modal>
-
-      {/* Modal para crear marca */}
+      </Modal>      {/* Modal para crear marca */}
       <Modal
         isOpen={isModalMarcaOpen}
         onRequestClose={closeModalMarca}
         contentLabel="Crear Marca"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <h2 className="formulario-table-modal-title">Crear Nueva Marca</h2>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -618,29 +610,22 @@ const Productos = () => {
               });
             }
           }}
-          className="formulario-table-formulario-table"
+          className="modal-crear-formulario"
         >
-          <div className="formulario-table-field-group">
-            <label htmlFor="marcaNombre">Nombre de la Marca:</label>
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Crear Nueva Marca</h2>
+            <button type="button" onClick={closeModalMarca} className="modal-crear-cerrar">×</button>
+            <button type="submit" className="modal-boton-crear">Crear</button>
+          </div>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Nombre de la Marca:</label>
             <input
               type="text"
               id="marcaNombre"
               name="marcaNombre"
               required
-              className="formulario-table-input"
+              className="formulario-input"
             />
-          </div>
-          <div className="formulario-table-form-actions">
-            <button type="submit" className="formulario-table-btn-confirm">
-              Crear
-            </button>
-            <button
-              type="button"
-              onClick={closeModalMarca}
-              className="formulario-table-btn-cancel"
-            >
-              Cancelar
-            </button>
           </div>
         </form>
       </Modal>

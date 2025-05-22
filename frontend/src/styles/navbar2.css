@@ -136,6 +136,10 @@
     animation-delay: 1.3s;    
     
 }
+.navbar2 li:nth-child(9) {
+    animation-delay: 1.5s;    
+    
+}
 
 
 

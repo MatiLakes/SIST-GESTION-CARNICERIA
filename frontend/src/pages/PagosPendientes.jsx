@@ -8,12 +8,32 @@ import useCreateCliente from "@hooks/clientes/useCreateCliente.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
-import stylesPagoPendiente from "@styles/pagoPendiente.module.css";
 import "@styles/formulariotable.css";
 import "@styles/selectFix.css";
+import "@styles/modalCrear.css";
 import styles from "@styles/categoria.module.css";
 
-const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPendientes } = useGetPagosPendientes();
+// Estilos en línea para el selector de cliente y el modal de confirmación
+const inlineStyles = {
+  clienteSelectorContainer: {
+    display: 'flex',
+    gap: '10px',
+    width: '100%',
+    alignItems: 'center'
+  },
+  clienteSelector: {
+    flex: 3,
+    minWidth: '220px'
+  },
+  modalConfirmarTexto: {
+    textAlign: 'center',
+    margin: '20px 0',
+    fontSize: '16px'
+  }
+};
+
+const PagosPendientes = () => {
+  const { pagosPendientes, loading, fetchPagosPendientes } = useGetPagosPendientes();
   const { create } = useCreatePagoPendiente(fetchPagosPendientes);
   const { remove } = useDeletePagoPendiente(fetchPagosPendientes);
   const { edit } = useEditPagoPendiente(fetchPagosPendientes);
@@ -55,7 +75,6 @@ const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPen
   }, [clientes]);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
   // Función para abrir el modal de cliente con reseteo de campos
   const openClienteModal = () => {
     setIsClienteModalOpen(true);
@@ -73,10 +92,13 @@ const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPen
           tipoSelect.value = "Persona";
           
           // Mostrar/ocultar campos según tipo por defecto
-          form.querySelector('#razonSocial').parentNode.style.display = 'none';
-          form.querySelector('#giro').parentNode.style.display = 'none';
-          form.querySelector('#nombres').parentNode.style.display = 'block';
-          form.querySelector('#apellidos').parentNode.style.display = 'block';
+          const empresaFields = form.querySelector('#razonSocial').closest('div[style*="display"]');
+          empresaFields.style.display = 'none';
+          
+          const nombresField = form.querySelector('#nombres').closest('.formulario-grupo');
+          const apellidosField = form.querySelector('#apellidos').closest('.formulario-grupo');
+          nombresField.style.display = 'block';
+          apellidosField.style.display = 'block';
         }
       }
     }, 100);
@@ -287,17 +309,54 @@ const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPen
     { header: "Fecha Límite", key: "fechaLimite" },
     { header: "Estado", key: "estado" },
     { header: "Cliente", key: "cliente" }
-  ];
-  // Función para formatear los datos de forma personalizada
+  ];  // Función para formatear los datos de forma personalizada
   const customFormat = (value, key) => {
-    // Solo aplica el formato de moneda si la key es "monto"
+    // Formateo de fechas
+    if (key === 'fechaPedido' || key === 'fechaLimite') {
+      if (!value) return 'No disponible';
+      const date = new Date(value);
+      // Ajustar la fecha a la zona horaria local
+      const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+      return localDate.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    }
+
+    // Formateo del monto
     if (key === "monto" && (typeof value === "number" || !isNaN(parseFloat(value)))) {
-      return `$${parseFloat(value).toFixed(2)}`;
-    } else if (typeof value === "object" && value !== null && value.nombres) {
-      return `${value.nombres} ${value.apellidos}`;
-    } else if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}/)) {
-      return new Date(value).toLocaleDateString('es-ES');
-    } else if (value === "Pendiente" || value === "Pagado" || value === "Vencido") {
+      return `$${parseFloat(value).toLocaleString('es-CL')}`;
+    }    // Formateo de cliente
+    if (key === 'cliente') {
+      // Verificar que tengamos el array de clientes y el valor del ID
+      if (!Array.isArray(clientes) || !value?.id) {
+        console.warn('Datos de clientes no disponibles o ID de cliente no válido:', { clientes, value });
+        return "No disponible";
+      }
+
+      const cliente = clientes.find(c => c.id === value.id);
+      if (!cliente) {
+        console.warn('Cliente no encontrado para el ID:', value.id);
+        return "Cliente no encontrado";
+      }      try {
+        if (cliente.tipoCliente === "Empresa") {
+          return cliente.razonSocial?.trim() || 'Sin razón social';
+        } else {
+          const nombres = cliente.nombres?.trim() || "Sin nombres";
+          const apellidos = cliente.apellidos?.trim() || "Sin apellidos";
+          return `${nombres} ${apellidos}`;
+        }
+      } catch (err) {
+        console.error('Error al formatear datos del cliente:', err, cliente);
+        return "Error al mostrar cliente";
+      }
+    }
+
+    
+
+    // Formateo del estado
+    if (value === "Pendiente" || value === "Pagado" || value === "Vencido") {
       return (
         <span style={{
           backgroundColor: value === 'Pendiente' ? '#fff3cd' : 
@@ -313,8 +372,10 @@ const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPen
         </span>
       );
     }
+
     return value || "No disponible";
   };
+
   return (
     <div className={styles["categoria-container"]}>
       {error ? (
@@ -371,76 +432,69 @@ const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPen
             customFormat={customFormat}
           />
 
-          {/* Modal de Creación */}
-          <Modal
+          {/* Modal de Creación */}          <Modal
             isOpen={isModalOpen}
             onRequestClose={closeModal}
             contentLabel="Crear Pago Pendiente"
             ariaHideApp={false}
-            className="formulario-table-modal-form"
-            overlayClassName="formulario-table-overlay"
+            className="modal-crear"
+            overlayClassName="modal-overlay"
+            closeTimeoutMS={300}
           >
-            <h2 className="formulario-table-modal-title">Crear Nuevo Pago Pendiente</h2>
-            <form onSubmit={handleCreatePagoPendiente} className="formulario-table-formulario-table">
-              <div className="formulario-table-field-group">
-                <label htmlFor="monto">Monto:</label>
+            <form onSubmit={handleCreatePagoPendiente} className="modal-crear-formulario">
+              <div className="modal-crear-header">
+                <h2 className="modal-crear-titulo">Crear Nuevo Pago Pendiente</h2>
+                <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
+                <button type="submit" className="modal-boton-crear">Guardar</button>
+              </div>
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Monto:</label>
                 <input
                   type="number"
-                  step="0.01"
-                  id="monto"
+                  id="monto" 
                   name="monto"
                   required
-                  className="formulario-table-input"
-                />
-              </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="fechaPedido">Fecha Pedido:</label>
+                  className="formulario-input"
+                />              </div>
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Fecha Pedido:</label>
                 <input
                   type="date"
                   id="fechaPedido"
                   name="fechaPedido"
                   required
-                  className="formulario-table-input"
+                  className="formulario-input"
                 />
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="fechaLimite">Fecha Límite:</label>
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Fecha Límite:</label>
                 <input
                   type="date"
                   id="fechaLimite"
                   name="fechaLimite"
                   required
-                  className="formulario-table-input"
+                  className="formulario-input"
                 />
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="estado">Estado:</label>
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Estado:</label>
                 <select 
                   id="estado"
                   name="estado"
                   required
-                  className="formulario-table-input"
+                  className="formulario-input"
                 >
                   <option value="Pendiente">Pendiente</option>
                   <option value="Pagado">Pagado</option>
                   <option value="Vencido">Vencido</option>
                 </select>
-              </div>              <div className="formulario-table-field-group">
-                <label htmlFor="id_cliente">Cliente:</label>
-                <div style={{ display: 'flex', gap: '10px', width: '100%', alignItems: 'center' }}>                  <select
+              </div>              <div className="formulario-grupo">                <label className="formulario-etiqueta">Cliente:</label>
+                <div className="cliente-selector-container">
+                  <select
                     id="id_cliente"
                     name="id_cliente"
                     required
-                    className="formulario-table-input"
-                    style={{ 
-                      flex: 3, 
-                      height: '38px', 
-                      fontSize: '15px',
-                      paddingRight: '25px',
-                      textOverflow: 'ellipsis',
-                      width: '100%',
-                      minWidth: '220px'
-                    }}
+                    className="formulario-input cliente-selector"
                   >
                     <option value="">Seleccione un cliente</option>
                     {clientes && clientes.length > 0 ? (
@@ -453,220 +507,211 @@ const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPen
                       ))
                     ) : (
                       <option disabled>No hay clientes disponibles</option>
-                    )}                  </select>
+                    )}
+                  </select>
                   <button
                     type="button"
                     onClick={openClienteModal}
-                    className="formulario-table-btn-confirm"
-                    style={{ 
-                      whiteSpace: 'nowrap',
-                      padding: '6px 10px',
-                      fontSize: '12px',
-                      flex: 1,
-                      height: '38px'
-                    }}
+                    className="modal-boton-anadir"
                   >
                     Nuevo Cliente
                   </button>
                 </div>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="factura">Factura (PDF/Imagen):</label>
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Factura (PDF/Imagen):</label>
                 <input
                   type="file"
                   id="factura"
                   name="factura"
                   accept=".pdf,.png,.jpg"
-                  className="formulario-table-input"
+                  className="formulario-input"
                 />
-              </div>
-              <div className="formulario-table-form-actions">
-                <button type="submit" className="formulario-table-btn-confirm">
-                  Crear
-                </button>
-                <button type="button" onClick={closeModal} className="formulario-table-btn-cancel">
-                  Cancelar
-                </button>
               </div>
             </form>
           </Modal>
 
-          {/* Modal de Edición */}
-          <Modal
+          {/* Modal de Edición */}          <Modal
             isOpen={isEditModalOpen}
             onRequestClose={() => setIsEditModalOpen(false)}
             contentLabel="Editar Pago Pendiente"
             ariaHideApp={false}
-            className="formulario-table-modal-form"
-            overlayClassName="formulario-table-overlay"
+            className="modal-crear"
+            overlayClassName="modal-overlay"
+            closeTimeoutMS={300}
           >
-            <h2 className="formulario-table-modal-title">Editar Pago Pendiente</h2>
             {currentPagoPendiente && (
-              <form onSubmit={handleEditPagoPendiente} className="formulario-table-formulario-table">
-                <div className="formulario-table-field-group">
-                  <label htmlFor="monto">Monto:</label>
+              <form onSubmit={handleEditPagoPendiente} className="modal-crear-formulario">
+                <div className="modal-crear-header">
+                  <h2 className="modal-crear-titulo">Editar Pago Pendiente</h2>
+                  <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
+                  <button type="submit" className="modal-boton-crear">Guardar</button>
+                </div>
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Monto:</label>
                   <input
                     type="number"
-                    step="0.01"
                     id="monto"
                     name="monto"
                     defaultValue={currentPagoPendiente.monto}
                     required
-                    className="formulario-table-input"
+                    className="formulario-input"
                   />
                 </div>
-                <div className="formulario-table-field-group">
-                  <label htmlFor="fechaPedido">Fecha Pedido:</label>
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Fecha Pedido:</label>
                   <input
-                    type="date"
-                    id="fechaPedido"
+                    type="date"                    id="fechaPedido"
                     name="fechaPedido"
                     defaultValue={currentPagoPendiente.fechaPedido}
                     required
-                    className="formulario-table-input"
+                    className="formulario-input"
                   />
                 </div>
-                <div className="formulario-table-field-group">
-                  <label htmlFor="fechaLimite">Fecha Límite:</label>
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Fecha Límite:</label>
                   <input
                     type="date"
                     id="fechaLimite"
                     name="fechaLimite"
                     defaultValue={currentPagoPendiente.fechaLimite}
                     required
-                    className="formulario-table-input"
+                    className="formulario-input"
                   />
                 </div>
-                <div className="formulario-table-field-group">
-                  <label htmlFor="estado">Estado:</label>
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Estado:</label>
                   <select 
                     id="estado"
                     name="estado"
                     defaultValue={currentPagoPendiente.estado}
                     required
-                    className="formulario-table-input"
+                    className="formulario-input"
                   >
                     <option value="Pendiente">Pendiente</option>
                     <option value="Pagado">Pagado</option>
                     <option value="Vencido">Vencido</option>
                   </select>
-                </div>                <div className="formulario-table-field-group">
-                  <label htmlFor="id_cliente">Cliente:</label>
-                  <div style={{ display: 'flex', gap: '10px', width: '100%', alignItems: 'center' }}>                    <select
+                </div>                
+                <div className="formulario-grupo">                  
+                  <label className="formulario-etiqueta">Cliente:</label>
+                  <div className="cliente-selector-container">                    
+                    <select
                       id="id_cliente"
                       name="id_cliente"
-                      defaultValue={currentPagoPendiente.id_cliente}
+                      defaultValue={currentPagoPendiente.cliente?.id}
                       required
-                      className="formulario-table-input"
-                      style={{ 
-                        flex: 3, 
-                        height: '38px', 
-                        fontSize: '15px',
-                        paddingRight: '25px',
-                        textOverflow: 'ellipsis',
-                        width: '100%',
-                        minWidth: '220px'
-                      }}
+                      className="formulario-input cliente-selector"
                     >
-                      <option value="">Seleccione un cliente</option>
-                      {clientes && clientes.length > 0 ? (
-                        clientes.map((cliente) => (
-                          <option key={cliente.id} value={cliente.id}>
-                            {cliente.tipoCliente === "Empresa" 
-                              ? `${cliente.razonSocial || ''} - ${cliente.rut}` 
-                              : `${cliente.nombres || ''} ${cliente.apellidos || ''} - ${cliente.rut}`}
-                          </option>
-                        ))
-                      ) : (
-                        <option disabled>No hay clientes disponibles</option>
-                      )}                    </select>                    <button
+                      <option value="">Selecciona un Cliente</option>
+                      {clientes && clientes.map((cliente) => (
+                        <option key={cliente.id} value={cliente.id}>
+                          {cliente.tipoCliente === "Empresa" 
+                            ? cliente.razonSocial 
+                            : `${cliente.nombres} ${cliente.apellidos}`}
+                        </option>
+                      ))}                    </select>
+                    <button
                       type="button"
                       onClick={openClienteModal}
-                      className="formulario-table-btn-confirm"
-                      style={{ 
-                        whiteSpace: 'nowrap',
-                        padding: '6px 10px',
-                        fontSize: '12px',
-                        flex: 1,
-                        height: '38px'
-                      }}
+                      className="modal-boton-anadir"
                     >
                       Nuevo Cliente
                     </button>
                   </div>
                 </div>
-                <div className="formulario-table-form-actions">
-                  <button type="submit" className="formulario-table-btn-confirm">
-                    Guardar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsEditModalOpen(false)}
-                    className="formulario-table-btn-cancel"
-                  >
-                    Cancelar
-                  </button>
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Factura (PDF/Imagen):</label>
+                  <input
+                    type="file"
+                    id="factura"
+                    name="factura"
+                    accept=".pdf,.png,.jpg"
+                    className="formulario-input"
+                  />
+                  {currentPagoPendiente.factura && (
+                    <div style={{ marginTop: '5px', fontSize: '0.9em', color: '#666' }}>
+                      Archivo actual: {currentPagoPendiente.factura.split('/').pop()}
+                    </div>
+                  )}
                 </div>
               </form>
             )}
           </Modal>
 
-          {/* Modal de Eliminación */}
-          <Modal
-            isOpen={isDeleteModalOpen}
-            onRequestClose={handleDeleteModalClose}
-            contentLabel="Eliminar Pago Pendiente"
-            ariaHideApp={false}
-            className="formulario-table-modal-form"
-            overlayClassName="formulario-table-overlay"
+      {/* Modal de Eliminación */}<Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={handleDeleteModalClose}
+        contentLabel="Eliminar"
+        ariaHideApp={false}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+        
+      >
+        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar?</h2>
+        <div className="formulario-table-form-actions">
+          <button
+            onClick={confirmDelete}
+            className="formulario-table-btn-confirm"
           >
-            <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar este pago pendiente?</h2>
-            <div className="formulario-table-form-actions">
-              <button
-                onClick={confirmDelete}
-                className="formulario-table-btn-confirm"
-              >
-                Eliminar
-              </button>
-              <button
-                onClick={handleDeleteModalClose}
-                className="formulario-table-btn-cancel"
-              >
-                Cancelar
-              </button>
-            </div>
-          </Modal>
+            Eliminar
+          </button>
+          <button
+            onClick={handleDeleteModalClose}
+            className="formulario-table-btn-cancel"
+          >
+            Cancelar
+          </button>
+        </div>
+      </Modal>
 
-          {/* Modal para Crear Cliente */}
-          <Modal
+          {/* Modal para Crear Cliente */}          <Modal
             isOpen={isClienteModalOpen}
             onRequestClose={() => setIsClienteModalOpen(false)}
             contentLabel="Crear Cliente"
             ariaHideApp={false}
-            className="formulario-table-modal-form"
-            overlayClassName="formulario-table-overlay"
-          >            <h2 className="formulario-table-modal-title">Crear Nuevo Cliente</h2>
-            <form onSubmit={handleCreateCliente} className="formulario-table-formulario-table" id="clienteForm">
-              <div className="formulario-table-field-group">
-                <label htmlFor="tipoCliente">Tipo de Cliente:</label>
+            className="modal-crear"
+            overlayClassName="modal-overlay"
+            closeTimeoutMS={300}
+          >
+            <form onSubmit={handleCreateCliente} className="modal-crear-formulario" id="clienteForm">
+              <div className="modal-crear-header">
+                <h2 className="modal-crear-titulo">Crear Nuevo Cliente</h2>
+                <button type="button" onClick={() => setIsClienteModalOpen(false)} className="modal-crear-cerrar">×</button>
+                <button type="submit" className="modal-boton-crear">Guardar</button>
+              </div>
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Tipo de Cliente:</label>
                 <select
                   id="tipoCliente"
                   name="tipoCliente"
                   required
-                  className="formulario-table-input"
-                  onChange={(e) => {
+                  className="formulario-input"                  onChange={(e) => {
                     const form = e.target.form;
                     const isEmpresa = e.target.value === "Empresa";
                     
-                    // Mostrar/ocultar campos según tipo
                     if (form) {
                       // Campos de empresa
-                      form.querySelector('#razonSocial').parentNode.style.display = isEmpresa ? 'block' : 'none';
-                      form.querySelector('#giro').parentNode.style.display = isEmpresa ? 'block' : 'none';
+                      const empresaFields = form.querySelector('div[style*="display"]:has(#razonSocial)');
+                      if (empresaFields) {
+                        empresaFields.style.display = isEmpresa ? 'block' : 'none';
+                        // Actualizar required en campos de empresa
+                        const razonSocialInput = form.querySelector('#razonSocial');
+                        const giroInput = form.querySelector('#giro');
+                        if (razonSocialInput) razonSocialInput.required = isEmpresa;
+                        if (giroInput) giroInput.required = isEmpresa;
+                      }
                       
                       // Campos de persona
-                      form.querySelector('#nombres').parentNode.style.display = isEmpresa ? 'none' : 'block';
-                      form.querySelector('#apellidos').parentNode.style.display = isEmpresa ? 'none' : 'block';
+                      const personaFields = form.querySelector('div[style*="display"]:has(#nombres)');
+                      if (personaFields) {
+                        personaFields.style.display = isEmpresa ? 'none' : 'block';
+                        // Actualizar required en campos de persona
+                        const nombresInput = form.querySelector('#nombres');
+                        const apellidosInput = form.querySelector('#apellidos');
+                        if (nombresInput) nombresInput.required = !isEmpresa;
+                        if (apellidosInput) apellidosInput.required = !isEmpresa;
+                      }
                     }
                   }}
                 >
@@ -674,126 +719,234 @@ const PagosPendientes = () => {  const { pagosPendientes, loading, fetchPagosPen
                   <option value="Persona">Persona</option>
                   <option value="Empresa">Empresa</option>
                 </select>
-              </div>              <div className="formulario-table-field-group">
-                <label htmlFor="rut">RUT:</label>
+              </div>
+              
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">RUT:</label>
                 <input
                   type="text"
                   id="rut"
                   name="rut"
                   required
-                  className="formulario-table-input"
+                  className="formulario-input"
                   placeholder="Ej: 12345678-9"
                   pattern="(\d{1,2}(\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])"
                   title="Formato válido: 12.345.678-9 o 12345678-9"
                 />
               </div>
-              
-              {/* Campos para Empresa */}
-              <div className="formulario-table-field-group" style={{ display: 'none' }}>
-                <label htmlFor="razonSocial">Razón Social:</label>
-                <input
-                  type="text"
-                  id="razonSocial"
-                  name="razonSocial"
-                  className="formulario-table-input"
-                />
-              </div>
-              <div className="formulario-table-field-group" style={{ display: 'none' }}>
-                <label htmlFor="giro">Giro:</label>
-                <input
-                  type="text"
-                  id="giro"
-                  name="giro"
-                  className="formulario-table-input"
-                />
-              </div>
-              
+
               {/* Campos para Persona */}
-              <div className="formulario-table-field-group">
-                <label htmlFor="nombres">Nombres:</label>
-                <input
-                  type="text"
-                  id="nombres"
-                  name="nombres"
-                  className="formulario-table-input"
-                />
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px', display: 'block' }}>
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Nombres</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <input
+                        type="text"
+                        id="nombres"
+                        name="nombres"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Apellidos</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <input
+                        type="text"
+                        id="apellidos"
+                        name="apellidos"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="apellidos">Apellidos:</label>
-                <input
-                  type="text"
-                  id="apellidos"
-                  name="apellidos"
-                  className="formulario-table-input"
-                />
+
+              {/* Campos para Empresa */}
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px', display: 'none' }}>
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Razón Social</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="razonSocial"
+                        name="razonSocial"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Giro</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="giro"
+                        name="giro"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>              
+              
+              {/* Campos de Contacto */}
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Email</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          dir="ltr"
+                          className="formulario-input"
+                          placeholder="correo@ejemplo.com"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Teléfono</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="telefono"
+                          name="telefono"
+                          dir="ltr"
+                          className="formulario-input"
+                          placeholder="+56 9 XXXX XXXX"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="email">Email:</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="formulario-table-input"
-                />
-              </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="telefono">Teléfono:</label>
-                <input
-                  type="text"
-                  id="telefono"
-                  name="telefono"
-                  className="formulario-table-input"
-                />
-              </div>              <div className="formulario-table-field-group">
-                <label htmlFor="direccion">Dirección:</label>
-                <input
-                  type="text"
-                  id="direccion"
-                  name="direccion"
-                  required
-                  className="formulario-table-input"
-                />
-              </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="comuna">Comuna:</label>
-                <input
-                  type="text"
-                  id="comuna"
-                  name="comuna"
-                  required
-                  className="formulario-table-input"
-                />
-              </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="ciudad">Ciudad:</label>
-                <input
-                  type="text"
-                  id="ciudad"
-                  name="ciudad"
-                  required
-                  className="formulario-table-input"
-                />
-              </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="region">Región:</label>
-                <input
-                  type="text"
-                  id="region"
-                  name="region"
-                  required
-                  className="formulario-table-input"
-                />
-              </div>              <div className="formulario-table-form-actions">
-                <button type="submit" className="formulario-table-btn-confirm">
-                  Crear
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsClienteModalOpen(false)}
-                  className="formulario-table-btn-cancel"
-                >
-                  Cancelar
-                </button>
+
+              {/* Campos de Dirección */}
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px', marginBottom: '10px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Dirección</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="direccion"
+                        name="direccion"
+                        required
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Comuna</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="comuna"
+                          name="comuna"
+                          required
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Ciudad</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="ciudad"
+                          name="ciudad"
+                          required
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Región</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <select
+                        id="region"
+                        name="region"
+                        required
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      >
+                        <option value="">Seleccione Región</option>
+                        <option value="Arica y Parinacota">Arica y Parinacota</option>
+                        <option value="Tarapacá">Tarapacá</option>
+                        <option value="Antofagasta">Antofagasta</option>
+                        <option value="Atacama">Atacama</option>
+                        <option value="Coquimbo">Coquimbo</option>
+                        <option value="Valparaíso">Valparaíso</option>
+                        <option value="Metropolitana de Santiago">Metropolitana de Santiago</option>
+                        <option value="O'Higgins">O'Higgins</option>
+                        <option value="Maule">Maule</option>
+                        <option value="Ñuble">Ñuble</option>
+                        <option value="Biobío">Biobío</option>
+                        <option value="Araucanía">Araucanía</option>
+                        <option value="Los Ríos">Los Ríos</option>
+                        <option value="Los Lagos">Los Lagos</option>
+                        <option value="Aysén">Aysén</option>
+                        <option value="Magallanes y la Antártica Chilena">Magallanes y la Antártica Chilena</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
             </form>
           </Modal>

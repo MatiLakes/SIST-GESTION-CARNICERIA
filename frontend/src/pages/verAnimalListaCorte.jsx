@@ -12,7 +12,6 @@ import "@styles/formulariotable.css";
 import "@styles/modalDetalles.css";
 import "@styles/modalCrear.css";
 
-import Swal from "sweetalert2";
 
 const VerAnimalListaCorte = () => {
   const { animalCortes, loading, error, fetchAnimalCortes } = useGetAnimalCorte();
@@ -530,7 +529,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="abastero"
@@ -566,7 +565,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="CantidadAsadoTira"
@@ -603,7 +602,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="asadoCarniceror"
@@ -640,7 +639,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="asientor"
@@ -677,7 +676,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="choclillo"
@@ -714,7 +713,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="cogote"
@@ -751,7 +750,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="entraña"
@@ -788,7 +787,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="filete"
@@ -825,7 +824,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="ganso"
@@ -862,7 +861,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huachalomo"
@@ -899,7 +898,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="lomoLiso"
@@ -936,7 +935,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="lomoVetado"
@@ -974,7 +973,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="palanca"
@@ -1011,7 +1010,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="plateada"
@@ -1048,7 +1047,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="polloBarriga"
@@ -1085,7 +1084,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="polloGanso"
@@ -1122,7 +1121,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="postaNegra"
@@ -1159,7 +1158,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="postaPaleta"
@@ -1196,7 +1195,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="postaRosada"
@@ -1233,7 +1232,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="puntaGanso"
@@ -1270,7 +1269,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="puntaPicana"
@@ -1307,7 +1306,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="puntaPaleta"
@@ -1344,7 +1343,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="sobrecostilla"
@@ -1381,7 +1380,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="tapabarriga"
@@ -1418,7 +1417,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="tapapecho"
@@ -1455,7 +1454,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huesoCarnudo"
@@ -1492,7 +1491,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huesoCConCarne"
@@ -1529,7 +1528,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="pataVacuno"
@@ -1566,7 +1565,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huachalomoOlla"
@@ -1603,7 +1602,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="cazuelaPaleta"
@@ -1640,7 +1639,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="osobuco"
@@ -1677,7 +1676,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="lagarto"
@@ -1714,7 +1713,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="costillaVacuno"
@@ -1751,7 +1750,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="tapaposta"
@@ -1788,7 +1787,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="malaya"
@@ -1888,7 +1887,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="abastero"
@@ -1925,7 +1924,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="CantidadAsadoTira"
@@ -1962,7 +1961,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="asadoCarniceror"
@@ -1999,7 +1998,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="asientor"
@@ -2036,7 +2035,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="choclillo"
@@ -2073,7 +2072,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="cogote"
@@ -2110,7 +2109,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="entraña"
@@ -2147,7 +2146,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="filete"
@@ -2184,7 +2183,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="ganso"
@@ -2221,7 +2220,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huachalomo"
@@ -2258,7 +2257,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="lomoLiso"
@@ -2295,7 +2294,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="lomoVetado"
@@ -2333,7 +2332,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="palanca"
@@ -2370,7 +2369,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="plateada"
@@ -2407,7 +2406,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="polloBarriga"
@@ -2444,7 +2443,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="polloGanso"
@@ -2481,7 +2480,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="postaNegra"
@@ -2518,7 +2517,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="postaPaleta"
@@ -2555,7 +2554,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="postaRosada"
@@ -2592,7 +2591,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="puntaGanso"
@@ -2629,7 +2628,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="puntaPicana"
@@ -2666,7 +2665,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="puntaPaleta"
@@ -2703,7 +2702,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="sobrecostilla"
@@ -2740,7 +2739,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="tapabarriga"
@@ -2777,7 +2776,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="tapapecho"
@@ -2814,7 +2813,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huesoCarnudo"
@@ -2851,7 +2850,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huesoCConCarne"
@@ -2888,7 +2887,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="pataVacuno"
@@ -2925,7 +2924,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="huachalomoOlla"
@@ -2962,7 +2961,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="cazuelaPaleta"
@@ -2999,7 +2998,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="osobuco"
@@ -3036,7 +3035,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="lagarto"
@@ -3073,7 +3072,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="costillaVacuno"
@@ -3110,7 +3109,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="tapaposta"
@@ -3147,7 +3146,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>Cantidad</label>
+                <label>kg</label>
                 <input
                   type="number"
                   id="malaya"
@@ -3239,28 +3238,28 @@ const VerAnimalListaCorte = () => {
                 <div className="dato-item">
                   <span className="dato-label">Abastecedor</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.abastero} cant.</span>
+                    <span className="cantidad">{animalCorteToView.abastero} kg</span>
                     <span className="precio">${animalCorteToView.precioAbastero}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Asado Tira</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.asadoTira} cant.</span>
+                    <span className="cantidad">{animalCorteToView.asadoTira} kg</span>
                     <span className="precio">${animalCorteToView.precioAsadoTira}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Asado Carnicero</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.asadoCarnicero} cant.</span>
+                    <span className="cantidad">{animalCorteToView.asadoCarnicero} kg</span>
                     <span className="precio">${animalCorteToView.precioAsadoCarnicero}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Asiento</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.asiento} cant.</span>
+                    <span className="cantidad">{animalCorteToView.asiento} kg</span>
                     <span className="precio">${animalCorteToView.precioAsiento}</span>
                   </span>
                 </div>
@@ -3274,210 +3273,210 @@ const VerAnimalListaCorte = () => {
                 <div className="dato-item">
                   <span className="dato-label">Cogote</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.cogote} cant.</span>
+                    <span className="cantidad">{animalCorteToView.cogote} kg</span>
                     <span className="precio">${animalCorteToView.precioCogote}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Entraña</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.entraña} cant.</span>
+                    <span className="cantidad">{animalCorteToView.entraña} kg</span>
                     <span className="precio">${animalCorteToView.precioEntraña}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Filete</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.filete} cant.</span>
+                    <span className="cantidad">{animalCorteToView.filete} kg</span>
                     <span className="precio">${animalCorteToView.precioFilete}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Ganso</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.ganso} cant.</span>
+                    <span className="cantidad">{animalCorteToView.ganso} kg</span>
                     <span className="precio">${animalCorteToView.precioGanso}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Huachalomo</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.huachalomo} cant.</span>
+                    <span className="cantidad">{animalCorteToView.huachalomo} kg</span>
                     <span className="precio">${animalCorteToView.precioHuachalomo}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Lomo Liso</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.lomoLiso} cant.</span>
+                    <span className="cantidad">{animalCorteToView.lomoLiso} kg</span>
                     <span className="precio">${animalCorteToView.precioLomoLiso}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Lomo Vetado</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.lomoVetado} cant.</span>
+                    <span className="cantidad">{animalCorteToView.lomoVetado} kg</span>
                     <span className="precio">${animalCorteToView.precioLomoVetado}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Palanca</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.palanca} cant.</span>
+                    <span className="cantidad">{animalCorteToView.palanca} kg</span>
                     <span className="precio">${animalCorteToView.precioPalanca}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Plateada</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.plateada} cant.</span>
+                    <span className="cantidad">{animalCorteToView.plateada} kg</span>
                     <span className="precio">${animalCorteToView.precioPlateada}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Pollo Barriga</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.polloBarriga} cant.</span>
+                    <span className="cantidad">{animalCorteToView.polloBarriga} kg</span>
                     <span className="precio">${animalCorteToView.precioPolloBarriga}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Pollo Ganso</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.polloGanso} cant.</span>
+                    <span className="cantidad">{animalCorteToView.polloGanso} kg</span>
                     <span className="precio">${animalCorteToView.precioPolloGanso}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Posta Negra</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.postaNegra} cant.</span>
+                    <span className="cantidad">{animalCorteToView.postaNegra} kg</span>
                     <span className="precio">${animalCorteToView.precioPostaNegra}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Posta Paleta</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.postaPaleta} cant.</span>
+                    <span className="cantidad">{animalCorteToView.postaPaleta} kg</span>
                     <span className="precio">${animalCorteToView.precioPostaPaleta}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Posta Rosada</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.postaRosada} cant.</span>
+                    <span className="cantidad">{animalCorteToView.postaRosada} kg</span>
                     <span className="precio">${animalCorteToView.precioPostaRosada}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Punta Ganso</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.puntaGanso} cant.</span>
+                    <span className="cantidad">{animalCorteToView.puntaGanso} kg</span>
                     <span className="precio">${animalCorteToView.precioPuntaGanso}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Punta Picana</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.puntaPicana} cant.</span>
+                    <span className="cantidad">{animalCorteToView.puntaPicana} kg</span>
                     <span className="precio">${animalCorteToView.precioPuntaPicana}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Punta Paleta</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.puntaPaleta} cant.</span>
+                    <span className="cantidad">{animalCorteToView.puntaPaleta} kg</span>
                     <span className="precio">${animalCorteToView.precioPuntaPaleta}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Sobrecostilla</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.sobrecostilla} cant.</span>
+                    <span className="cantidad">{animalCorteToView.sobrecostilla} kg</span>
                     <span className="precio">${animalCorteToView.precioSobrecostilla}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Tapabarriga</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.tapabarriga} cant.</span>
+                    <span className="cantidad">{animalCorteToView.tapabarriga} kg</span>
                     <span className="precio">${animalCorteToView.precioTapabarriga}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Tapapecho</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.tapapecho} cant.</span>
+                    <span className="cantidad">{animalCorteToView.tapapecho} kg</span>
                     <span className="precio">${animalCorteToView.precioTapapecho}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Hueso Carnudo</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.huesoCarnudo} cant.</span>
+                    <span className="cantidad">{animalCorteToView.huesoCarnudo} kg</span>
                     <span className="precio">${animalCorteToView.precioHuesoCarnudo}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Hueso con Carne</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.huesoCConCarne} cant.</span>
+                    <span className="cantidad">{animalCorteToView.huesoCConCarne} kg</span>
                     <span className="precio">${animalCorteToView.precioHuesoCConCarne}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Pata Vacuno</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.pataVacuno} cant.</span>
+                    <span className="cantidad">{animalCorteToView.pataVacuno} kg</span>
                     <span className="precio">${animalCorteToView.precioPataVacuno}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Huachalomo Olla</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.huachalomoOlla} cant.</span>
+                    <span className="cantidad">{animalCorteToView.huachalomoOlla} kg</span>
                     <span className="precio">${animalCorteToView.precioHuachalomoOlla}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Cazuela Paleta</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.cazuelaPaleta} cant.</span>
+                    <span className="cantidad">{animalCorteToView.cazuelaPaleta} kg</span>
                     <span className="precio">${animalCorteToView.precioCazuelaPaleta}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Osobuco</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.osobuco} cant.</span>
+                    <span className="cantidad">{animalCorteToView.osobuco} kg</span>
                     <span className="precio">${animalCorteToView.precioOsobuco}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Lagarto</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.lagarto} cant.</span>
+                    <span className="cantidad">{animalCorteToView.lagarto} kg</span>
                     <span className="precio">${animalCorteToView.precioLagarto}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Costilla Vacuno</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.costillaVacuno} cant.</span>
+                    <span className="cantidad">{animalCorteToView.costillaVacuno} kg</span>
                     <span className="precio">${animalCorteToView.precioCostillaVacuno}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Tapaposta</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.tapaposta} cant.</span>
+                    <span className="cantidad">{animalCorteToView.tapaposta} kg</span>
                     <span className="precio">${animalCorteToView.precioTapaposta}</span>
                   </span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Malaya</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.malaya} cant.</span>
+                    <span className="cantidad">{animalCorteToView.malaya} kg</span>
                     <span className="precio">${animalCorteToView.precioMalaya}</span>
                   </span>
                 </div>

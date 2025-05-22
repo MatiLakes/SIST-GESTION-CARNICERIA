@@ -238,8 +238,9 @@ const Clientes = () => {
     { header: "ID", key: "id" },
     { header: "Tipo Cliente", key: "tipoCliente" },
     { header: "RUT", key: "rut" },
-    { header: "Nombre/Razón Social", key: "nombreCompleto" }, // Usamos una clave personalizada para el nombre
-    { header: "Dirección", key: "direccion" },
+    { header: "Nombre/Razón Social", key: "nombreCompleto" },
+    { header: "Dirección", key: "direccion" }, // Usamos una clave personalizada para el nombre
+    { header: "Región", key: "region" },
     { header: "Comuna", key: "comuna" },
     { header: "Ciudad", key: "ciudad" },
     { header: "Teléfono", key: "telefono" },
@@ -336,6 +337,7 @@ const Clientes = () => {
             showViewButton={false}
             entidad="clientes"
             customFormat={customFormat}
+            showCalendarButton={false}
           />
 
           {/* Modal de Creación */}

@@ -83,7 +83,9 @@ const Table = ({
           row.fecha_vencimiento,
           row.fechaVencimiento,
           row.fechaFaena,
-          row.fechaEntrega
+          row.fechaEntrega,
+          row.fechaPedido,
+          row.fechaLimite
         ];
 
         // Recorre las fechas y verifica si alguna de ellas es válida y coincide con la fecha seleccionada

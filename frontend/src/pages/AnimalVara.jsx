@@ -3,13 +3,16 @@ import { useGetAnimalVara } from "@hooks/animalVara/useGetAnimalVara";
 import { useCreateAnimalVara } from "@hooks/animalVara/useCreateAnimalVara";
 import { useDeleteAnimalVara } from "@hooks/animalVara/useDeleteAnimalVara";
 import { useUpdateAnimalVara } from "@hooks/animalVara/useUpdateAnimalVara";
-import { getAllAnimalCortesService } from '../services/animalCorte.service';  // Aquí la importación correcta
+import { getAllAnimalCortesService } from '../services/animalCorte.service';
+import { MdOutlineEdit } from "react-icons/md";
 import Swal from 'sweetalert2';
 
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
 import "@styles/formulariotable.css";
+import "@styles/modalDetalles.css";
+import "@styles/modalCrear.css";
 
 const AnimalVara = () => {
     const { animalVaras, loading, error, fetchAnimalVaras } = useGetAnimalVara();
@@ -197,7 +200,7 @@ const handleEditSubmit = (e) => {
 
     return (
         <div className={styles["categoria-container"]}>            
-            <Table
+            <Table 
                 data={varasData}
                 columns={columns}
                 headerTitle="Varas"
@@ -209,7 +212,12 @@ const handleEditSubmit = (e) => {
                 showCalendarButton={true}
                 showExcelButton={true}
                 entidad="animal-vara"
-                customFormat={(value) => (value?.nombreLista ? value.nombreLista : value)}
+                customFormat={(value, key) => {
+                    if (key === "precioTotalVara" && (typeof value === "number" || !isNaN(parseFloat(value)))) {
+                        return `$${parseFloat(value).toLocaleString('es-CL')}`;
+                    }
+                    return value?.nombreLista ? value.nombreLista : value;
+                }}
             />
 
             {/* Modal de Creación */}
@@ -218,13 +226,18 @@ const handleEditSubmit = (e) => {
                 onRequestClose={() => setIsCreateModalOpen(false)}
                 contentLabel="Añadir Vara"
                 ariaHideApp={false}
-                className="formulario-table-modal-form"
-                overlayClassName="formulario-table-overlay"
+                className="modal-crear"
+                overlayClassName="modal-overlay"
+                closeTimeoutMS={300}
             >
-                <h2 className="formulario-table-modal-title">Añadir Vara</h2>
-                <form onSubmit={handleCreateModalSubmit} className="formulario-table-formulario-table">
-                    <div className="formulario-table-field-group">
-                        <label htmlFor="fechaLlegada">Fecha de Llegada:</label>
+                <form onSubmit={handleCreateModalSubmit} className="modal-crear-formulario">
+                    <div className="modal-crear-header">
+                        <h2 className="modal-crear-titulo">Añadir Vara</h2>
+                        <button type="button" onClick={() => setIsCreateModalOpen(false)} className="modal-crear-cerrar">×</button>
+                        <button type="submit" className="modal-boton-crear">Guardar</button>
+                    </div>
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Fecha de Llegada:</label>
                         <input
                             type="date"
                             id="fechaLlegada"
@@ -232,11 +245,11 @@ const handleEditSubmit = (e) => {
                             value={newAnimalVaraData.fechaLlegada}
                             onChange={handleCreateModalChange}
                             required
-                            className="formulario-table-input"
+                            className="formulario-input"
                         />
                     </div>
-                    <div className="formulario-table-field-group">
-                        <label htmlFor="temperaturaLlegada">Temperatura de Llegada:</label>
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Temperatura de Llegada:</label>
                         <input
                             type="number"
                             id="temperaturaLlegada"
@@ -244,11 +257,11 @@ const handleEditSubmit = (e) => {
                             value={newAnimalVaraData.temperaturaLlegada}
                             onChange={handleCreateModalChange}
                             required
-                            className="formulario-table-input"
+                            className="formulario-input"
                         />
                     </div>
-                    <div className="formulario-table-field-group">
-                        <label htmlFor="precioTotalVara">Precio total Vara:</label>
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Precio Total Vara:</label>
                         <input
                             type="number"
                             id="precioTotalVara"
@@ -256,39 +269,28 @@ const handleEditSubmit = (e) => {
                             value={newAnimalVaraData.precioTotalVara}
                             onChange={handleCreateModalChange}
                             required
-                            className="formulario-table-input"
+                            className="formulario-input"
                         />
                     </div>
-                  
-                    <div className="formulario-table-field-group">
-    <label htmlFor="nombreLista">Lista de Precios:</label>
-    <select
-        id="nombreLista"
-        name="tipoAnimal.nombreLista"  // Es importante usar el nombre correcto para actualizar el campo dentro de tipoAnimal
-        value={newAnimalVaraData.tipoAnimal.nombreLista}  // Usamos el valor correcto de tipoAnimal.nombreLista
-        onChange={handleCreateModalChange}
-        required
-        className="formulario-table-input tipo-cuenta-select"
-    >
-        <option value="">Selecciona una Lista de Precios</option>
-        {tiposAnimales.map((tipo) => (
-            <option key={tipo.id} value={tipo.nombreLista}>
-                {tipo.nombreLista}  {/* Muestra el nombreLista */}
-            </option>
-        ))}
-    </select>
-</div>            <div className="formulario-table-form-actions">
-                        <button type="submit" className="formulario-table-btn-confirm">
-                            Crear
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setIsCreateModalOpen(false)}
-                            className="formulario-table-btn-cancel"
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Lista de Precios:</label>
+                        <select
+                            id="nombreLista"
+                            name="tipoAnimal.nombreLista"
+                            value={newAnimalVaraData.tipoAnimal.nombreLista}
+                            onChange={handleCreateModalChange}
+                            required
+                            className="formulario-input"
                         >
-                            Cancelar
-                        </button>
+                            <option value="">Selecciona una Lista de Precios</option>
+                            {tiposAnimales.map((tipo) => (
+                                <option key={tipo.id} value={tipo.nombreLista}>
+                                    {tipo.nombreLista}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+                    
                 </form>
             </Modal>
 
@@ -298,13 +300,18 @@ const handleEditSubmit = (e) => {
                 onRequestClose={() => setIsEditModalOpen(false)}
                 contentLabel="Editar Vara"
                 ariaHideApp={false}
-                className="formulario-table-modal-form"
-                overlayClassName="formulario-table-overlay"
+                className="modal-crear"  
+                overlayClassName="modal-overlay"
+                closeTimeoutMS={300}
             >
-                <h2 className="formulario-table-modal-title">Editar Vara</h2>
-                <form onSubmit={handleEditSubmit} className="formulario-table-formulario-table">
-                    <div className="formulario-table-field-group">
-                        <label htmlFor="fechaLlegada">Fecha de Llegada:</label>
+                <form onSubmit={handleEditSubmit} className="modal-crear-formulario">
+                    <div className="modal-crear-header">
+                        <h2 className="modal-crear-titulo">Editar Vara</h2>
+                        <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
+                        <button type="submit" className="modal-boton-crear">Guardar</button>
+                    </div>
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Fecha de Llegada:</label>
                         <input
                             type="date"
                             id="fechaLlegada"
@@ -312,11 +319,11 @@ const handleEditSubmit = (e) => {
                             value={formData.fechaLlegada}
                             onChange={handleEditChange}
                             required
-                            className="formulario-table-input"
+                            className="formulario-input"
                         />
                     </div>
-                    <div className="formulario-table-field-group">
-                        <label htmlFor="temperaturaLlegada">Temperatura de Llegada:</label>
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Temperatura de Llegada:</label>
                         <input
                             type="number"
                             id="temperaturaLlegada"
@@ -324,79 +331,67 @@ const handleEditSubmit = (e) => {
                             value={formData.temperaturaLlegada}
                             onChange={handleEditChange}
                             required
-                            className="formulario-table-input"
+                            className="formulario-input"
                         />
                     </div>
-                    <div className="formulario-table-field-group">
-                        <label htmlFor="precioTotalVara">Precio total Vara:</label>
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Precio Total Vara:</label>
                         <input
-                            type="text"
+                            type="number"
                             id="precioTotalVara"
                             name="precioTotalVara"
                             value={formData.precioTotalVara}
                             onChange={handleEditChange}
                             required
-                            className="formulario-table-input"
+                            className="formulario-input"
                         />
                     </div>
-                    <div className="formulario-table-field-group">
-                    <label htmlFor="nombreLista">Lista de Precios:</label>
-                    <select
-                        id="nombreLista"
-                        name="tipoAnimal.nombreLista"  // Es importante usar el nombre correcto para actualizar el campo dentro de tipoAnimal
-                        value={formData.tipoAnimal}  // Usamos el valor correcto de tipoAnimal.nombreLista
-                        onChange={handleEditChange}
-                        required
-                        className="formulario-table-input tipo-cuenta-select"
-                    >
-                        <option value="">Selecciona una Lista de Precios</option>
-                        {tiposAnimales.map((tipo) => (
-                            <option key={tipo.id} value={tipo.nombreLista}>
-                                {tipo.nombreLista}  {/* Muestra el nombreLista */}
-                            </option>
-                        ))}
-                    </select>
-                </div>  
-                    <div className="formulario-table-form-actions">
-                        <button type="submit" className="formulario-table-btn-confirm">
-                            Actualizar
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setIsEditModalOpen(false)}
-                            className="formulario-table-btn-cancel"
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Lista de Precios:</label>
+                        <select
+                            id="nombreLista"
+                            name="tipoAnimal.nombreLista"
+                            value={formData.tipoAnimal}
+                            onChange={handleEditChange}
+                            required
+                            className="formulario-input"
                         >
-                            Cancelar
-                        </button>
+                            <option value="">Selecciona una Lista de Precios</option>
+                            {tiposAnimales.map((tipo) => (
+                                <option key={tipo.id} value={tipo.nombreLista}>
+                                    {tipo.nombreLista}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </form>
             </Modal>
 
-           {/* Modal de Eliminación */}
-                 <Modal
-                   isOpen={isDeleteModalOpen}
-                   onRequestClose={handleDeleteModalClose}
-                   contentLabel="Eliminar Proveedor"
-                   ariaHideApp={false}
-                   className="formulario-table-modal-form"
-                   overlayClassName="formulario-table-overlay"
-                 >
-                   <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar este proveedor?</h2>
-                   <div className="formulario-table-form-actions">
-                     <button
-                       onClick={confirmDelete}
-                       className="formulario-table-btn-confirm"
-                     >
-                       Eliminar
-                     </button>
-                     <button
-                       onClick={handleDeleteModalClose}
-                       className="formulario-table-btn-cancel"
-                     >
-                       Cancelar
-                     </button>
-                   </div>
-                 </Modal>
+            {/* Modal de Eliminación */}
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onRequestClose={handleDeleteModalClose}
+                contentLabel="Eliminar Vara"
+                ariaHideApp={false}
+                className="formulario-table-modal-form"
+                overlayClassName="formulario-table-overlay"
+            >
+                <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar esta vara?</h2>
+                <div className="formulario-table-form-actions">
+                    <button
+                        onClick={confirmDelete}
+                        className="formulario-table-btn-confirm"
+                    >
+                        Eliminar
+                    </button>
+                    <button
+                        onClick={handleDeleteModalClose}
+                        className="formulario-table-btn-cancel"
+                    >
+                        Cancelar
+                    </button>
+                </div>
+            </Modal>
         </div>
     );
 };
