@@ -16,6 +16,8 @@ import AnimalVara from '@pages/AnimalVara';
 import Subproductos from '@pages/Subproductos';
 import PagosPendientes from './pages/PagosPendientes';
 import Clientes from './pages/Clientes';
+import ControlHigiene from './pages/ControlHigiene';
+import Personal from './pages/Personal';
 
 import '@styles/styles.css';
 
@@ -89,6 +91,25 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+
+      {
+        path: '/control-higiene',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <ControlHigiene />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/personal',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Personal />
+          </ProtectedRoute>
+        ),
+      },
+
       {
         path: '/pedidos',
         element: (

@@ -256,8 +256,7 @@ const Table = ({
                       {columns.map((col) => {
                         const cellValue = row[col.key];
                         return (
-                          <td key={col.key}>
-                            {editAll && (col.key === "precio" || col.key === "cantidad") ? (
+                          <td key={col.key}>                            {editAll && (col.key === "precio" || col.key === "cantidad") ? (
                               <input
                                 type="text"
                                 value={cellValue || ""}
@@ -266,7 +265,22 @@ const Table = ({
                                   handleCellChange(e.target.value, rowIndex, col.key);
                                 }}
                               />                            ) : (
-                              formatData(cellValue || "No disponible", col.key)
+                              // Manejar propiedades anidadas como "personal.nombre"
+                              col.key.includes('.') ? 
+                                (() => {
+                                  const keys = col.key.split('.');
+                                  let value = row;
+                                  // Navegar por el objeto siguiendo la cadena de claves
+                                  for (const key of keys) {
+                                    if (value && typeof value === 'object') {
+                                      value = value[key];
+                                    } else {
+                                      value = undefined;
+                                      break;
+                                    }
+                                  }
+                                  return formatData(value || "No disponible", col.key);
+                                })() : formatData(cellValue || "No disponible", col.key)
                             )}
                           </td>
                         );
