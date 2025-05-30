@@ -12,6 +12,8 @@ import marcaProductoRoutes from "./marcaProducto.routes.js";
 import subproductoRoutes from "./subproducto.routes.js";
 import pagoPendienteRoutes from "./pagoPendiente.routes.js";
 import clienteRoutes from "./cliente.routes.js";
+import personalRoutes from "./personal.routes.js";
+import controlHigieneRoutes from "./controlHigiene.routes.js";
 
 const router = Router();
 
@@ -27,6 +29,8 @@ router
   .use("/marcas-productos", marcaProductoRoutes)
   .use("/subproductos", subproductoRoutes)
   .use("/pagos-pendientes", pagoPendienteRoutes)
-  .use("/clientes", clienteRoutes);
+  .use("/clientes", clienteRoutes)
+  .use("/personal", personalRoutes)
+  .use("/control-higiene", controlHigieneRoutes);
 
 export default router;

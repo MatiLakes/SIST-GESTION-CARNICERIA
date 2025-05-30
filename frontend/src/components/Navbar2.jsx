@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState, useEffect } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket } from "react-icons/fa";
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket, FaFileAlt, FaHardHat } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { GiMilkCarton } from "react-icons/gi";
 import { GiCow } from "react-icons/gi";
@@ -111,6 +111,20 @@ const Navbar2 = () => {
                     <span>Productos</span>
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink to="/control-higiene" className={location.pathname === "/control-higiene" ? "active" : ""}>
+                    <FaFileAlt className="nav-icon" />
+                    <span>Control Higiene</span>
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink to="/personal" className={location.pathname === "/personal" ? "active" : ""}>
+                    <FaHardHat className="nav-icon" />
+                    <span>Personal</span>
+                  </NavLink>
+                </li>
+
                 <li>
                   <NavLink to="/subproductos" className={location.pathname === "/subproductos" ? "active" : ""}>
                     <FaShoppingBasket  className="nav-icon" />
