@@ -201,7 +201,7 @@ const Productos = () => {
     { header: "Variante", key: "variante" },
     { header: "Precio Venta", key: "precioVenta" },
     { header: "Precio Compra", key: "precioCompra" },    
-    { header: "Cant kg", key: "stock" },
+
     { header: "Fecha Vencimiento", key: "fechaVencimiento" },
     { header: "Tipo", key: "tipo" },
     { header: "Marca", key: "marca" }
@@ -283,7 +283,7 @@ const Productos = () => {
             />
           </div>
           <div className="formulario-grupo">
-            <label className="formulario-etiqueta">Cantidad de kg:</label>
+            <label className="formulario-etiqueta">Cantidad:</label>
             <input
               type="number"
               id="stock"
@@ -429,7 +429,7 @@ const Productos = () => {
               />
             </div>
             <div className="formulario-grupo">              
-              <label className="formulario-etiqueta">Cantidad de kg:</label>
+              <label className="formulario-etiqueta">Cantidad:</label>
               <input
                 type="number"
                 id="stock"

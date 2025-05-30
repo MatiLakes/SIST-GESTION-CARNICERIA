@@ -346,159 +346,289 @@ const Clientes = () => {
             onRequestClose={closeModal}
             contentLabel="Crear Cliente"
             ariaHideApp={false}
-            className="formulario-table-modal-form"
-            overlayClassName="formulario-table-overlay"
+            className="modal-crear"
+            overlayClassName="modal-overlay"
+            closeTimeoutMS={300}
           >
-            <h2 className="formulario-table-modal-title">Crear Nuevo Cliente</h2>
-            <form onSubmit={handleCreateCliente} className="formulario-table-formulario-table">
-              <div className="formulario-table-field-group">
-                <label htmlFor="tipoCliente">Tipo de Cliente:</label>
-                <select 
+            <form onSubmit={handleCreateCliente} className="modal-crear-formulario">
+              <div className="modal-crear-header">
+                <h2 className="modal-crear-titulo">Crear Nuevo Cliente</h2>
+                <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
+                <button type="submit" className="modal-boton-crear">Guardar</button>
+              </div>
+
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Tipo de Cliente:</label>
+                <select
                   id="tipoCliente"
                   name="tipoCliente"
                   required
-                  className="formulario-table-input"
-                  onChange={handleTipoClienteChange}
-                  value={clienteType}
+                  className="formulario-input"
+                  onChange={(e) => {
+                    const form = e.target.form;
+                    const isEmpresa = e.target.value === "Empresa";
+                    
+                    if (form) {
+                      // Campos de empresa
+                      const empresaFields = form.querySelector('div[style*="display"]:has(#razonSocial)');
+                      if (empresaFields) {
+                        empresaFields.style.display = isEmpresa ? 'block' : 'none';
+                        // Actualizar required en campos de empresa
+                        const razonSocialInput = form.querySelector('#razonSocial');
+                        const giroInput = form.querySelector('#giro');
+                        if (razonSocialInput) razonSocialInput.required = isEmpresa;
+                        if (giroInput) giroInput.required = isEmpresa;
+                      }
+                      
+                      // Campos de persona
+                      const personaFields = form.querySelector('div[style*="display"]:has(#nombres)');
+                      if (personaFields) {
+                        personaFields.style.display = isEmpresa ? 'none' : 'block';
+                        // Actualizar required en campos de persona
+                        const nombresInput = form.querySelector('#nombres');
+                        const apellidosInput = form.querySelector('#apellidos');
+                        if (nombresInput) nombresInput.required = !isEmpresa;
+                        if (apellidosInput) apellidosInput.required = !isEmpresa;
+                      }
+                    }
+                  }}
                 >
+                  <option value="">Seleccione tipo</option>
                   <option value="Persona">Persona</option>
                   <option value="Empresa">Empresa</option>
                 </select>
               </div>
-
-              <div className="formulario-table-field-group">
-                <label htmlFor="rut">RUT:</label>
+              
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">RUT:</label>
                 <input
                   type="text"
                   id="rut"
                   name="rut"
-                  placeholder="12.345.678-9"
                   required
-                  className="formulario-table-input"
+                  className="formulario-input"
+                  placeholder="Ej: 12345678-9"
+                  pattern="(\d{1,2}(\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])"
+                  title="Formato válido: 12.345.678-9 o 12345678-9"
                 />
               </div>
 
-              {clienteType === "Persona" && (
-                <>
-                  <div className="formulario-table-field-group">
-                    <label htmlFor="nombres">Nombres:</label>
-                    <input
-                      type="text"
-                      id="nombres"
-                      name="nombres"
-                      required
-                      className="formulario-table-input"
-                    />
+              {/* Campos para Persona */}
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px', display: 'block' }}>
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Nombres</span>
                   </div>
-                  <div className="formulario-table-field-group">
-                    <label htmlFor="apellidos">Apellidos:</label>
-                    <input
-                      type="text"
-                      id="apellidos"
-                      name="apellidos"
-                      required
-                      className="formulario-table-input"
-                    />
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="nombres"
+                        name="nombres"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
                   </div>
-                </>
-              )}
+                </div>
 
-              {clienteType === "Empresa" && (
-                <>
-                  <div className="formulario-table-field-group">
-                    <label htmlFor="razonSocial">Razón Social:</label>
-                    <input
-                      type="text"
-                      id="razonSocial"
-                      name="razonSocial"
-                      required
-                      className="formulario-table-input"
-                    />
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Apellidos</span>
                   </div>
-                  <div className="formulario-table-field-group">
-                    <label htmlFor="giro">Giro:</label>
-                    <input
-                      type="text"
-                      id="giro"
-                      name="giro"
-                      required
-                      className="formulario-table-input"
-                    />
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="apellidos"
+                        name="apellidos"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
                   </div>
-                </>
-              )}
-
-              <div className="formulario-table-field-group">
-                <label htmlFor="direccion">Dirección:</label>
-                <input
-                  type="text"
-                  id="direccion"
-                  name="direccion"
-                  required
-                  className="formulario-table-input"
-                />
+                </div>
               </div>
 
-              <div className="formulario-table-field-group">
-                <label htmlFor="comuna">Comuna:</label>
-                <input
-                  type="text"
-                  id="comuna"
-                  name="comuna"
-                  required
-                  className="formulario-table-input"
-                />
+              {/* Campos para Empresa */}
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px', display: 'none' }}>
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Razón Social</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="razonSocial"
+                        name="razonSocial"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Giro</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="giro"
+                        name="giro"
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="formulario-table-field-group">
-                <label htmlFor="ciudad">Ciudad:</label>
-                <input
-                  type="text"
-                  id="ciudad"
-                  name="ciudad"
-                  required
-                  className="formulario-table-input"
-                />
+              {/* Campos de Contacto */}
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Email</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          dir="ltr"
+                          className="formulario-input"
+                          placeholder="correo@ejemplo.com"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Teléfono</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="telefono"
+                          name="telefono"
+                          dir="ltr"
+                          className="formulario-input"
+                          placeholder="+56 9 XXXX XXXX"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="formulario-table-field-group">
-                <label htmlFor="region">Región:</label>
-                <input
-                  type="text"
-                  id="region"
-                  name="region"
-                  required
-                  className="formulario-table-input"
-                />
-              </div>
+              {/* Campos de Dirección */}
+              <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px', marginBottom: '10px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Dirección</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <input
+                        type="text"
+                        id="direccion"
+                        name="direccion"
+                        required
+                        dir="ltr"
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-              <div className="formulario-table-field-group">
-                <label htmlFor="telefono">Teléfono:</label>
-                <input
-                  type="text"
-                  id="telefono"
-                  name="telefono"
-                  className="formulario-table-input"
-                />
-              </div>
+                <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Comuna</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="comuna"
+                          name="comuna"
+                          required
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="formulario-table-field-group">
-                <label htmlFor="email">Email:</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="formulario-table-input"
-                />
-              </div>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Ciudad</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="ciudad"
+                          name="ciudad"
+                          required
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="formulario-table-form-actions">
-                <button type="submit" className="formulario-table-btn-confirm">
-                  Crear
-                </button>
-                <button type="button" onClick={closeModal} className="formulario-table-btn-cancel">
-                  Cancelar
-                </button>
+                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                  <div className="subproducto-nombre-grupo">
+                    <span className="subproducto-nombre">Región</span>
+                  </div>
+                  <div className="subproducto-inputs-grupo">
+                    <div className="input-grupo" style={{ width: '100%' }}>
+                      <select
+                        id="region"
+                        name="region"
+                        required
+                        className="formulario-input"
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                      >
+                        <option value="">Seleccione Región</option>
+                        <option value="Arica y Parinacota">Arica y Parinacota</option>
+                        <option value="Tarapacá">Tarapacá</option>
+                        <option value="Antofagasta">Antofagasta</option>
+                        <option value="Atacama">Atacama</option>
+                        <option value="Coquimbo">Coquimbo</option>
+                        <option value="Valparaíso">Valparaíso</option>
+                        <option value="Metropolitana de Santiago">Metropolitana de Santiago</option>
+                        <option value="O'Higgins">O'Higgins</option>
+                        <option value="Maule">Maule</option>
+                        <option value="Ñuble">Ñuble</option>
+                        <option value="Biobío">Biobío</option>
+                        <option value="Araucanía">Araucanía</option>
+                        <option value="Los Ríos">Los Ríos</option>
+                        <option value="Los Lagos">Los Lagos</option>
+                        <option value="Aysén">Aysén</option>
+                        <option value="Magallanes y la Antártica Chilena">Magallanes y la Antártica Chilena</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
             </form>
           </Modal>
@@ -509,174 +639,307 @@ const Clientes = () => {
             onRequestClose={() => setIsEditModalOpen(false)}
             contentLabel="Editar Cliente"
             ariaHideApp={false}
-            className="formulario-table-modal-form"
-            overlayClassName="formulario-table-overlay"
+            className="modal-crear"
+            overlayClassName="modal-overlay"
+            closeTimeoutMS={300}
           >
-            <h2 className="formulario-table-modal-title">Editar Cliente</h2>
             {currentCliente && (
-              <form onSubmit={handleEditCliente} className="formulario-table-formulario-table">
-                <div className="formulario-table-field-group">
-                  <label htmlFor="tipoCliente">Tipo de Cliente:</label>
-                  <select 
+              <form onSubmit={handleEditCliente} className="modal-crear-formulario">
+                <div className="modal-crear-header">
+                  <h2 className="modal-crear-titulo">Editar Cliente</h2>
+                  <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
+                  <button type="submit" className="modal-boton-crear">Guardar</button>
+                </div>
+
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Tipo de Cliente:</label>
+                  <select
                     id="tipoCliente"
                     name="tipoCliente"
-                    defaultValue={currentCliente.tipoCliente}
                     required
-                    className="formulario-table-input"
-                    onChange={handleTipoClienteChange}
+                    className="formulario-input"
+                    onChange={(e) => {
+                      setClienteType(e.target.value);
+                      const form = e.target.form;
+                      const isEmpresa = e.target.value === "Empresa";
+                      
+                      if (form) {
+                        // Campos de empresa
+                        const empresaFields = form.querySelector('div[style*="display"]:has(#razonSocial)');
+                        if (empresaFields) {
+                          empresaFields.style.display = isEmpresa ? 'block' : 'none';
+                          // Actualizar required en campos de empresa
+                          const razonSocialInput = form.querySelector('#razonSocial');
+                          const giroInput = form.querySelector('#giro');
+                          if (razonSocialInput) razonSocialInput.required = isEmpresa;
+                          if (giroInput) giroInput.required = isEmpresa;
+                        }
+                        
+                        // Campos de persona
+                        const personaFields = form.querySelector('div[style*="display"]:has(#nombres)');
+                        if (personaFields) {
+                          personaFields.style.display = isEmpresa ? 'none' : 'block';
+                          // Actualizar required en campos de persona
+                          const nombresInput = form.querySelector('#nombres');
+                          const apellidosInput = form.querySelector('#apellidos');
+                          if (nombresInput) nombresInput.required = !isEmpresa;
+                          if (apellidosInput) apellidosInput.required = !isEmpresa;
+                        }
+                      }
+                    }}
+                    value={clienteType}
+                    defaultValue={currentCliente.tipoCliente}
                   >
                     <option value="Persona">Persona</option>
                     <option value="Empresa">Empresa</option>
                   </select>
                 </div>
-
-                <div className="formulario-table-field-group">
-                  <label htmlFor="rut">RUT:</label>
+                
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">RUT:</label>
                   <input
                     type="text"
                     id="rut"
                     name="rut"
+                    required
+                    className="formulario-input"
+                    placeholder="Ej: 12345678-9"
+                    pattern="(\d{1,2}(\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])"
+                    title="Formato válido: 12.345.678-9 o 12345678-9"
                     defaultValue={currentCliente.rut}
-                    required
-                    className="formulario-table-input"
                   />
                 </div>
 
-                {clienteType === "Persona" && (
-                  <>
-                    <div className="formulario-table-field-group">
-                      <label htmlFor="nombres">Nombres:</label>
-                      <input
-                        type="text"
-                        id="nombres"
-                        name="nombres"
-                        defaultValue={currentCliente.nombres}
-                        required
-                        className="formulario-table-input"
-                      />
+                {/* Campos para Persona */}
+                <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px', display: clienteType === 'Persona' ? 'block' : 'none' }}>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Nombres</span>
                     </div>
-                    <div className="formulario-table-field-group">
-                      <label htmlFor="apellidos">Apellidos:</label>
-                      <input
-                        type="text"
-                        id="apellidos"
-                        name="apellidos"
-                        defaultValue={currentCliente.apellidos}
-                        required
-                        className="formulario-table-input"
-                      />
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="nombres"
+                          name="nombres"
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                          required={clienteType === 'Persona'}
+                          defaultValue={currentCliente.nombres}
+                        />
+                      </div>
                     </div>
-                  </>
-                )}
+                  </div>
 
-                {clienteType === "Empresa" && (
-                  <>
-                    <div className="formulario-table-field-group">
-                      <label htmlFor="razonSocial">Razón Social:</label>
-                      <input
-                        type="text"
-                        id="razonSocial"
-                        name="razonSocial"
-                        defaultValue={currentCliente.razonSocial}
-                        required
-                        className="formulario-table-input"
-                      />
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Apellidos</span>
                     </div>
-                    <div className="formulario-table-field-group">
-                      <label htmlFor="giro">Giro:</label>
-                      <input
-                        type="text"
-                        id="giro"
-                        name="giro"
-                        defaultValue={currentCliente.giro}
-                        required
-                        className="formulario-table-input"
-                      />
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="apellidos"
+                          name="apellidos"
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                          required={clienteType === 'Persona'}
+                          defaultValue={currentCliente.apellidos}
+                        />
+                      </div>
                     </div>
-                  </>
-                )}
-
-                <div className="formulario-table-field-group">
-                  <label htmlFor="direccion">Dirección:</label>
-                  <input
-                    type="text"
-                    id="direccion"
-                    name="direccion"
-                    defaultValue={currentCliente.direccion}
-                    required
-                    className="formulario-table-input"
-                  />
+                  </div>
                 </div>
 
-                <div className="formulario-table-field-group">
-                  <label htmlFor="comuna">Comuna:</label>
-                  <input
-                    type="text"
-                    id="comuna"
-                    name="comuna"
-                    defaultValue={currentCliente.comuna}
-                    required
-                    className="formulario-table-input"
-                  />
+                {/* Campos para Empresa */}
+                <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px', display: clienteType === 'Empresa' ? 'block' : 'none' }}>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Razón Social</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="razonSocial"
+                          name="razonSocial"
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                          required={clienteType === 'Empresa'}
+                          defaultValue={currentCliente.razonSocial}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Giro</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="giro"
+                          name="giro"
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                          required={clienteType === 'Empresa'}
+                          defaultValue={currentCliente.giro}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="formulario-table-field-group">
-                  <label htmlFor="ciudad">Ciudad:</label>
-                  <input
-                    type="text"
-                    id="ciudad"
-                    name="ciudad"
-                    defaultValue={currentCliente.ciudad}
-                    required
-                    className="formulario-table-input"
-                  />
+                {/* Campos de Contacto */}
+                <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+                  <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+                    <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                      <div className="subproducto-nombre-grupo">
+                        <span className="subproducto-nombre">Email</span>
+                      </div>
+                      <div className="subproducto-inputs-grupo">
+                        <div className="input-grupo" style={{ width: '100%' }}>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            dir="ltr"
+                            className="formulario-input"
+                            placeholder="correo@ejemplo.com"
+                            style={{ minWidth: '220px', textAlign: 'left' }}
+                            defaultValue={currentCliente.email}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                      <div className="subproducto-nombre-grupo">
+                        <span className="subproducto-nombre">Teléfono</span>
+                      </div>
+                      <div className="subproducto-inputs-grupo">
+                        <div className="input-grupo" style={{ width: '100%' }}>
+                          <input
+                            type="text"
+                            id="telefono"
+                            name="telefono"
+                            dir="ltr"
+                            className="formulario-input"
+                            placeholder="+56 9 XXXX XXXX"
+                            style={{ minWidth: '220px', textAlign: 'left' }}
+                            defaultValue={currentCliente.telefono}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="formulario-table-field-group">
-                  <label htmlFor="region">Región:</label>
-                  <input
-                    type="text"
-                    id="region"
-                    name="region"
-                    defaultValue={currentCliente.region}
-                    required
-                    className="formulario-table-input"
-                  />
-                </div>
+                {/* Campos de Dirección */}
+                <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px', marginBottom: '10px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Dirección</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <input
+                          type="text"
+                          id="direccion"
+                          name="direccion"
+                          required
+                          dir="ltr"
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                          defaultValue={currentCliente.direccion}
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="formulario-table-field-group">
-                  <label htmlFor="telefono">Teléfono:</label>
-                  <input
-                    type="text"
-                    id="telefono"
-                    name="telefono"
-                    defaultValue={currentCliente.telefono}
-                    className="formulario-table-input"
-                  />
-                </div>
+                  <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+                    <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                      <div className="subproducto-nombre-grupo">
+                        <span className="subproducto-nombre">Comuna</span>
+                      </div>
+                      <div className="subproducto-inputs-grupo">
+                        <div className="input-grupo" style={{ width: '100%' }}>
+                          <input
+                            type="text"
+                            id="comuna"
+                            name="comuna"
+                            required
+                            dir="ltr"
+                            className="formulario-input"
+                            style={{ minWidth: '220px', textAlign: 'left' }}
+                            defaultValue={currentCliente.comuna}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-                <div className="formulario-table-field-group">
-                  <label htmlFor="email">Email:</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    defaultValue={currentCliente.email}
-                    className="formulario-table-input"
-                  />
-                </div>
+                    <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                      <div className="subproducto-nombre-grupo">
+                        <span className="subproducto-nombre">Ciudad</span>
+                      </div>
+                      <div className="subproducto-inputs-grupo">
+                        <div className="input-grupo" style={{ width: '100%' }}>
+                          <input
+                            type="text"
+                            id="ciudad"
+                            name="ciudad"
+                            required
+                            dir="ltr"
+                            className="formulario-input"
+                            style={{ minWidth: '220px', textAlign: 'left' }}
+                            defaultValue={currentCliente.ciudad}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="formulario-table-form-actions">
-                  <button type="submit" className="formulario-table-btn-confirm">
-                    Guardar
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setIsEditModalOpen(false)} 
-                    className="formulario-table-btn-cancel"
-                  >
-                    Cancelar
-                  </button>
+                  <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                    <div className="subproducto-nombre-grupo">
+                      <span className="subproducto-nombre">Región</span>
+                    </div>
+                    <div className="subproducto-inputs-grupo">
+                      <div className="input-grupo" style={{ width: '100%' }}>
+                        <select
+                          id="region"
+                          name="region"
+                          required
+                          className="formulario-input"
+                          style={{ minWidth: '220px', textAlign: 'left' }}
+                          defaultValue={currentCliente.region}
+                        >
+                          <option value="">Seleccione Región</option>
+                          <option value="Arica y Parinacota">Arica y Parinacota</option>
+                          <option value="Tarapacá">Tarapacá</option>
+                          <option value="Antofagasta">Antofagasta</option>
+                          <option value="Atacama">Atacama</option>
+                          <option value="Coquimbo">Coquimbo</option>
+                          <option value="Valparaíso">Valparaíso</option>
+                          <option value="Metropolitana de Santiago">Metropolitana de Santiago</option>
+                          <option value="O'Higgins">O'Higgins</option>
+                          <option value="Maule">Maule</option>
+                          <option value="Ñuble">Ñuble</option>
+                          <option value="Biobío">Biobío</option>
+                          <option value="Araucanía">Araucanía</option>
+                          <option value="Los Ríos">Los Ríos</option>
+                          <option value="Los Lagos">Los Lagos</option>
+                          <option value="Aysén">Aysén</option>
+                          <option value="Magallanes y la Antártica Chilena">Magallanes y la Antártica Chilena</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </form>
             )}

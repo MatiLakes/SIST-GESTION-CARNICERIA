@@ -603,14 +603,13 @@ const PagosPendientes = () => {
                       required
                       className="formulario-input cliente-selector"
                     >
-                      <option value="">Selecciona un Cliente</option>
-                      {clientes && clientes.map((cliente) => (
+                      <option value="">Selecciona un Cliente</option>                      {clientes && clientes.map((cliente) => (
                         <option key={cliente.id} value={cliente.id}>
                           {cliente.tipoCliente === "Empresa" 
-                            ? cliente.razonSocial 
-                            : `${cliente.nombres} ${cliente.apellidos}`}
+                            ? `${cliente.razonSocial || ''} - ${cliente.rut}` 
+                            : `${cliente.nombres || ''} ${cliente.apellidos || ''} - ${cliente.rut}`}
                         </option>
-                      ))}                    </select>
+                      ))}</select>
                     <button
                       type="button"
                       onClick={openClienteModal}
