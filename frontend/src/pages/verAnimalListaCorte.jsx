@@ -426,7 +426,7 @@ const VerAnimalListaCorte = () => {
           status: "Client error",
           message: error.message === "Ya existe un tipo de animal con este nombre de lista." 
             ? `Ya existe un tipo de animal con el nombre "${validatedData.nombreLista}"`
-            : "El nombre de la lista de precio está siendo utilizado en otra parte.",
+            : "El nombre de la lista de precio está siendo utilizado en Vara.",
           details: {}
         };
         setFormError(errorData);
@@ -447,7 +447,6 @@ const VerAnimalListaCorte = () => {
   if (loading) return <p>Cargando cortes de animales...</p>;
   if (error) return <p>Error: {error}</p>;
   const columns = [
-    { header: "ID", key: "id" },
     { header: "Nombre", key: "nombreLista" },
   ];
 
@@ -483,7 +482,7 @@ const VerAnimalListaCorte = () => {
       >
         <form onSubmit={handleCreateModalSubmit} className="modal-crear-formulario">
           <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Añadir lista de Precios</h2>
+            <h2 className="modal-crear-titulo">Crear lista de Precios</h2>
             <button type="button" onClick={() => setIsCreateModalOpen(false)} className="modal-crear-cerrar">×</button>
             <button type="submit" className="modal-boton-crear">Guardar</button>
           </div>
@@ -3181,23 +3180,27 @@ const VerAnimalListaCorte = () => {
 
 
 
-
-
-
       {/* Modal de Eliminación */}      <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        contentLabel="Eliminar"
+        contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
-        
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar?</h2>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar esta lista de precios?</p>
+        {animalCorteToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Lista:</strong> {animalCorteToDelete.nombreLista}</p>
+          </div>
+        )}
         <div className="formulario-table-form-actions">
           <button
             onClick={confirmDelete}
             className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
           >
             Eliminar
           </button>
@@ -3208,7 +3211,7 @@ const VerAnimalListaCorte = () => {
             Cancelar
           </button>
         </div>
-      </Modal>      {/* Modal de Ver Detalles */}      <Modal
+      </Modal>{/* Modal de Ver Detalles */}      <Modal
         isOpen={isViewModalOpen}
         onRequestClose={handleViewModalClose}
         contentLabel="Ver Detalles"
@@ -3219,7 +3222,7 @@ const VerAnimalListaCorte = () => {
       >
         <div className="modal-crear-formulario">          
           <div className="modal-detalles-header">          
-            <h2 className="modal-detalles-titulo">Detalles: {animalCorteToView?.nombreLista}</h2>
+            <h2 className="modal-detalles-titulo">Detalles de {animalCorteToView?.nombreLista}</h2>
             <button type="button" onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
             <button
               type="button"

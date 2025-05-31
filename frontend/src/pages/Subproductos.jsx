@@ -103,14 +103,13 @@ const Subproductos = () => {
   if (loading) return <p>Cargando subproductos...</p>;
 
   const columns = [
-    { header: "ID", key: "id" },
     { header: "Fecha Faena", key: "fechaFaena" },
     { header: "Animales Faenados", key: "numeroAnimalesFaenados" },
     { header: "Fecha Entrega", key: "fechaEntrega" },
   ];
 
   return (
-    <div className={styles["container"]}>
+    <div className={styles["subproducto-container"]}>
       <Table
         data={subproductos}
         columns={columns}
@@ -322,7 +321,7 @@ const Subproductos = () => {
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}      >        <div className="modal-crear-formulario">
           <div className="modal-detalles-header">          
-            <h2 className="modal-detalles-titulo">Detalles del Subproducto ID: {subproductoToView?.id}</h2>
+            <h2 className="modal-detalles-titulo">Detalles del Subproducto</h2>
             <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
             <button
               onClick={() => {
@@ -366,16 +365,22 @@ const Subproductos = () => {
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
         contentLabel="Eliminar"
-        ariaHideApp={false}
-        className="formulario-table-modal-form"
+        ariaHideApp={false}        className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
-        
-      >
-        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar?</h2>
+        style={{ content: { maxWidth: '400px' } }}
+      ><h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este subproducto?</p>
+        {currentSubproducto && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Animales Faenados:</strong> {currentSubproducto.numeroAnimalesFaenados}</p>
+            <p><strong>Fecha Entrega:</strong> {currentSubproducto.fechaEntrega}</p>
+          </div>
+        )}
         <div className="formulario-table-form-actions">
-          <button
+          <button 
             onClick={confirmDelete}
             className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
           >
             Eliminar
           </button>

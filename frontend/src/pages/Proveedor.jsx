@@ -3,10 +3,13 @@ import { useGetProveedor } from "@hooks/proveedor/useGetProveedor";
 import { useCreateProveedor } from "@hooks/proveedor/useCreateProveedor";
 import { useDeleteProveedor } from "@hooks/proveedor/useDeleteProveedor";
 import { useUpdateProveedor } from "@hooks/proveedor/useUpdateProveedor";
+import { MdOutlineEdit } from "react-icons/md";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
 import "@styles/formulariotable.css";
+import "@styles/modalCrear.css";
+import "@styles/modalDetalles.css";
 import Swal from 'sweetalert2';
 
 const Proveedores = () => {
@@ -16,38 +19,24 @@ const Proveedores = () => {
   const { handleUpdate } = useUpdateProveedor(fetchProveedores);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [proveedorToEdit, setProveedorToEdit] = useState(null);
   const [proveedorToDelete, setProveedorToDelete] = useState(null);
-  const [newProveedorData, setNewProveedorData] = useState({
+  const [proveedorToView, setProveedorToView] = useState(null);
+  
+  const initialProveedorData = {
     nombre: "",
     direccion: "",
     banco: "",
     numeroCuenta: "",
     tipoCuenta: "",
     nombreEncargado: "",
-    nombreRepartidor: "",
-    movilEncargado: "",
-    telefonoEncargado: "",
-    movilRepartidor: "",
-    telefonoRepartidor: "",
-  });
-  const [formData, setFormData] = useState({
-    nombre: "",
-    direccion: "",
-    banco: "",
-    numeroCuenta: "",
-    tipoCuenta: "",
-    nombreEncargado: "",
-    nombreRepartidor: "",
-    movilEncargado: "",
-    telefonoEncargado: "",
-    movilRepartidor: "",
-    telefonoRepartidor: "",
-  });
+    movilEncargado: [""],
+  };
 
-  const [formStep, setFormStep] = useState(1);
+  const [newProveedorData, setNewProveedorData] = useState(initialProveedorData);
+  const [formData, setFormData] = useState(initialProveedorData);
 
   useEffect(() => {
     console.log("Proveedores obtenidos:", proveedores);
@@ -78,161 +67,167 @@ const Proveedores = () => {
       numeroCuenta: proveedor.numeroCuenta,
       tipoCuenta: proveedor.tipoCuenta,
       nombreEncargado: proveedor.nombreEncargado,
-      nombreRepartidor: proveedor.nombreRepartidor,
-      movilEncargado: proveedor.movilEncargado,
-      telefonoEncargado: proveedor.telefonoEncargado,
-      movilRepartidor: proveedor.movilRepartidor,
-      telefonoRepartidor: proveedor.telefonoRepartidor
+      movilEncargado: Array.isArray(proveedor.movilEncargado) ? proveedor.movilEncargado : [proveedor.movilEncargado],
     });
     setIsEditModalOpen(true);
   }
 
   const handleCreateClick = () => {
     setIsCreateModalOpen(true);
+    setNewProveedorData(initialProveedorData);
+  };
+
+  const handleViewClick = (proveedor) => {
+    setProveedorToView(proveedor);
+    setIsViewModalOpen(true);
+  };
+
+  const handleViewModalClose = () => {
+    setIsViewModalOpen(false);
+    setProveedorToView(null);
   };
 
   const validateFields = (data) => {
     // Validación de nombre (solo letras y mínimo 3 caracteres)
-    const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    if (!nombreRegex.test(data.nombre) || data.nombre.length < 3) {
-      Swal.fire("Error", "El nombre solo puede contener letras y debe tener al menos 3 caracteres.", "error");
+    const nombreRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$/;
+    if (!data.nombre || !nombreRegex.test(data.nombre)) {
+      Swal.fire("Error", "El nombre debe tener al menos 3 caracteres y solo puede contener letras.", "error");
       return false;
     }
-  
-    // Validación de direccion (máximo 50 caracteres y mínimo 3 caracteres)
-    if (data.direccion.length < 3 || data.direccion.length > 50) {
-      Swal.fire("Error", "La dirección debe tener entre 3 y 50 caracteres.", "error");
+
+    // Validación de número de cuenta (solo números)
+    const numeroCuentaRegex = /^[0-9]+$/;
+    if (!data.numeroCuenta || !numeroCuentaRegex.test(data.numeroCuenta)) {
+      Swal.fire("Error", "El número de cuenta es requerido y solo debe contener números.", "error");
+      return false;
+    }    // Validación de móviles (deben contener solo números y pueden empezar con +)
+    const movilRegex = /^\+?(?:[0-9]{9}|[0-9]{11})$/;
+    const moviles = Array.isArray(data.movilEncargado) ? data.movilEncargado : [data.movilEncargado];
+    if (!moviles.length || !moviles[0]) {
+      Swal.fire("Error", "Debe ingresar al menos un número móvil.", "error");
       return false;
     }
-  
-    // Validación de banco (máximo 20 caracteres y mínimo 3 caracteres)
-    if (data.banco.length < 3 || data.banco.length > 20) {
-      Swal.fire("Error", "El banco debe tener entre 3 y 20 caracteres.", "error");
-      return false;
+    for (const movil of moviles) {
+      if (!movilRegex.test(movil)) {
+        Swal.fire("Error", "Los números móviles deben tener 9 u 11 dígitos.", "error");
+        return false;
+      }
     }
-  
-    // Validación de numeroCuenta (solo números)
-    const cuentaRegex = /^[0-9]+$/;
-    if (!cuentaRegex.test(data.numeroCuenta)) {
-      Swal.fire("Error", "El número de cuenta solo puede contener números.", "error");
-      return false;
+
+    // Validación de campos requeridos
+    const requiredFields = ["direccion", "banco", "tipoCuenta", "nombreEncargado"];
+    for (const field of requiredFields) {
+      if (!data[field] || data[field].trim() === "") {
+        Swal.fire("Error", `El campo ${field.replace(/([A-Z])/g, " $1").toLowerCase()} es requerido.`, "error");
+        return false;
+      }
     }
-  
-    // Validación de nombreEncargado (solo letras y mínimo 3 caracteres)
-    if (!nombreRegex.test(data.nombreEncargado) || data.nombreEncargado.length < 3) {
-      Swal.fire("Error", "El nombre del encargado solo puede contener letras y debe tener al menos 3 caracteres.", "error");
-      return false;
-    }
-  
-    // Validación de movilEncargado (debe tener 9 dígitos)
-    const movilEncargadoRegex = /^[0-9]{9}$/;
-    if (!movilEncargadoRegex.test(data.movilEncargado)) {
-      Swal.fire("Error", "El móvil del encargado debe tener 9 dígitos.", "error");
-      return false;
-    }
-  
-    // Validación de telefonoEncargado (debe tener 9 dígitos)
-    const telefonoEncargadoRegex = /^[0-9]{9}$/;
-    if (!telefonoEncargadoRegex.test(data.telefonoEncargado)) {
-      Swal.fire("Error", "El teléfono del encargado debe tener 9 dígitos.", "error");
-      return false;
-    }
-  
-    // Validación de movilRepartidor (debe tener 9 dígitos)
-    const movilRepartidorRegex = /^[0-9]{9}$/;
-    if (!movilRepartidorRegex.test(data.movilRepartidor)) {
-      Swal.fire("Error", "El móvil del repartidor debe tener 9 dígitos.", "error");
-      return false;
-    }
-  
-    // Validación de telefonoRepartidor (debe ser un número válido)
-    const telefonoRepartidorRegex = /^[0-9]+$/;
-    if (!telefonoRepartidorRegex.test(data.telefonoRepartidor)) {
-      Swal.fire("Error", "El teléfono del repartidor debe ser un número válido.", "error");
-      return false;
-    }
-  
+
     return true;
   };
-  const handleCreateModalChange = (e) => {
-    setNewProveedorData({ ...newProveedorData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e, isEditing = false) => {
+    e.preventDefault();
+    const formDataToSubmit = isEditing ? formData : newProveedorData;
+
+    if (!validateFields(formDataToSubmit)) {
+      return;
+    }
+
+    try {
+      if (isEditing) {
+        await handleUpdate(proveedorToEdit.id, formDataToSubmit);
+        setIsEditModalOpen(false);
+        setProveedorToEdit(null);
+      } else {
+        await handleCreate(formDataToSubmit);
+        setIsCreateModalOpen(false);
+      }
+      setFormData(initialProveedorData);
+      setNewProveedorData(initialProveedorData);
+    } catch (error) {
+      console.error("Error al procesar el formulario:", error);
+      Swal.fire("Error", "Hubo un error al procesar el formulario.", "error");
+    }
   };
 
-
-  const handleCreateModalSubmit = (e) => {
-    e.preventDefault();
-    
-    // Validar los campos antes de proceder
-    if (validateFields(newProveedorData)) {
-      // Llamar a la función de creación pasando los datos validados
-      handleCreate(newProveedorData);
-
-      // Limpiar los datos después de guardar
-      setNewProveedorData({
-        nombre: "",
-        direccion: "",
-        banco: "",
-        numeroCuenta: "",
-        tipoCuenta: "",
-        nombreEncargado: "",
-        nombreRepartidor: "",
-        movilEncargado: "",
-        telefonoEncargado: "",
-        movilRepartidor: "",
-        telefonoRepartidor: "",
+  const handleChange = (e, isEditing = false) => {
+    const { name, value } = e.target;
+    const setState = isEditing ? setFormData : setNewProveedorData;
+    const currentState = isEditing ? formData : newProveedorData;    if (name === "movilEncargado") {
+      // Si el valor viene con un índice (ej: movilEncargado-0)
+      const indexMatch = e.target.id.match(/movilEncargado-(\d+)/);
+      if (indexMatch) {
+        const index = parseInt(indexMatch[1]);
+        let newMoviles = [...(currentState.movilEncargado || [])];
+        
+        // Limitar a solo números y un posible + al inicio
+        let cleanValue = value.replace(/[^\d+]/g, '');
+        const startsWithPlus = cleanValue.startsWith('+');
+        
+        // Remover todos los + excepto el primero si existe
+        cleanValue = cleanValue.replace(/\+/g, '');
+        if (startsWithPlus) {
+          cleanValue = '+' + cleanValue;
+        }          // Limitar el número a 9 u 11 dígitos
+        const digitsOnly = cleanValue.replace(/^\+/, '');
+        const digitLength = digitsOnly.length;
+          if (digitLength > 11) {
+          // Si tiene más de 11 dígitos, truncar a 11
+          const truncatedDigits = digitsOnly.slice(0, 11);
+          cleanValue = startsWithPlus ? '+' + truncatedDigits : truncatedDigits;
+        } else if (digitLength > 9 && digitLength < 12) {
+          // Si tiene entre 9 y 11 dígitos, mantener todos los dígitos
+          cleanValue = startsWithPlus ? '+' + digitsOnly : digitsOnly;
+        } else if (digitLength > 9) {
+          // Si tiene más de 9 dígitos pero no es camino a 11, truncar a 9
+          const truncatedDigits = digitsOnly.slice(0, 9);
+          cleanValue = startsWithPlus ? '+' + truncatedDigits : truncatedDigits;
+        }
+        
+        // Actualiza el número en el índice específico
+        newMoviles[index] = cleanValue;
+        setState({
+          ...currentState,
+          movilEncargado: newMoviles
+        });
+      }
+    } else {
+      setState({
+        ...currentState,
+        [name]: value,
       });
-
-      // Cerrar el modal de creación
-      setIsCreateModalOpen(false);
     }
   };
 
-  const handleEditChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleAddMovil = (isEditing = false) => {
+    const setState = isEditing ? setFormData : setNewProveedorData;
+    const currentState = isEditing ? formData : newProveedorData;
+    
+    setState({
+      ...currentState,
+      movilEncargado: [...currentState.movilEncargado, ""]
+    });
   };
 
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
-    if (validateFields(formData)) {
-      handleUpdate(proveedorToEdit.id, formData);
-      setIsEditModalOpen(false);
-    }
-  }; 
-
-  const handleBackStep = () => {
-    if (formStep === 3) {
-      setFormStep(2);  // Vuelve al paso 2 si estás en el paso 3
-    } else if (formStep === 2) {
-      setFormStep(1);  // Vuelve al paso 1 si estás en el paso 2
-    }
+  const handleRemoveMovil = (index, isEditing = false) => {
+    const setState = isEditing ? setFormData : setNewProveedorData;
+    const currentState = isEditing ? formData : newProveedorData;
+    
+    const newMoviles = currentState.movilEncargado.filter((_, i) => i !== index);
+    setState({
+      ...currentState,
+      movilEncargado: newMoviles
+    });
   };
-  
-  const handleNextStep = () => {
-    if (formStep === 1) {
-      setFormStep(2);  // Avanza al paso 2 si estás en el paso 1
-    } else if (formStep === 2) {
-      setFormStep(3);  // Avanza al paso 3 si estás en el paso 2
-    }
-  };
-  if (loading) return <p>Cargando proveedores...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   const columns = [
     { header: "Nombre", key: "nombre" },
-    { header: "Dirección", key: "direccion" },
-    { header: "Banco", key: "banco" },
-    { header: "Número Cuenta", key: "numeroCuenta" },
-    { header: "Tipo de Cuenta", key: "tipoCuenta" },
-    { header: "Encargado", key: "nombreEncargado" },
-    { header: "Teléfono Encargado", key: "telefonoEncargado" },
-    { header: "Móvil Encargado", key: "movilEncargado" },
-    { header: "Repartidor", key: "nombreRepartidor" },
-    { header: "Telefono Repartidor", key: "telefonoRepartidor" },
-    { header: "Móvil Repartidor", key: "movilRepartidor" },
-
-    
-    
+    { header: "Dirección", key: "direccion" }
   ];
+
+  if (loading) return <div>Cargando...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className={styles["categoria-container"]}>
@@ -242,472 +237,467 @@ const Proveedores = () => {
         headerTitle="Proveedores"
         onCreate={handleCreateClick}
         onEdit={handleUpdateClick}
-        onDelete={handleDeleteClick}
-        showEditAllButton={false}
-        showViewButton={false}
-        entidad="proveedores"
+        onDelete={handleDeleteClick}        showEditAllButton={false}
+        showViewButton={true}
+        onView={handleViewClick}
         showCalendarButton={false}
+        entidad="proveedores"
+        customFormat={(value, key) => {
+          if (key === "movilEncargado" && Array.isArray(value)) {
+            return value.join(", ");
+          }
+          return value;
+        }}
       />
 
       {/* Modal de Creación */}
       <Modal
         isOpen={isCreateModalOpen}
         onRequestClose={() => setIsCreateModalOpen(false)}
-        contentLabel="Añadir Proveedor"
+        contentLabel="Crear Proveedor"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <h2 className="formulario-table-modal-title">Añadir Proveedor</h2>
-        <form onSubmit={handleCreateModalSubmit} className="formulario-table-formulario-table">
-          {formStep === 1 && (
-            <>
-              <div className="formulario-table-field-group">
-                <label htmlFor="nombre">Nombre del Proveedor:</label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  value={newProveedorData.nombre}
-                  onChange={handleCreateModalChange}
-                  required
-                  className="formulario-table-input"
-                />
+        <form onSubmit={(e) => handleSubmit(e, false)} className="modal-crear-formulario">
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Crear Nuevo Proveedor</h2>
+            <button type="button" onClick={() => setIsCreateModalOpen(false)} className="modal-crear-cerrar">×</button>
+            <button type="submit" className="modal-boton-crear">Guardar</button>
+          </div>
+
+          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Nombre</span>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="direccion">Dirección:</label>
-                <input
-                  type="text"
-                  id="direccion"
-                  name="direccion"
-                  value={newProveedorData.direccion}
-                  onChange={handleCreateModalChange}
-                  required
-                  className="formulario-table-input"
-                />
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value={newProveedorData.nombre}
+                    onChange={(e) => handleChange(e, false)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                  />
+                </div>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="banco">Banco:</label>
-                <input
-                  type="text"
-                  id="banco"
-                  name="banco"
-                  value={newProveedorData.banco}
-                  onChange={handleCreateModalChange}
-                  required
-                  className="formulario-table-input"
-                />
+            </div>
+
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Dirección</span>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="numeroCuenta">Número de Cuenta:</label>
-                <input
-                  type="text"
-                  id="numeroCuenta"
-                  name="numeroCuenta"
-                  value={newProveedorData.numeroCuenta}
-                  onChange={handleCreateModalChange}
-                  required
-                  className="formulario-table-input"
-                />
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <input
+                    type="text"
+                    id="direccion"
+                    name="direccion"
+                    value={newProveedorData.direccion}
+                    onChange={(e) => handleChange(e, false)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                  />
+                </div>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="tipoCuenta">Tipo de Cuenta:</label>
-                <select
-                  id="tipoCuenta"
-                  name="tipoCuenta"
-                  value={newProveedorData.tipoCuenta}
-                  onChange={handleCreateModalChange}
-                  required
-                  className="formulario-table-input tipo-cuenta-select"
-                >
-                  <option value="">Selecciona un tipo de cuenta</option>
-                  <option value="Cuenta corriente">Cuenta corriente</option>
-                  <option value="Cuenta vista">Cuenta vista</option>
-                  <option value="Cuenta de ahorro">Cuenta de ahorro</option>
-                </select>
-              </div>
-              <div className="formulario-table-form-actions">
-                <button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="formulario-table-btn-confirm"
-                >
-                  Siguiente
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsCreateModalOpen(false)}
-                className="formulario-table-btn-cancel"
-              >
-                Cancelar
-              </button>
-              <div className="formulario-table-form-actions">
-              </div>
-            </>
-          )}
-          {formStep === 2 && (
-            <>
-              <div className="formulario-table-field-group">
-                <label htmlFor="nombreEncargado">Encargado:</label>
-                <input
-                  type="text"
-                  id="nombreEncargado"
-                  name="nombreEncargado"
-                  value={newProveedorData.nombreEncargado}
-                  onChange={handleCreateModalChange}
-                  className="formulario-table-input"
-                />
+            </div>
+
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Banco</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <select
+                      id="banco"
+                      name="banco"
+                      value={newProveedorData.banco}
+                      onChange={(e) => handleChange(e, false)}
+                      className="formulario-input"
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    >
+                      <option value="">Seleccione Banco</option>
+                      <option value="Banco de Chile">Banco de Chile</option>
+                      <option value="Banco Santander Chile">Banco Santander</option>
+                      <option value="Banco BCI">Banco BCI</option>
+                      <option value="Banco Itaú Chile">Banco Itaú</option>
+                      <option value="Scotiabank Chile">Scotiabank</option>
+                      <option value="Banco Estado">Banco Estado</option>
+                      <option value="Banco BICE">Banco BICE</option>
+                      <option value="Banco Security">Banco Security</option>
+                      <option value="Banco Falabella">Banco Falabella</option>
+                      <option value="Banco Ripley">Banco Ripley</option>
+                      <option value="Banco Consorcio">Banco Consorcio</option>
+                      <option value="Banco Internacional">Banco Internacional</option>
+                      <option value="Banco BTG Pactual Chile">Banco BTG Pactual</option>
+                      <option value="HSBC Bank">HSBC Bank</option>
+                      <option value="Deutsche Bank">Deutsche Bank</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
-              <div className="formulario-table-field-group">
-  <label htmlFor="telefonoEncargado">Telefono Encargado:</label>
-  <input
-    type="tel"
-    id="telefonoEncargado"
-    name="telefonoEncargado"
-    value={newProveedorData.telefonoEncargado} // Extraemos el número del primer objeto del array
-    onChange={handleCreateModalChange}
-    pattern="^[0-9]+$" // Solo permite números
-    maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-    className="formulario-table-input"
-  />
-</div>
-<div className="formulario-table-field-group">
-  <label htmlFor="movilEncargado">Móvil Encargado:</label>
-  <input
-    type="tel"
-    id="movilEncargado"
-    name="movilEncargado"
-    value={newProveedorData.movilEncargado} // Extraemos el número del primer objeto del array
-    onChange={handleCreateModalChange}
-    pattern="^[0-9]+$" // Solo permite números
-    maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-    className="formulario-table-input"
-  />
-</div>
-
-
-              <div className="formulario-table-form-actions">
-              <button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="formulario-table-btn-confirm"
-                >
-                  Siguiente
-                </button>
-           
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Número de Cuenta</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <input
+                      type="text"
+                      id="numeroCuenta"
+                      name="numeroCuenta"
+                      value={newProveedorData.numeroCuenta}
+                      onChange={(e) => handleChange(e, false)}
+                      className="formulario-input"
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-              <button
-                  type="button"
-                  onClick={handleBackStep}
-                  className="formulario-table-btn-cancel"
-                >
-                  Atrás
-                </button>
-            </>
-          )}
-          {formStep === 3 && (
-            <>
-                            <div className="formulario-table-field-group">
-                <label htmlFor="nombreRepartidor">Repartidor:</label>
-                <input
-                  type="text"
-                  id="nombreRepartidor"
-                  name="nombreRepartidor"
-                  value={newProveedorData.nombreRepartidor }
-                  onChange={handleCreateModalChange}
-                  className="formulario-table-input"
-                />
-               </div>
-               <label htmlFor="telefonoRepartidor">Telefono Repartidor:</label>
-              <input
-                type="tel"
-                id="telefonoRepartidor"
-                name="telefonoRepartidor"
-                value={newProveedorData.telefonoRepartidor} // Extraemos el número del primer objeto del array
-                onChange={handleCreateModalChange}
-                pattern="^[0-9]+$" // Solo permite números
-                maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-                className="formulario-table-input"
-              />
+            </div>
 
-<div className="formulario-table-field-group">
-  <label htmlFor="movilRepartidor">Móvil Repartidor:</label>
-  <input
-    type="tel"
-    id="movilRepartidor"
-    name="movilRepartidor"
-    value={newProveedorData.movilRepartidor} // Extraemos el número del primer objeto del array
-    onChange={handleCreateModalChange}
-    pattern="^[0-9]+$" // Solo permite números
-    maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-    className="formulario-table-input"
-  />
-</div>
-               
-
-             
-              <div className="formulario-table-form-actions">
-                <button
-                  type="button"
-                  onClick={handleBackStep}
-                  className="formulario-table-btn-cancel"
-                >
-                  Atrás
-                </button>
-                <button
-                  type="submit"
-                  className="formulario-table-btn-confirm"
-                >
-                  Crear Proveedor
-                </button>
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Tipo de Cuenta</span>
               </div>
-            </>
-          )}
-          
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <select
+                    id="tipoCuenta"
+                    name="tipoCuenta"
+                    value={newProveedorData.tipoCuenta}
+                    onChange={(e) => handleChange(e, false)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                  >
+                    <option value="">Seleccione tipo de cuenta</option>
+                    <option value="Cuenta corriente">Cuenta corriente</option>
+                    <option value="Cuenta vista">Cuenta vista</option>
+                    <option value="Cuenta de ahorro">Cuenta de ahorro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Nombre Encargado</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <input
+                      type="text"
+                      id="nombreEncargado"
+                      name="nombreEncargado"
+                      value={newProveedorData.nombreEncargado}
+                      onChange={(e) => handleChange(e, false)}
+                      className="formulario-input"
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Móvil Encargado</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>                    {newProveedorData.movilEncargado.map((movil, index) => (
+                      <div key={index} style={{ position: 'relative', width: '100%' }}>
+                        <input                          type="text"
+                          id={`movilEncargado-${index}`}
+                          name="movilEncargado"
+                          value={movil}
+                          onChange={(e) => handleChange(e, false)}                          
+                          pattern="^\+?(?:\d{9}|\d{11})$"
+                          placeholder="+56 9 XXXX XXXX"
+                          title="Ejemplo: 912345678 o +56912345678, opcional el +)"
+                          className="formulario-input"
+                          style={{ width: '100%', paddingRight: '5px', textAlign: 'left' }}
+                          required={index === 0}
+                        />
+                        <div style={{ position: 'absolute', right: '-53px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '5px' }}>
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMovil(index, false)}
+                              className="modal-boton-anadir"
+                              style={{ backgroundColor: '#dc3545', padding: '2px 14px' }}
+                            >
+                              ×
+                            </button>
+                          )}
+                          {index === newProveedorData.movilEncargado.length - 1 && index === 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleAddMovil(false)}
+                              className="modal-boton-anadir"
+                              style={{ padding: '2px 14px' }}
+                            >
+                              +
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
       </Modal>
-      
 
-
-
-      {/* Modal de Edicion*/}
+      {/* Modal de Edición */}
       <Modal
         isOpen={isEditModalOpen}
         onRequestClose={() => setIsEditModalOpen(false)}
         contentLabel="Editar Proveedor"
         ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <h2 className="formulario-table-modal-title">Editar Proveedor</h2>
-        <form onSubmit={handleEditSubmit} className="formulario-table-formulario-table">
-          {formStep === 1 && (
-            <>
-              <div className="formulario-table-field-group">
-                <label htmlFor="nombre">Nombre del Proveedor:</label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleEditChange}
-                  required
-                  className="formulario-table-input"
-                />
+        <form onSubmit={(e) => handleSubmit(e, true)} className="modal-crear-formulario">
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Editar Proveedor</h2>
+            <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
+            <button type="submit" className="modal-boton-crear">Guardar</button>
+          </div>
+
+          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Nombre</span>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="direccion">Dirección:</label>
-                <input
-                  type="text"
-                  id="direccion"
-                  name="direccion"
-                  value={formData.direccion}
-                  onChange={handleEditChange}
-                  required
-                  className="formulario-table-input"
-                />
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <input
+                    type="text"
+                    id="edit-nombre"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={(e) => handleChange(e, true)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                  />
+                </div>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="banco">Banco:</label>
-                <input
-                  type="text"
-                  id="banco"
-                  name="banco"
-                  value={formData.banco}
-                  onChange={handleEditChange}
-                  required
-                  className="formulario-table-input"
-                />
+            </div>
+
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Dirección</span>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="numeroCuenta">Número de Cuenta:</label>
-                <input
-                  type="text"
-                  id="numeroCuenta"
-                  name="numeroCuenta"
-                  value={formData.numeroCuenta}
-                  onChange={handleEditChange}
-                  required
-                  className="formulario-table-input"
-                />
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <input
+                    type="text"
+                    id="edit-direccion"
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={(e) => handleChange(e, true)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                  />
+                </div>
               </div>
-              <div className="formulario-table-field-group">
-                <label htmlFor="tipoCuenta">Tipo de Cuenta:</label>
-                <select
-                  id="tipoCuenta"
-                  name="tipoCuenta"
-                  value={formData.tipoCuenta}
-                  onChange={handleEditChange}
-                  required
-                  className="formulario-table-input tipo-cuenta-select"
-                >
-                  <option value="">Selecciona un tipo de cuenta</option>
-                  <option value="Cuenta corriente">Cuenta corriente</option>
-                  <option value="Cuenta vista">Cuenta vista</option>
-                  <option value="Cuenta de ahorro">Cuenta de ahorro</option>
-                </select>
-              </div>
-              <div className="formulario-table-form-actions">
-                <button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="formulario-table-btn-confirm"
-                >
-                  Siguiente
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(false)}
-                className="formulario-table-btn-cancel"
-              >
-                Cancelar
-              </button>
-              <div className="formulario-table-form-actions">
-              </div>
-            </>
-          )}
-                  {formStep === 2 && (
-            <>
-              <div className="formulario-table-field-group">
-                <label htmlFor="nombreEncargado">Encargado:</label>
-                <input
-                  type="text"
-                  id="nombreEncargado"
-                  name="nombreEncargado"
-                  value={formData.nombreEncargado}
-                  onChange={handleEditChange}
-                  className="formulario-table-input"
-                />
+            </div>
+
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Banco</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <select
+                      id="edit-banco"
+                      name="banco"
+                      value={formData.banco}
+                      onChange={(e) => handleChange(e, true)}
+                      className="formulario-input"
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    >
+                      <option value="">Seleccione Banco</option>
+                      <option value="Banco de Chile">Banco de Chile</option>
+                      <option value="Banco Santander">Banco Santander</option>
+                      <option value="Banco BCI">Banco BCI</option>
+                      <option value="Banco Itaú">Banco Itaú</option>
+                      <option value="Scotiabank">Scotiabank</option>
+                      <option value="Banco Estado">Banco Estado</option>
+                      <option value="Banco BICE">Banco BICE</option>
+                      <option value="Banco Security">Banco Security</option>
+                      <option value="Banco Falabella">Banco Falabella</option>
+                      <option value="Banco Ripley">Banco Ripley</option>
+                      <option value="Banco Consorcio">Banco Consorcio</option>
+                      <option value="Banco Internacional">Banco Internacional</option>
+                      <option value="Banco BTG Pactual">Banco BTG Pactual</option>
+                      <option value="HSBC Bank">HSBC Bank</option>
+                      <option value="Deutsche Bank">Deutsche Bank</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
-              <div className="formulario-table-field-group">
-  <label htmlFor="telefonoEncargado">Telefono Encargado:</label>
-  <input
-    type="tel"
-    id="telefonoEncargado"
-    name="telefonoEncargado"
-    value={formData.telefonoEncargado} // Extraemos el número del primer objeto del array
-    onChange={handleEditChange}
-    pattern="^[0-9]+$" // Solo permite números
-    maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-    className="formulario-table-input"
-  />
-</div>
-<div className="formulario-table-field-group">
-  <label htmlFor="movilEncargado">Móvil Encargado:</label>
-  <input
-    type="tel"
-    id="movilEncargado"
-    name="movilEncargado"
-    value={formData.movilEncargado} // Extraemos el número del primer objeto del array
-    onChange={handleEditChange}
-    pattern="^[0-9]+$" // Solo permite números
-    maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-    className="formulario-table-input"
-  />
-</div>
-
-
-       
-              <div className="formulario-table-form-actions">
-              <button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="formulario-table-btn-confirm"
-                >
-                  Siguiente
-                </button>
-           
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Número de Cuenta</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <input
+                      type="text"
+                      id="edit-numeroCuenta"
+                      name="numeroCuenta"
+                      value={formData.numeroCuenta}
+                      onChange={(e) => handleChange(e, true)}
+                      className="formulario-input"
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-              <button
-                  type="button"
-                  onClick={handleBackStep}
-                  className="formulario-table-btn-cancel"
-                >
-                  Atrás
-                </button>
-            </>
-          )}
-          {formStep === 3 && (
-            <>
-                            <div className="formulario-table-field-group">
-                <label htmlFor="nombreRepartidor">Repartidor:</label>
-                <input
-                  type="text"
-                  id="nombreRepartidor"
-                  name="nombreRepartidor"
-                  value={formData.nombreRepartidor }
-                  onChange={handleEditChange}
-                  className="formulario-table-input"
-                />
-               </div>
-               <label htmlFor="telefonoRepartidor">Telefono Repartidor:</label>
-              <input
-                type="tel"
-                id="telefonoRepartidor"
-                name="telefonoRepartidor"
-                value={formData.telefonoRepartidor} // Extraemos el número del primer objeto del array
-                onChange={handleEditChange}
-                pattern="^[0-9]+$" // Solo permite números
-                maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-                className="formulario-table-input"
-              />
+            </div>
 
-<div className="formulario-table-field-group">
-  <label htmlFor="movilRepartidor">Móvil Repartidor:</label>
-  <input
-    type="tel"
-    id="movilRepartidor"
-    name="movilRepartidor"
-    value={formData.movilRepartidor} // Extraemos el número del primer objeto del array
-    onChange={handleEditChange}
-    pattern="^[0-9]+$" // Solo permite números
-    maxLength="15" // Limita a 15 dígitos como máximo, ajusta según tu necesidad
-    className="formulario-table-input"
-  />
-</div>
-               
-    
-              <div className="formulario-table-form-actions">
-                <button
-                  type="button"
-                  onClick={handleBackStep}
-                  className="formulario-table-btn-cancel"
-                >
-                  Atrás
-                </button>
-                <button
-                  type="submit"
-                  className="formulario-table-btn-confirm"
-                >
-                  Actualizar Proveedor
-                </button>
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">Tipo de Cuenta</span>
               </div>
-            </>
-          )}
-          
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <select
+                    id="edit-tipoCuenta"
+                    name="tipoCuenta"
+                    value={formData.tipoCuenta}
+                    onChange={(e) => handleChange(e, true)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                  >
+                    <option value="">Seleccione tipo de cuenta</option>
+                    <option value="Cuenta corriente">Cuenta corriente</option>
+                    <option value="Cuenta vista">Cuenta vista</option>
+                    <option value="Cuenta de ahorro">Cuenta de ahorro</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Nombre Encargado</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <input
+                      type="text"
+                      id="edit-nombreEncargado"
+                      name="nombreEncargado"
+                      value={formData.nombreEncargado}
+                      onChange={(e) => handleChange(e, true)}
+                      className="formulario-input"
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="subproducto-nombre-grupo">
+                  <span className="subproducto-nombre">Móvil Encargado</span>
+                </div>
+                <div className="subproducto-inputs-grupo">
+                  <div className="input-grupo" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>                    
+                    {formData.movilEncargado.map((movil, index) => (
+                      <div key={index} style={{ position: 'relative', width: '100%' }}>
+                        <input                          type="text"
+                          id={`movilEncargado-${index}`}
+                          name="movilEncargado"
+                          value={movil}
+                          onChange={(e) => handleChange(e, true)}                          
+                          pattern="^\+?(?:\d{9}|\d{11})$"
+                          placeholder="56912345678"
+                          title="Ejemplo: 912345678 o +56912345678, opcional el +)"
+                          className="formulario-input"
+                          style={{ width: '100%', paddingRight: '5px', textAlign: 'left' }}
+                          required={index === 0}
+                        />
+                        <div style={{ position: 'absolute', right: '-53px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '5px' }}>
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMovil(index, true)}
+                              className="modal-boton-anadir"
+                              style={{ backgroundColor: '#dc3545', padding: '2px 14px' }}
+                            >
+                              ×
+                            </button>
+                          )}
+                          {index === formData.movilEncargado.length - 1 && index === 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleAddMovil(true)}
+                              className="modal-boton-anadir"
+                              style={{ padding: '2px 14px' }}
+                            >
+                              +
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
       </Modal>
-      
- 
 
       {/* Modal de Eliminación */}
       <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        contentLabel="Eliminar Proveedor"
+        contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar este proveedor?</h2>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este proveedor?</p>
+        {proveedorToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Nombre:</strong> {proveedorToDelete.nombre}</p>
+            <p><strong>Encargado:</strong> {proveedorToDelete.nombreEncargado}</p>
+          </div>
+        )}
         <div className="formulario-table-form-actions">
-          <button
+          <button 
             onClick={confirmDelete}
             className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
           >
             Eliminar
           </button>
@@ -717,6 +707,66 @@ const Proveedores = () => {
           >
             Cancelar
           </button>
+        </div>
+      </Modal>
+
+      {/* Modal de Ver Detalles */}
+      <Modal
+        isOpen={isViewModalOpen}
+        onRequestClose={handleViewModalClose}
+        contentLabel="Ver Detalles"
+        ariaHideApp={false}
+        className="modal-detalles"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
+      >
+        <div className="modal-crear-formulario">
+          <div className="modal-detalles-header">          
+            <h2 className="modal-detalles-titulo">Detalles del Proveedor {proveedorToView?.nombre}</h2>
+            <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
+            <button
+              onClick={() => {
+                handleUpdateClick(proveedorToView);
+                handleViewModalClose();
+              }}
+              className="modal-detalles-editar"
+            >
+              <MdOutlineEdit size={24} />
+            </button>
+          </div>
+            {proveedorToView && (
+            <div className="modal-detalles-contenido">
+              <div className="datos-grid">                <div className="dato-item">
+                  <span className="dato-label">Nombre:</span>
+                  <span className="dato-value">{proveedorToView.nombre}</span>
+                </div>
+                <div className="dato-item">
+                  <span className="dato-label">Banco:</span>
+                  <span className="dato-value">{proveedorToView.banco}</span>
+                </div>
+                <div className="dato-item">
+                  <span className="dato-label">Número de Cuenta:</span>
+                  <span className="dato-value">{proveedorToView.numeroCuenta}</span>
+                </div>
+                <div className="dato-item">
+                  <span className="dato-label">Tipo de Cuenta:</span>
+                  <span className="dato-value">{proveedorToView.tipoCuenta}</span>
+                </div>
+                <div className="dato-item">
+                  <span className="dato-label">Nombre Encargado:</span>
+                  <span className="dato-value">{proveedorToView.nombreEncargado}</span>
+                </div>
+                <div className="dato-item">
+                  <span className="dato-label">Móvil Encargado:</span>
+                  <span className="dato-value">
+                    {Array.isArray(proveedorToView.movilEncargado) 
+                      ? proveedorToView.movilEncargado.join(", ")
+                      : proveedorToView.movilEncargado}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </Modal>
     </div>

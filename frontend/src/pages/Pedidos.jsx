@@ -142,7 +142,6 @@ const Pedidos = () => {
   if (loading) return <p>Cargando pedidos...</p>;
 
   const columns = [
-    { header: "ID", key: "id" },
     { header: "Cliente", key: "cliente_nombre" },
     { header: "Carnicero", key: "carnicero_nombre" },
     { header: "Teléfono", key: "telefono_cliente" },
@@ -307,16 +306,24 @@ const Pedidos = () => {
       <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        contentLabel="Eliminar Pedido"
+        contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar este pedido?</h2>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este pedido?</p>        {currentPedido && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Cliente:</strong> {currentPedido.cliente_nombre}</p>
+            <p><strong>Fecha de Entrega:</strong> {currentPedido.fecha_entrega}</p>
+          </div>
+        )}
         <div className="formulario-table-form-actions">
-          <button
+          <button 
             onClick={confirmDelete}
             className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
           >
             Eliminar
           </button>
@@ -326,7 +333,7 @@ const Pedidos = () => {
           >
             Cancelar
           </button>
-        </div>      </Modal>
+        </div></Modal>
 
       {/* Modal de Ver Detalles */}
       <Modal
@@ -340,7 +347,7 @@ const Pedidos = () => {
       >
         <div className="modal-crear-formulario">
           <div className="modal-detalles-header">          
-            <h2 className="modal-detalles-titulo">Detalles del Pedido</h2>
+            <h2 className="modal-detalles-titulo">Detalles del Pedido de {pedidoToView?.cliente_nombre}</h2>
             <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
             <button
               onClick={() => {
@@ -356,8 +363,8 @@ const Pedidos = () => {
           {pedidoToView && (
             <div className="modal-detalles-contenido">
               <div className="datos-grid">                <div className="dato-item">
-                  <span className="dato-label">Cliente:</span>
-                  <span className="dato-value">{pedidoToView.cliente_nombre}</span>
+                  <span className="dato-label">Carnicero:</span>
+                  <span className="dato-value">{pedidoToView.carnicero_nombre}</span>
                 </div>
 
                 <div style={{ gridColumn: "1 / -1", marginTop: "20px" }}>

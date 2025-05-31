@@ -72,8 +72,9 @@ export const updateCliente = async (id, clienteData) => {
 
 export const deleteCliente = async (id) => {
   try {
-    await axiosInstance.delete(`/clientes/${id}`);
-    console.log(`Cliente con ID ${id} eliminado.`);
+    const response = await axiosInstance.delete(`/clientes/${id}`);
+    console.log(`Cliente con ID ${id} eliminado.`, response);
+    return response.data;
   } catch (error) {
     console.error("Error al eliminar cliente:", error);
     throw error;

@@ -498,22 +498,31 @@ const Productos = () => {
             </div>
           </form>
         )}
-      </Modal>
-
-      {/* Modal de Eliminación */}
+      </Modal>      {/* Modal de Eliminación */}
       <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        contentLabel="Eliminar Producto"
+        contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar este producto?</h2>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este producto?</p>
+        {productoToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Nombre:</strong> {productoToDelete.nombre}</p>
+            <p><strong>Tipo:</strong> {productoToDelete.tipo.nombre}</p>
+            <p><strong>Marca:</strong> {productoToDelete.marca.nombre}</p>
+            <p><strong>Precio de Venta:</strong> ${productoToDelete.precioVenta?.toLocaleString('es-CL')}</p>
+          </div>
+        )}
         <div className="formulario-table-form-actions">
-          <button
+          <button 
             onClick={confirmDelete}
             className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
           >
             Eliminar
           </button>
@@ -524,7 +533,7 @@ const Productos = () => {
             Cancelar
           </button>
         </div>
-      </Modal>      {/* Modal para crear tipo */}
+      </Modal>{/* Modal para crear tipo */}
       <Modal
         isOpen={isModalTipoOpen}
         onRequestClose={closeModalTipo}

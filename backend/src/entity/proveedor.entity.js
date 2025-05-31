@@ -17,69 +17,32 @@ const ProveedorSchema = new EntitySchema({
     direccion: {
       type: "varchar",
       length: 255,
-      nullable: true,
+      nullable: false,
     },
     banco: {
       type: "varchar",
       length: 255,
-      nullable: true,
+      nullable: false,
     },
     numeroCuenta: {
       type: "varchar",
       length: 50,
-      nullable: true,
+      nullable: false,
     },
     tipoCuenta: {
       type: "varchar",
       length: 50,
-      nullable: true,
-    },
-
-    // Campos para el encargado
-    idEncargado: {
-      type: "int",
-      nullable: true,
-      generated: true,
+      nullable: false,
     },
     nombreEncargado: {
       type: "varchar",
       length: 255,
-      nullable: true,
+      nullable: false,
     },
-
     movilEncargado: {
-      type: "varchar", 
-      length: 50,
-      nullable: true,
+      type: "simple-array",
+      nullable: false,
     },
-    telefonoEncargado: {
-      type: "varchar", 
-      length: 50,
-      nullable: true,
-    },
-
-
-    idRepartidor: {
-      type: "int",
-      nullable: true,
-      generated: true,
-    },
-    nombreRepartidor: {
-      type: "varchar",
-      length: 255,
-      nullable: true,
-    },
-
-    movilRepartidor: {
-      type: "varchar", 
-      nullable: true,
-    },
-    telefonoRepartidor: {
-      type: "varchar", 
-      length: 50,
-      nullable: true,
-    },
-
     createdAt: {
       type: "timestamp with time zone",
       default: () => "CURRENT_TIMESTAMP",

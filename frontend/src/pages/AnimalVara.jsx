@@ -232,7 +232,7 @@ const handleEditSubmit = (e) => {
             >
                 <form onSubmit={handleCreateModalSubmit} className="modal-crear-formulario">
                     <div className="modal-crear-header">
-                        <h2 className="modal-crear-titulo">Añadir Vara</h2>
+                        <h2 className="modal-crear-titulo">Crear Vara</h2>
                         <button type="button" onClick={() => setIsCreateModalOpen(false)} className="modal-crear-cerrar">×</button>
                         <button type="submit" className="modal-boton-crear">Guardar</button>
                     </div>
@@ -365,22 +365,26 @@ const handleEditSubmit = (e) => {
                         </select>
                     </div>
                 </form>
-            </Modal>
-
-            {/* Modal de Eliminación */}
+            </Modal>            {/* Modal de Eliminación */}
             <Modal
                 isOpen={isDeleteModalOpen}
                 onRequestClose={handleDeleteModalClose}
-                contentLabel="Eliminar Vara"
+                contentLabel="Confirmar Eliminación"
                 ariaHideApp={false}
                 className="formulario-table-modal-form"
                 overlayClassName="formulario-table-overlay"
-            >
-                <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar esta vara?</h2>
+                style={{ content: { maxWidth: '400px' } }}
+            >                <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+                <p>¿Estás seguro de que deseas eliminar esta vara?</p>
+                <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+                    <p><strong>Lista de Precios:</strong> {animalVaraToDelete?.tipoAnimal?.nombreLista}</p>
+                    <p><strong>Fecha de Llegada:</strong> {animalVaraToDelete?.fechaLlegada}</p>
+                </div>
                 <div className="formulario-table-form-actions">
-                    <button
+                    <button 
                         onClick={confirmDelete}
                         className="formulario-table-btn-confirm"
+                        style={{ backgroundColor: '#dc3545' }}
                     >
                         Eliminar
                     </button>

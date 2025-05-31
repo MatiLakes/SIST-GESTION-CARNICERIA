@@ -7,7 +7,7 @@ import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
 import "@styles/formulariotable.css";
-import "@styles/modalPersonal.css";
+import "@styles/Personal.css";
 
 const Personal = () => {
   const { personal, loading, error, fetchPersonal } = useGetPersonal();
@@ -91,7 +91,7 @@ const Personal = () => {
   if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
-    <div className="categoria-container">
+    <div className="personal-container">
       <Table
         data={personal}
         columns={columns}

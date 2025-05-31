@@ -140,7 +140,13 @@
     animation-delay: 1.5s;    
     
 }
-
+.navbar2 li:nth-child(10) {
+    animation-delay: 1.7s;    
+    
+}.navbar2 li:nth-child(11) {
+    animation-delay: 1.9s;    
+    
+}
 
 
 /* Estilos responsivos */

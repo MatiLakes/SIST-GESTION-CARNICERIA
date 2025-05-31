@@ -13,19 +13,13 @@ export async function createProveedorService(data) {
 
     // Crear el nuevo proveedor
     const nuevoProveedor = proveedorRepository.create({
-      nombre: data.nombre,
-      direccion: data.direccion,
-      banco: data.banco,
-      numeroCuenta: data.numeroCuenta,
-      tipoCuenta: data.tipoCuenta,
-      idEncargado: data.idEncargado,
-      nombreEncargado: data.nombreEncargado,
-      movilEncargado: data.movilEncargado,
-      telefonoEncargado: data.telefonoEncargado,
-      idRepartidor: data.idRepartidor,
-      nombreRepartidor: data.nombreRepartidor,
-      movilRepartidor: data.movilRepartidor,
-      telefonoRepartidor: data.telefonoRepartidor,
+      nombre: data.nombre || "",
+      direccion: data.direccion || "",
+      banco: data.banco || "",
+      numeroCuenta: data.numeroCuenta || "",
+      tipoCuenta: data.tipoCuenta || "",
+      nombreEncargado: data.nombreEncargado || "",
+      movilEncargado: Array.isArray(data.movilEncargado) ? data.movilEncargado : [data.movilEncargado || ""],
     });
 
     // Guardar el proveedor en la base de datos
@@ -47,8 +41,14 @@ export async function updateProveedorService(id, data) {
     if (!proveedor) return [null, "Proveedor no encontrado."];
 
     // Actualizar los campos del proveedor con los nuevos valores
-    Object.keys(data).forEach((key) => {
-      if (data[key] !== undefined) proveedor[key] = data[key];
+    Object.assign(proveedor, {
+      nombre: data.nombre || proveedor.nombre,
+      direccion: data.direccion || proveedor.direccion,
+      banco: data.banco || proveedor.banco,
+      numeroCuenta: data.numeroCuenta || proveedor.numeroCuenta,
+      tipoCuenta: data.tipoCuenta || proveedor.tipoCuenta,
+      nombreEncargado: data.nombreEncargado || proveedor.nombreEncargado,
+      movilEncargado: Array.isArray(data.movilEncargado) ? data.movilEncargado : [data.movilEncargado || ""],
     });
 
     // Guardar el proveedor actualizado en la base de datos
@@ -99,7 +99,6 @@ export async function getProveedorByIdService(id) {
 
     // Buscar el proveedor por ID
     const proveedor = await proveedorRepository.findOneBy({ id });
-
     if (!proveedor) return [null, "Proveedor no encontrado."];
 
     return [proveedor, null];

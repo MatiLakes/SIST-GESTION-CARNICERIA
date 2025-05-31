@@ -63,6 +63,37 @@ select {
     text-align: left !important;
 }
 
+/* Estilos para placeholders */
+.formulario-input::placeholder {
+    color: #677;
+    font-weight: 500;
+}
+
+/* Para Firefox */
+.formulario-input::-moz-placeholder {
+    color: #667;
+    font-weight: 500;
+    opacity: 1;
+}
+
+/* Para Chrome/Safari/Opera */
+.formulario-input::-webkit-input-placeholder {
+    color: #667;
+    font-weight: 500;
+}
+
+/* Para IE/Edge */
+.formulario-input:-ms-input-placeholder {
+    color: #667;
+    font-weight: 500;
+}
+
+/* Para Edge */
+.formulario-input::-ms-input-placeholder {
+    color: #667;
+    font-weight: 500;
+}
+
 /* Quitar color azul al seleccionar los inputs */
 .formulario-table-input:focus,
 .tipo-cuenta-select:focus {

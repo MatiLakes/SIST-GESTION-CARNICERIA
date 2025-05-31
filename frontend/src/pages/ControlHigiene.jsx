@@ -7,7 +7,7 @@ import useGetPersonal from "@hooks/personal/useGetPersonal";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
-import "@styles/modalHigiene.css";
+import "@styles/Higiene.css";
 
 const ControlHigiene = () => {
   const { controles, loading, error, fetchControles } = useGetControles();
@@ -143,7 +143,7 @@ const ControlHigiene = () => {
   if (error) return <div className="error-message">Error: {error}</div>;
 
   return (
-    <div className="categoria-container">
+    <div className="higiene-container">
       <Table
         data={controles}
         columns={columns}

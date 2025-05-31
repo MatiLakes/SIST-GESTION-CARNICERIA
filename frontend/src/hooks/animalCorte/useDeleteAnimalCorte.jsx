@@ -6,7 +6,7 @@ const useDeleteAnimalCorte = (fetchAnimalCortes) => {
     try {
       const response = await deleteAnimalCorteService(id);
       if (!response || response.error) {
-        showErrorAlert('Error de referencia', 'La lista de precio no puede eliminarse porque está siendo utilizado en otra parte.');
+        showErrorAlert('Error de referencia', 'La lista de precio no puede eliminarse porque está siendo utilizado en Vara.');
         return;
       }
       
@@ -14,7 +14,7 @@ const useDeleteAnimalCorte = (fetchAnimalCortes) => {
       fetchAnimalCortes();
     } catch (error) {
       console.error('Error al eliminar la lista de precios:', error);
-      showErrorAlert('Error de referencia', 'La lista de precio no puede eliminarse porque está siendo utilizado en otra parte.');
+      showErrorAlert('Error de referencia', 'La lista de precio no puede eliminarse porque está siendo utilizado en Vara.');
     }
   };
 

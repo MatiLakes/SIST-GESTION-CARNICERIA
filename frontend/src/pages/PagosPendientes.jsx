@@ -303,7 +303,6 @@ const PagosPendientes = () => {
   if (loading || loadingClientes) return <p>Cargando datos...</p>;
 
   const columns = [
-    { header: "ID", key: "id" },
     { header: "Monto", key: "monto" },
     { header: "Fecha Pedido", key: "fechaPedido" },
     { header: "Fecha Límite", key: "fechaLimite" },
@@ -636,22 +635,32 @@ const PagosPendientes = () => {
                 </div>
               </form>
             )}
-          </Modal>
-
-      {/* Modal de Eliminación */}<Modal
+          </Modal>      {/* Modal de Eliminación */}
+      <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
-        contentLabel="Eliminar"
+        contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
         className="formulario-table-modal-form"
         overlayClassName="formulario-table-overlay"
-        
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <h2 className="formulario-table-modal-title">¿Estás seguro que deseas eliminar?</h2>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este pago pendiente?</p>
+        {currentPagoPendiente && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Cliente:</strong> {clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.tipoCliente === "Empresa" 
+              ? clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.razonSocial 
+              : `${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.nombres} ${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.apellidos}`}</p>
+            <p><strong>Monto:</strong> ${currentPagoPendiente.monto?.toLocaleString('es-CL')}</p>
+            <p><strong>Estado:</strong> {currentPagoPendiente.estado}</p>
+          </div>
+        )}
         <div className="formulario-table-form-actions">
-          <button
+          <button 
             onClick={confirmDelete}
             className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
           >
             Eliminar
           </button>

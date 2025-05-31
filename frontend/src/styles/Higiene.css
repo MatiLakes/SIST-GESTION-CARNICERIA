@@ -1,5 +1,5 @@
 /* Contenedor principal */
-.subproducto-container {
+.higiene-container {
     background-color: #f4f6f8; /* Gris claro, estilo moderno de sistemas */
     min-height: 100vh;
     height: 100%;
@@ -8,4 +8,3 @@
     justify-content: center;
     flex-direction: column;
   }
-  

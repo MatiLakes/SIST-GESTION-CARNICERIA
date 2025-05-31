@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useGetClientes from "@hooks/clientes/useGetClientes.jsx";
 import useCreateCliente from "@hooks/clientes/useCreateCliente.jsx";
-import useDeleteCliente from "@hooks/clientes/useDeleteCliente.jsx";
+import {useDeleteCliente} from "@hooks/clientes/useDeleteCliente.jsx";
 import useEditCliente from "@hooks/clientes/useEditCliente.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
@@ -10,10 +10,9 @@ import "@styles/formulariotable.css";
 import "@styles/selectFix.css";
 import styles from "@styles/categoria.module.css";
 
-const Clientes = () => {
-  const { clientes, loading, fetchClientes } = useGetClientes();
+const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetClientes();
   const { create } = useCreateCliente(fetchClientes);
-  const { remove } = useDeleteCliente(fetchClientes);
+  const { handleDelete } = useDeleteCliente(fetchClientes);
   const { edit } = useEditCliente(fetchClientes);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -52,32 +51,10 @@ const Clientes = () => {
   const handleDeleteModalClose = () => {
     setIsDeleteModalOpen(false);
     setCurrentCliente(null);
-  };
-
-  const confirmDelete = async () => {
-    if (!currentCliente) return;
-
-    try {
-      await remove(currentCliente.id);
-      handleDeleteModalClose();
-
-      // Mostrar alerta de éxito después de eliminar
-      Swal.fire({
-        title: "¡Eliminado!",
-        text: "El cliente ha sido eliminado exitosamente",
-        icon: "success",
-        confirmButtonColor: "#000000"
-      });
-    } catch (error) {
-      console.error("Error al eliminar cliente:", error);
-      // Mostrar alerta de error
-      Swal.fire({
-        title: "Error",
-        text: "No se pudo eliminar el cliente",
-        icon: "error",
-        confirmButtonColor: "#000000"
-      });
-    }
+  };  const confirmDelete = () => {
+    handleDelete(currentCliente.id);
+    setIsDeleteModalOpen(false);
+    setCurrentCliente(null);
   };
 
   const handleCreateCliente = async (event) => {
@@ -235,7 +212,6 @@ const Clientes = () => {
 
   if (loading) return <p>Cargando datos...</p>;
   const columns = [
-    { header: "ID", key: "id" },
     { header: "Tipo Cliente", key: "tipoCliente" },
     { header: "RUT", key: "rut" },
     { header: "Nombre/Razón Social", key: "nombreCompleto" },
