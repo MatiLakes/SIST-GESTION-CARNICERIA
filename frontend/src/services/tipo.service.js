@@ -21,3 +21,25 @@ export const createTipo = async (tipoData) => {
     throw error;
   }
 };
+
+// Eliminar un tipo de producto
+export const deleteTipo = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/tipos-productos/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al eliminar el tipo de producto:", error);
+    throw error;
+  }
+};
+
+// Actualizar un tipo de producto
+export const updateTipo = async (id, tipoData) => {
+  try {
+    const response = await axiosInstance.put(`/tipos-productos/${id}`, tipoData);
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar el tipo de producto:", error);
+    throw error;
+  }
+};

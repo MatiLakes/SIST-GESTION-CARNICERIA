@@ -31,28 +31,49 @@ const Table = ({
   showExcelButton = true, // Nueva prop para controlar la visibilidad del botón de exportar a Excel
   entidad = "", // Nueva prop para identificar la entidad
   customFormat = null, // Nueva prop para formatear datos de forma personalizada
-}) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(data);
+}) => {  const [searchTerm, setSearchTerm] = useState("");  const [filteredData, setFilteredData] = useState(data.sort((a, b) => {
+    // Identificar si la columna es una fecha
+    const isDateColumn = columns[0].key.toLowerCase().includes('fecha');
+    
+    if (isDateColumn) {
+      // Ordenar fechas de más reciente a más antigua
+      const dateA = a[columns[0].key] ? new Date(a[columns[0].key]) : new Date(0);
+      const dateB = b[columns[0].key] ? new Date(b[columns[0].key]) : new Date(0);
+      return dateB - dateA;
+    } else {
+      // Ordenar texto alfabéticamente
+      const valueA = typeof a[columns[0].key] === 'object' ? a[columns[0].key]?.nombre?.toLowerCase() || '' : String(a[columns[0].key] || '').toLowerCase();
+      const valueB = typeof b[columns[0].key] === 'object' ? b[columns[0].key]?.nombre?.toLowerCase() || '' : String(b[columns[0].key] || '').toLowerCase();
+      return valueA.localeCompare(valueB);
+    }
+  }));
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(7);
   const [pageInput, setPageInput] = useState(currentPage);
   const [editAll, setEditAll] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [showDatePicker, setShowDatePicker] = useState(false); // Estado para manejar la visibilidad del calendario
+  const [selectedDate, setSelectedDate] = useState(null);  const [showDatePicker, setShowDatePicker] = useState(false); // Estado para manejar la visibilidad del calendario
   const [showClearButton, setShowClearButton] = useState(false); // Estado para manejar la visibilidad del botón "Mostrar Todo"
+  const [sortConfig, setSortConfig] = useState({
+    key: columns[0]?.key || '',
+    direction: 'asc'
+  });
 
   // Manejo del filtro de búsqueda
   const handleSearch = (event) => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
-    
-    setFilteredData(
-      data.filter((row) =>
-        columns.some((col) =>
-          searchInObject(row[col.key], term) // Función que buscará en los objetos
+      setFilteredData(
+      data
+        .filter((row) =>
+          columns.some((col) =>
+            searchInObject(row[col.key], term) // Función que buscará en los objetos
+          )
         )
-      )
+        .sort((a, b) => {
+          const valueA = typeof a[columns[0].key] === 'object' ? a[columns[0].key]?.nombre?.toLowerCase() || '' : String(a[columns[0].key] || '').toLowerCase();
+          const valueB = typeof b[columns[0].key] === 'object' ? b[columns[0].key]?.nombre?.toLowerCase() || '' : String(b[columns[0].key] || '').toLowerCase();
+          return valueA.localeCompare(valueB);
+        })
     );
     
     setCurrentPage(1);
@@ -75,7 +96,7 @@ const Table = ({
       const selectedDateString = date.toISOString().split('T')[0];
 
       // Filtra los datos, comparando solo la parte de la fecha (yyyy-MM-dd)
-      const filteredByDate = data.filter((row) => {
+      let filteredByDate = data.filter((row) => {
         // Define un arreglo con las propiedades de fecha de cada fila
         const datesToCheck = [
           row.fechaLlegada,
@@ -95,8 +116,19 @@ const Table = ({
           const parsedDate = new Date(date);
           return !isNaN(parsedDate) && parsedDate.toISOString().split('T')[0] === selectedDateString;
         });
+      });      // Ordenar por fecha más reciente primero
+      filteredByDate = filteredByDate.sort((a, b) => {
+        const isDateColumn = columns[0].key.toLowerCase().includes('fecha');
+        if (isDateColumn) {
+          const dateA = a[columns[0].key] ? new Date(a[columns[0].key]) : new Date(0);
+          const dateB = b[columns[0].key] ? new Date(b[columns[0].key]) : new Date(0);
+          return dateB - dateA;
+        } else {
+          const valueA = typeof a[columns[0].key] === 'object' ? a[columns[0].key]?.nombre?.toLowerCase() || '' : String(a[columns[0].key] || '').toLowerCase();
+          const valueB = typeof b[columns[0].key] === 'object' ? b[columns[0].key]?.nombre?.toLowerCase() || '' : String(b[columns[0].key] || '').toLowerCase();
+          return valueA.localeCompare(valueB);
+        }
       });
-
       setFilteredData(filteredByDate);
     } else {
       setFilteredData(data); // Mostrar todos los datos si no hay fecha seleccionada
@@ -235,11 +267,35 @@ const Table = ({
             )}
           </div>
         </div>
-        <table>
-          <thead>
+        <table>          <thead>
             <tr>
               {columns.map((col) => (
-                <th key={col.key}>{col.header}</th>
+                <th 
+                  key={col.key}
+                  onClick={() => {
+                    const newDirection = sortConfig.key === col.key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+                    setSortConfig({ key: col.key, direction: newDirection });                    const sortedData = [...filteredData].sort((a, b) => {
+                      // Identificar si la columna es una fecha
+                      const isDateColumn = col.key.toLowerCase().includes('fecha');
+                      
+                      if (isDateColumn) {
+                        // Ordenar fechas
+                        const dateA = a[col.key] ? new Date(a[col.key]) : new Date(0);
+                        const dateB = b[col.key] ? new Date(b[col.key]) : new Date(0);
+                        return newDirection === 'asc' ? dateA - dateB : dateB - dateA;
+                      } else {
+                        // Ordenar texto
+                        const valueA = typeof a[col.key] === 'object' ? a[col.key]?.nombre?.toLowerCase() || '' : String(a[col.key] || '').toLowerCase();
+                        const valueB = typeof b[col.key] === 'object' ? b[col.key]?.nombre?.toLowerCase() || '' : String(b[col.key] || '').toLowerCase();
+                        return newDirection === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                      }
+                    });
+                    setFilteredData(sortedData);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {col.header} {sortConfig.key === col.key && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </th>
               ))}
               <th style={{ textAlign: "right" }}>Acciones</th>
             </tr>

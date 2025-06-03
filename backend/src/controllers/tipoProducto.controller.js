@@ -26,4 +26,30 @@ export const tipoProductoController = {
       handleErrorServer(res, 500, error.message);
     }
   },
+
+  async eliminarTipoProducto(req, res) {
+    try {
+      const { id } = req.params;
+      const [mensaje, err] = await tipoProductoService.eliminarTipoProducto(id);
+      if (err) return handleErrorClient(res, 400, err);
+
+      handleSuccess(res, 200, mensaje);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
+
+  async actualizarTipoProducto(req, res) {
+    try {
+      const { id } = req.params;
+      const datosActualizados = req.body;
+
+      const [tipoProducto, err] = await tipoProductoService.actualizarTipoProducto(id, datosActualizados);
+      if (err) return handleErrorClient(res, 400, err);
+
+      handleSuccess(res, 200, "Tipo de producto actualizado correctamente.", tipoProducto);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 };

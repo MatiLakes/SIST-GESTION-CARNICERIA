@@ -26,4 +26,30 @@ export const marcaProductoController = {
       handleErrorServer(res, 500, error.message);
     }
   },
+
+  async eliminarMarcaProducto(req, res) {
+    try {
+      const { id } = req.params;
+      const [mensaje, err] = await marcaProductoService.eliminarMarcaProducto(id);
+      if (err) return handleErrorClient(res, 400, err);
+
+      handleSuccess(res, 200, mensaje);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
+
+  async actualizarMarcaProducto(req, res) {
+    try {
+      const { id } = req.params;
+      const datosActualizados = req.body;
+
+      const [marcaProducto, err] = await marcaProductoService.actualizarMarcaProducto(id, datosActualizados);
+      if (err) return handleErrorClient(res, 400, err);
+
+      handleSuccess(res, 200, "Marca de producto actualizada correctamente.", marcaProducto);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  },
 };

@@ -7,9 +7,10 @@ import useGetMarcas from "@hooks/productos/useGetMarcas.jsx";
 import useGetTipos from "@hooks/productos/useGetTipos.jsx";
 import useCreateMarca from "@hooks/productos/useCreateMarca.jsx";
 import useCreateTipo from "@hooks/productos/useCreateTipo.jsx";
-import useFilterProductosByNombre from "@hooks/productos/useFilterProductosByNombre.jsx";
-import useFilterProductosByMarca from "@hooks/productos/useFilterProductosByMarca.jsx";
-import useFilterProductosByTipo from "@hooks/productos/useFilterProductosByTipo.jsx";
+import { useDeleteTipo } from "@hooks/productos/useDeleteTipo.jsx";
+import useEditTipo from "@hooks/productos/useEditTipo.jsx";
+import { useDeleteMarca } from "@hooks/productos/useDeleteMarca.jsx";
+import useEditMarca from "@hooks/productos/useEditMarca.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
@@ -19,17 +20,18 @@ import "@styles/modalCrear.css";
 import Swal from "sweetalert2";
 
 const Productos = () => {
-  const { productos, loading, setProductos, fetchProductos } = useGetProductos();
+  const { productos, loading, fetchProductos } = useGetProductos();
   const { marcas, fetchMarcas } = useGetMarcas();
   const { tipos, fetchTipos } = useGetTipos();
-  const { filterByNombre } = useFilterProductosByNombre(setProductos);
-  const { filterByMarca } = useFilterProductosByMarca(setProductos);
-  const { filterByTipo } = useFilterProductosByTipo(setProductos);
   const { create: createProducto } = useCreateProducto(fetchProductos);
   const { remove } = useDeleteProducto(fetchProductos);
   const { edit } = useEditProducto(fetchProductos);
   const { create: createMarca } = useCreateMarca(fetchMarcas);
   const { create: createTipo } = useCreateTipo(fetchTipos);
+  const { handleDelete: deleteTipo } = useDeleteTipo(fetchTipos);
+  const { edit: editTipo } = useEditTipo(fetchTipos);
+  const { handleDelete: deleteMarca } = useDeleteMarca(fetchMarcas);
+  const { edit: editMarca } = useEditMarca(fetchMarcas);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -38,6 +40,13 @@ const Productos = () => {
   const [isModalTipoOpen, setIsModalTipoOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productoToDelete, setProductoToDelete] = useState(null);
+  const [isGestionTipoOpen, setIsGestionTipoOpen] = useState(false);
+  const [isGestionMarcaOpen, setIsGestionMarcaOpen] = useState(false);
+  const [selectedTipo, setSelectedTipo] = useState(null);
+  const [selectedMarca, setSelectedMarca] = useState(null);
+  const [isEditTipoMode, setIsEditTipoMode] = useState(false);  const [isEditMarcaMode, setIsEditMarcaMode] = useState(false);
+  const [searchTipo, setSearchTipo] = useState("");
+  const [searchMarca, setSearchMarca] = useState("");
 
   const stableFetchMarcas = useCallback(fetchMarcas, []);
   const stableFetchTipos = useCallback(fetchTipos, []);
@@ -94,41 +103,15 @@ const Productos = () => {
       }
     }
   };
-
   const handleCreateProducto = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-  
-    const stock = parseInt(formData.get("stock"), 10);
     const precioVenta = parseFloat(formData.get("precioVenta"));
-    const precioCompra = parseFloat(formData.get("precioCompra"));
-  
-    if (stock < 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "La cantidad no puede ser negativa.",
-        confirmButtonColor: "#000000"
-      });
-      return;
-    }
-  
-    if (precioCompra > precioVenta) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "El precio de compra no puede ser mayor al precio de venta.",
-        confirmButtonColor: "#000000"
-      });
-      return;
-    }
   
     const newProducto = {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta,
-      precioCompra,
-      stock,
       fechaVencimiento: formData.get("fechaVencimiento"),
       tipo: {
         id: parseInt(formData.get("tipo"), 10),
@@ -160,13 +143,10 @@ const Productos = () => {
 
   const handleEditProducto = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
-    const updatedProducto = {
+    const formData = new FormData(event.target);    const updatedProducto = {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta: parseFloat(formData.get("precioVenta")),
-      precioCompra: parseFloat(formData.get("precioCompra")),
-      stock: parseInt(formData.get("stock"), 10),
       fechaVencimiento: formData.get("fechaVencimiento"),
       tipo: parseInt(formData.get("tipo"), 10),
       marca: parseInt(formData.get("marca"), 10),
@@ -192,23 +172,110 @@ const Productos = () => {
     }
   };
 
+  const openGestionTipo = () => setIsGestionTipoOpen(true);
+  const closeGestionTipo = () => {
+    setIsGestionTipoOpen(false);
+    setSelectedTipo(null);
+    setIsEditTipoMode(false);
+  };
+
+  const openGestionMarca = () => setIsGestionMarcaOpen(true);
+  const closeGestionMarca = () => {
+    setIsGestionMarcaOpen(false);
+    setSelectedMarca(null);
+    setIsEditMarcaMode(false);
+  };
+
+  const handleTipoSelect = (tipo) => {
+    setSelectedTipo(tipo);
+  };
+
+  const handleMarcaSelect = (marca) => {
+    setSelectedMarca(marca);
+  };
+  const handleEditMarca = async (e) => {
+    e.preventDefault();
+    const marcaNombre = e.target.marcaNombre.value;
+    try {
+      await editMarca(selectedMarca.id, { nombre: marcaNombre });
+      setIsEditMarcaMode(false);
+      setSelectedMarca(null);
+      Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: "Marca actualizada correctamente.",
+        confirmButtonColor: "#000000"
+      });
+    } catch (error) {
+      console.error("Error al editar marca:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo actualizar la marca.",
+        confirmButtonColor: "#000000"
+      });
+    }
+  };
+
+  const handleDeleteMarca = async () => {
+    try {
+      await deleteMarca(selectedMarca.id);
+      setSelectedMarca(null);
+      setIsEditMarcaMode(false);
+    } catch (error) {
+      console.error("Error al eliminar marca:", error);
+    }
+  };
+
+  const handleEditTipo = async (e) => {
+    e.preventDefault();
+    const tipoNombre = e.target.tipoNombre.value;
+    try {
+      await editTipo(selectedTipo.id, { nombre: tipoNombre });
+      setIsEditTipoMode(false);
+      setSelectedTipo(null);
+      Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: "Tipo actualizado correctamente.",
+        confirmButtonColor: "#000000"
+      });
+    } catch (error) {
+      console.error("Error al editar tipo:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo actualizar el tipo.",
+        confirmButtonColor: "#000000"
+      });
+    }
+  };
+
+  const handleDeleteTipo = async () => {
+    try {
+      await deleteTipo(selectedTipo.id);
+      setSelectedTipo(null);
+      setIsEditTipoMode(false);
+    } catch (error) {
+      console.error("Error al eliminar tipo:", error);
+    }
+  };
+
   if (loading) return <p>Cargando productos...</p>;
 
   console.log("Lista de productos:", productos);
-
   const columns = [
     { header: "Nombre", key: "nombre" },
     { header: "Variante", key: "variante" },
     { header: "Precio Venta", key: "precioVenta" },
-    { header: "Precio Compra", key: "precioCompra" },    
-
     { header: "Fecha Vencimiento", key: "fechaVencimiento" },
     { header: "Tipo", key: "tipo" },
     { header: "Marca", key: "marca" }
   ];
 
   return (
-    <div className={styles["categoria-container"]}>      <Table
+    <div className={styles["categoria-container"]}>
+      <Table
         data={productos}
         columns={columns}
         headerTitle="Productos"
@@ -220,7 +287,7 @@ const Productos = () => {
         showCalendarButton={true}
         entidad="productos"
         customFormat={(value, key) => {
-          if ((key === "precioVenta" || key === "precioCompra") && (typeof value === "number" || !isNaN(parseFloat(value)))) {
+          if (key === "precioVenta" && (typeof value === "number" || !isNaN(parseFloat(value)))) {
             return `$${parseFloat(value).toLocaleString('es-CL')}`;
           }
           if (key === "tipo" || key === "marca") {
@@ -228,7 +295,9 @@ const Productos = () => {
           }
           return value?.nombreLista ? value.nombreLista : value;
         }}
-      />      {/* Modal de Creación */}
+      />
+      
+      {/* Modal de Creación */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
@@ -273,26 +342,6 @@ const Productos = () => {
             />
           </div>
           <div className="formulario-grupo">
-            <label className="formulario-etiqueta">Precio Compra:</label>
-            <input
-              type="number"
-              id="precioCompra"
-              name="precioCompra"
-              required
-              className="formulario-input"
-            />
-          </div>
-          <div className="formulario-grupo">
-            <label className="formulario-etiqueta">Cantidad:</label>
-            <input
-              type="number"
-              id="stock"
-              name="stock"
-              required
-              className="formulario-input"
-            />
-          </div>
-          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
             <input
               type="date"
@@ -301,8 +350,7 @@ const Productos = () => {
               className="formulario-input"
             />
           </div>
-          <div style={{ display: 'flex', gap: '1rem', width: '100%', margin: '0 auto', maxWidth: '800px' }}>
-            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+          <div style={{ display: 'flex', gap: '1rem', width: '100%', margin: '0 auto', maxWidth: '800px' }}>                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Tipo</span>
               </div>
@@ -316,15 +364,14 @@ const Productos = () => {
                     style={{ minWidth: '180px' }}
                   >
                     <option value="">Seleccione un Tipo</option>
-                    {tipos.map((tipo) => (
+                    {[...tipos].sort((a, b) => a.nombre.localeCompare(b.nombre)).map((tipo) => (
                       <option key={tipo.id} value={tipo.id}>
                         {tipo.nombre}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div className="input-grupo">
-                  <button
+                <div className="input-grupo" style={{ display: 'flex', gap: '8px' }}>                  <button
                     type="button"
                     className="modal-boton-anadir"
                     onClick={openModalTipo}
@@ -349,7 +396,7 @@ const Productos = () => {
                     style={{ minWidth: '180px' }}
                   >
                     <option value="">Seleccione una Marca</option>
-                    {marcas.map((marca) => (
+                    {[...marcas].sort((a, b) => a.nombre.localeCompare(b.nombre)).map((marca) => (
                       <option key={marca.id} value={marca.id}>
                         {marca.nombre}
                       </option>
@@ -418,28 +465,6 @@ const Productos = () => {
               />
             </div>
             <div className="formulario-grupo">
-              <label className="formulario-etiqueta">Precio Compra:</label>
-              <input
-                type="number"
-                id="precioCompra"
-                name="precioCompra"
-                defaultValue={currentProducto.precioCompra}
-                required
-                className="formulario-input"
-              />
-            </div>
-            <div className="formulario-grupo">              
-              <label className="formulario-etiqueta">Cantidad:</label>
-              <input
-                type="number"
-                id="stock"
-                name="stock"
-                defaultValue={currentProducto.stock}
-                required
-                className="formulario-input"
-              />
-            </div>
-            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
               <input
                 type="date"
@@ -463,7 +488,7 @@ const Productos = () => {
                       className="formulario-input"
                       style={{ minWidth: '220px' }}
                     >
-                      {tipos.map((tipo) => (
+                      {[...tipos].sort((a, b) => a.nombre.localeCompare(b.nombre)).map((tipo) => (
                         <option key={tipo.id} value={tipo.id}>
                           {tipo.nombre}
                         </option>
@@ -486,7 +511,7 @@ const Productos = () => {
                       className="formulario-input"
                       style={{ minWidth: '220px' }}
                     >
-                      {marcas.map((marca) => (
+                      {[...marcas].sort((a, b) => a.nombre.localeCompare(b.nombre)).map((marca) => (
                         <option key={marca.id} value={marca.id}>
                           {marca.nombre}
                         </option>
@@ -533,60 +558,132 @@ const Productos = () => {
             Cancelar
           </button>
         </div>
-      </Modal>{/* Modal para crear tipo */}
-      <Modal
+      </Modal>{/* Modal para crear tipo */}      <Modal
         isOpen={isModalTipoOpen}
         onRequestClose={closeModalTipo}
         contentLabel="Crear Tipo"
         ariaHideApp={false}
         className="modal-crear"
         overlayClassName="modal-overlay"
-        closeTimeoutMS={300}
-      >
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            const tipoNombre = e.target.tipoNombre.value;
-            try {
-              await createTipo({ nombre: tipoNombre });
-              closeModalTipo();
-              fetchTipos();
-              Swal.fire({
-                icon: "success",
-                title: "¡Éxito!",
-                text: "Tipo creado correctamente.",
-                confirmButtonColor: "#000000"
-              });
-            } catch (error) {
-              console.error("Error al crear tipo:", error);
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "No se pudo crear el tipo.",
-                confirmButtonColor: "#000000"
-              });
-            }
-          }}
-          className="modal-crear-formulario"
-        >
-          <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Crear Nuevo Tipo</h2>
-            <button type="button" onClick={closeModalTipo} className="modal-crear-cerrar">×</button>
-            <button type="submit" className="modal-boton-crear">Crear</button>
+        closeTimeoutMS={300}      >        
+        <div className="modal-crear-formulario">         
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const tipoNombre = e.target.tipoNombre.value;
+              try {
+                await createTipo({ nombre: tipoNombre });
+                e.target.reset();
+                closeModalTipo();
+                Swal.fire({
+                  icon: "success",
+                  title: "¡Éxito!",
+                  text: "Tipo creado correctamente.",
+                  confirmButtonColor: "#000000"
+                });
+                fetchTipos();
+              } catch (error) {
+                console.error("Error al crear tipo:", error);
+                Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text: "No se pudo crear el tipo.",
+                  confirmButtonColor: "#000000"
+                });
+              }
+            }}
+          >            <div className="modal-crear-header">
+              <h2 className="modal-crear-titulo">Crear Nuevo Tipo</h2>
+              <button type="button" onClick={closeModalTipo} className="modal-crear-cerrar">×</button>
+              <button type="submit" className="modal-boton-crear">Crear</button>
+            </div>
+            <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+              <label className="formulario-etiqueta">Nombre del Tipo:</label>
+              <input
+                type="text"
+                id="tipoNombre"
+                name="tipoNombre"
+                required
+                className="formulario-input"
+              />
+            </div>
+          </form>          <div className="gestion-section">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 className="gestion-titulo">Gestionar Tipos Existentes</h3>
+              <div className="search-container" style={{ display: 'flex', alignItems: 'center' }}>                <input
+                  type="text"
+                  placeholder="Buscar tipo..."
+                  value={searchTipo}
+                  onChange={(e) => setSearchTipo(e.target.value)}
+                  className="search-input"
+                  style={{ marginLeft: '10px' }}
+                />
+              </div>
+            </div>            <div className="gestion-lista">
+              {tipos
+                .filter(tipo => 
+                  tipo.nombre.toLowerCase().includes(searchTipo.toLowerCase())
+                )
+                .sort((a, b) => a.nombre.localeCompare(b.nombre))
+                .map((tipo) => (
+                <div
+                  key={tipo.id}
+                  className={`gestion-item ${selectedTipo?.id === tipo.id ? 'selected' : ''}`}
+                  onClick={() => handleTipoSelect(tipo)}
+                >
+                  <span>{tipo.nombre}</span>
+                  {selectedTipo?.id === tipo.id && (
+                    <div className="gestion-actions">
+                      <button
+                        className="btn-editar"
+                        onClick={() => setIsEditTipoMode(true)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn-eliminar"
+                        onClick={handleDeleteTipo}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Modal para editar tipo */}
+            <Modal
+              isOpen={isEditTipoMode}
+              onRequestClose={() => setIsEditTipoMode(false)}
+              contentLabel="Editar Tipo"
+              className="modal-crear"
+              overlayClassName="modal-overlay"
+              closeTimeoutMS={300}
+            >
+              <div className="modal-crear-formulario">
+                <form onSubmit={handleEditTipo}>
+                  <div className="modal-crear-header">
+                    <h2 className="modal-crear-titulo">Editar Tipo</h2>
+                    <button type="button" onClick={() => setIsEditTipoMode(false)} className="modal-crear-cerrar">×</button>
+                    <button type="submit" className="modal-boton-crear">Guardar</button>
+                  </div>
+                  <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+                    <label className="formulario-etiqueta">Editar Nombre:</label>
+                    <input
+                      type="text"
+                      name="tipoNombre"
+                      defaultValue={selectedTipo?.nombre}
+                      className="formulario-input"
+                      required
+                    />
+                  </div>
+                </form>
+              </div>
+            </Modal>
           </div>
-          <div className="formulario-grupo">
-            <label className="formulario-etiqueta">Nombre del Tipo:</label>
-            <input
-              type="text"
-              id="tipoNombre"
-              name="tipoNombre"
-              required
-              className="formulario-input"
-            />
-          </div>
-        </form>
-      </Modal>      {/* Modal para crear marca */}
-      <Modal
+        </div>
+      </Modal>{/* Modal para crear marca */}      <Modal
         isOpen={isModalMarcaOpen}
         onRequestClose={closeModalMarca}
         contentLabel="Crear Marca"
@@ -594,49 +691,193 @@ const Productos = () => {
         className="modal-crear"
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}
+      >        <div className="modal-crear-formulario">
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const marcaNombre = e.target.marcaNombre.value;
+              try {
+                await createMarca({ nombre: marcaNombre });
+                e.target.reset();
+                closeModalMarca();
+                Swal.fire({
+                  icon: "success",
+                  title: "¡Éxito!",
+                  text: "Marca creada correctamente.",
+                  confirmButtonColor: "#000000"
+                });
+                fetchMarcas();
+              } catch (error) {
+                console.error("Error al crear marca:", error);
+                Swal.fire({
+                  icon: "error",
+                  title: "Error",
+                  text: "No se pudo crear la marca.",
+                  confirmButtonColor: "#000000"
+                });
+              }
+            }}
+          >            <div className="modal-crear-header">
+              <h2 className="modal-crear-titulo">Crear Nueva Marca</h2>
+              <button type="button" onClick={closeModalMarca} className="modal-crear-cerrar">×</button>
+              <button type="submit" className="modal-boton-crear">Crear</button>
+            </div>
+            
+            <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+              <label className="formulario-etiqueta">Nombre de la Marca:</label>
+              <input
+                type="text"
+                id="marcaNombre"
+                name="marcaNombre"
+                required
+                className="formulario-input"
+              />
+            </div>
+          </form>          <div className="gestion-section">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 className="gestion-titulo">Gestionar Marcas Existentes</h3>
+              <div className="search-container" style={{ display: 'flex', alignItems: 'center' }}>                <input
+                  type="text"
+                  placeholder="Buscar marca..."
+                  value={searchMarca}
+                  onChange={(e) => setSearchMarca(e.target.value)}
+                  className="search-input"
+                  style={{ marginLeft: '10px' }}
+                />
+              </div>
+            </div>            <div className="gestion-lista">
+              {marcas
+                .filter(marca => 
+                  marca.nombre.toLowerCase().includes(searchMarca.toLowerCase())
+                )
+                .sort((a, b) => a.nombre.localeCompare(b.nombre))
+                .map((marca) => (
+                <div
+                  key={marca.id}
+                  className={`gestion-item ${selectedMarca?.id === marca.id ? 'selected' : ''}`}
+                  onClick={() => handleMarcaSelect(marca)}
+                >
+                  <span>{marca.nombre}</span>
+                  {selectedMarca?.id === marca.id && (
+                    <div className="gestion-actions">
+                      <button
+                        className="btn-editar"
+                        onClick={() => setIsEditMarcaMode(true)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn-eliminar"
+                        onClick={handleDeleteMarca}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Modal para editar marca */}
+            <Modal
+              isOpen={isEditMarcaMode}
+              onRequestClose={() => setIsEditMarcaMode(false)}
+              contentLabel="Editar Marca"
+              className="modal-crear"
+              overlayClassName="modal-overlay"
+              closeTimeoutMS={300}
+            >
+              <div className="modal-crear-formulario">
+                <form onSubmit={handleEditMarca}>
+                  <div className="modal-crear-header">
+                    <h2 className="modal-crear-titulo">Editar Marca</h2>
+                    <button type="button" onClick={() => setIsEditMarcaMode(false)} className="modal-crear-cerrar">×</button>
+                    <button type="submit" className="modal-boton-crear">Guardar</button>
+                  </div>
+                  <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+                    <label className="formulario-etiqueta">Editar Nombre:</label>
+                    <input
+                      type="text"
+                      name="marcaNombre"
+                      defaultValue={selectedMarca?.nombre}
+                      className="formulario-input"
+                      required
+                    />
+                  </div>
+                </form>
+              </div>
+            </Modal>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal para gestionar tipos */}
+      <Modal
+        isOpen={isGestionTipoOpen}
+        onRequestClose={closeGestionTipo}
+        contentLabel="Gestionar Tipos"
+        ariaHideApp={false}
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
       >
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            const marcaNombre = e.target.marcaNombre.value;
-            try {
-              await createMarca({ nombre: marcaNombre });
-              closeModalMarca();
-              fetchMarcas();
-              Swal.fire({
-                icon: "success",
-                title: "¡Éxito!",
-                text: "Marca creada correctamente.",
-                confirmButtonColor: "#000000"
-              });
-            } catch (error) {
-              console.error("Error al crear marca:", error);
-              Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "No se pudo crear la marca.",
-                confirmButtonColor: "#000000"
-              });
-            }
-          }}
-          className="modal-crear-formulario"
-        >
+        <div className="modal-crear-formulario">
           <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Crear Nueva Marca</h2>
-            <button type="button" onClick={closeModalMarca} className="modal-crear-cerrar">×</button>
-            <button type="submit" className="modal-boton-crear">Crear</button>
+            <h2 className="modal-crear-titulo">Gestionar Tipos</h2>
+            <button type="button" onClick={closeGestionTipo} className="modal-crear-cerrar">×</button>
           </div>
-          <div className="formulario-grupo">
-            <label className="formulario-etiqueta">Nombre de la Marca:</label>
-            <input
-              type="text"
-              id="marcaNombre"
-              name="marcaNombre"
-              required
-              className="formulario-input"
-            />
+          <div className="gestion-lista">
+            {tipos.map((tipo) => (
+              <div
+                key={tipo.id}
+                className={`gestion-item ${selectedTipo?.id === tipo.id ? 'selected' : ''}`}
+                onClick={() => handleTipoSelect(tipo)}
+              >
+                <span>{tipo.nombre}</span>
+                {selectedTipo?.id === tipo.id && (
+                  <div className="gestion-actions">
+                    <button
+                      className="btn-editar"
+                      onClick={() => setIsEditTipoMode(true)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn-eliminar"
+                      onClick={handleDeleteTipo}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        </form>
+          {isEditTipoMode && selectedTipo && (
+            <form onSubmit={handleEditTipo} className="edit-form">
+              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Nombre del Tipo:</label>
+                <input
+                  type="text"
+                  name="tipoNombre"
+                  defaultValue={selectedTipo.nombre}
+                  className="formulario-input"
+                  required
+                />
+              </div>
+              <div className="form-actions">
+                <button type="submit" className="btn-guardar">Guardar</button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditTipoMode(false)}
+                  className="btn-cancelar"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       </Modal>
     </div>
   );

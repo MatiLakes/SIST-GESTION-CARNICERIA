@@ -33,4 +33,61 @@ export const marcaProductoService = {
       return [null, "Error al obtener las marcas de productos."];
     }
   },
+
+  async eliminarMarcaProducto(id) {
+    try {
+      const marcaProductoRepository = AppDataSource.getRepository(MarcaProducto);
+      
+      // Verificar si la marca existe
+      const marcaProducto = await marcaProductoRepository.findOneBy({ id });
+      if (!marcaProducto) {
+        return [null, "La marca de producto no existe."];
+      }
+
+      // Verificar si la marca está siendo usada por algún producto
+      const productoRepository = AppDataSource.getRepository('Producto');
+      const productoConMarca = await productoRepository.findOne({
+        where: { marca: { id } }
+      });
+
+      if (productoConMarca) {
+        return [null, "No se puede eliminar la marca porque está siendo utilizada por productos."];
+      }
+
+      await marcaProductoRepository.remove(marcaProducto);
+      return [{ message: "Marca de producto eliminada correctamente." }, null];
+    } catch (error) {
+      console.error("Error en eliminarMarcaProducto:", error);
+      return [null, "Error al eliminar la marca de producto."];
+    }
+  },
+
+  async actualizarMarcaProducto(id, data) {
+    try {
+      const marcaProductoRepository = AppDataSource.getRepository(MarcaProducto);
+      
+      // Verificar si la marca existe
+      const marcaProducto = await marcaProductoRepository.findOneBy({ id });
+      if (!marcaProducto) {
+        return [null, "La marca de producto no existe."];
+      }
+
+      // Verificar si ya existe otra marca con el mismo nombre
+      if (data.nombre && data.nombre !== marcaProducto.nombre) {
+        const marcaExistente = await marcaProductoRepository.findOneBy({ nombre: data.nombre });
+        if (marcaExistente) {
+          return [null, "Ya existe una marca de producto con ese nombre."];
+        }
+      }
+
+      // Actualizar los datos
+      Object.assign(marcaProducto, data);
+      await marcaProductoRepository.save(marcaProducto);
+      
+      return [marcaProducto, null];
+    } catch (error) {
+      console.error("Error en actualizarMarcaProducto:", error);
+      return [null, "Error al actualizar la marca de producto."];
+    }
+  }
 };
