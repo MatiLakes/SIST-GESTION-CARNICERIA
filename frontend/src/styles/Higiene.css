@@ -8,3 +8,57 @@
     justify-content: center;
     flex-direction: column;
   }
+
+  .dato-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+  }
+  
+  .dato-grupo {
+    margin-bottom: 32px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  
+  .dato-titulo {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  
+  .dato-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 0.95rem;
+  }
+  
+  .estado {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+  }
+  
+  .cumple {
+    background-color: #000000;
+    color: white;
+  }
+  
+  .no-cumple {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  

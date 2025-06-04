@@ -239,7 +239,7 @@
 }
 
 .datos-etiqueta {
-  color: #666;
+  color: #333;
   font-size: 14px;
   margin-bottom: 0;
 }
@@ -254,7 +254,7 @@
 .datos-icono {
   width: 20px;
   height: 20px;
-  color: #666;
+  color: #ff0000;
 }
 
 

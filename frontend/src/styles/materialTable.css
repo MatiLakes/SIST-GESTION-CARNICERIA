@@ -632,6 +632,7 @@ c
   justify-content: center;
   align-items: center;
   margin-left: 8px; /* Espacio entre el icono y otros elementos */
+  
 }
 
 /* Contenedor de los filtros de fecha (con el icono de calendario y el botón "Mostrar Todo") */
@@ -668,6 +669,7 @@ c
   transform: translateX(-50%); /* Ajusta el centro para que se alinee perfectamente */
   top: 60px; /* Ajusta la posición vertical según lo necesites */
   transition: left var(--transition-speed) ease; /* Añadir transición suave */
+  
 }
 
 /* Ajuste cuando la navbar está contraída */
@@ -681,7 +683,7 @@ body[data-navbar-collapsed="true"] .calendar-overlay {
   border: none;
   cursor: pointer;
   position: relative;
-  z-index: 1000; /* Asegura que el icono esté encima del calendario */
+
 }
 
 /* Cambiar el color de fondo del encabezado */

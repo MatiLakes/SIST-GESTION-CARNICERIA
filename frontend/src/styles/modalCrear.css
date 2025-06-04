@@ -449,3 +449,81 @@
   margin-bottom: 16px;
 }
 
+/* Estilos para el checklist */
+.checklist-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 20px;
+  position: relative;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin: 15px 0;
+  border: 1px solid #e9ecef;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.checkbox-grupo {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  
+}
+
+.checkbox-grupo:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkbox-input {
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  cursor: pointer;
+  border: 2px solid #adb5bd;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+.checkbox-input:checked {
+  background-color: #000;
+  border-color: #000;
+}
+
+.checkbox-label {
+  font-size: 0.95rem;
+  color: #495057;
+  cursor: pointer;
+  user-select: none;
+  text-transform: capitalize;
+}
+
+.checkbox-grupo .checkbox-input:checked + .checkbox-label {
+  color: #000;
+  font-weight: 500;
+}
+
+.checkbox-grupo:last-child {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin: 0 auto;
+  width: auto; /* Permitir que el ancho se ajuste al contenido */
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive para el checklist */
+@media (max-width: 768px) {
+  .checklist-container {
+    grid-template-columns: 1fr;
+  }
+}
+

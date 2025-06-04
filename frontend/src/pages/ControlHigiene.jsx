@@ -7,7 +7,10 @@ import useGetPersonal from "@hooks/personal/useGetPersonal";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
+import { MdOutlineEdit } from "react-icons/md";
 import "@styles/Higiene.css";
+import "@styles/modalCrear.css";
+import "@styles/modalDetalles.css";
 
 const ControlHigiene = () => {
   const { controles, loading, error, fetchControles } = useGetControles();
@@ -17,7 +20,11 @@ const ControlHigiene = () => {
   const { remove } = useDeleteControl(fetchControles);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [currentControl, setCurrentControl] = useState(null);
+  const [controlToDelete, setControlToDelete] = useState(null);
+  const [controlToView, setControlToView] = useState(null);
 
   // Registra los datos para diagnosticar el problema
   useEffect(() => {
@@ -58,84 +65,163 @@ const ControlHigiene = () => {
         await create(data);
         setIsModalOpen(false);
       }
-      Swal.fire("Guardado", "Registro actualizado correctamente", "success");
+      Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: isEdit ? "Registro actualizado correctamente" : "Registro creado correctamente",
+        confirmButtonColor: "#000000"
+      });
     } catch {
-      Swal.fire("Error", "No se pudo guardar el registro", "error");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo guardar el registro",
+        confirmButtonColor: "#000000"
+      });
     }
   };
 
-  const handleDelete = async (registro) => {
-    const confirm = await Swal.fire({
-      title: "¿Eliminar registro?",
-      text: `Fecha: ${registro.fecha}`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar"
-    });
+  const handleDeleteModalOpen = (control) => {
+    setControlToDelete(control);
+    setIsDeleteModalOpen(true);
+  };
 
-    if (confirm.isConfirmed) {
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+    setControlToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (controlToDelete) {
       try {
-        await remove(registro.id);
-        Swal.fire("Eliminado", "Registro eliminado correctamente", "success");
-      } catch {
-        Swal.fire("Error", "No se pudo eliminar el registro", "error");
+        await remove(controlToDelete.id);
+        handleDeleteModalClose();
+        Swal.fire({
+          icon: "success",
+          title: "¡Eliminado!",
+          text: "El registro ha sido eliminado correctamente",
+          confirmButtonColor: "#000000"
+        });
+      } catch (error) {
+        console.error("Error al eliminar registro:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo eliminar el registro",
+          confirmButtonColor: "#000000"
+        });
       }
     }
   };
 
+  const handleViewClick = (control) => {
+    setControlToView(control);
+    setIsViewModalOpen(true);
+  };
+
+  const handleViewModalClose = () => {
+    setIsViewModalOpen(false);
+    setControlToView(null);
+  };
+
   const columns = [
-    { header: "ID", key: "id" },
     { header: "Fecha", key: "fecha" },
     { header: "Nombre", key: "personal.nombre" },
     { header: "Sección", key: "personal.seccion" },
     { header: "V°B°", key: "vbCumplimiento" },
     { header: "ACC", key: "nroAccionCorrectiva" },
-    { header: "Observación", key: "observacion" },
-  ];
-
-  const renderForm = (isEdit = false) => {
+  ];  const renderFormContent = (isEdit = false) => {
     const defaultValues = isEdit ? currentControl : {};
     return (
-      <form onSubmit={(e) => handleSubmit(e, isEdit)}>
-        <label>Fecha: <input type="date" name="fecha" defaultValue={defaultValues.fecha || ""} required /></label>
-        <label>Trabajador:
-          <select name="personalId" defaultValue={defaultValues.personal?.id || ""} required>
+      <>
+        <div className="formulario-grupo">
+          <label className="formulario-etiqueta">Fecha:</label>
+          <input
+            type="date"
+            name="fecha"
+            defaultValue={defaultValues.fecha || ""}
+            required
+            className="formulario-input"
+          />
+        </div>
+
+        <div className="formulario-grupo">
+          <label className="formulario-etiqueta">Trabajador:</label>
+          <select
+            name="personalId"
+            defaultValue={defaultValues.personal?.id || ""}
+            required
+            className="formulario-input"
+          >
             <option value="">Seleccione...</option>
-            {personal.map(p => (
+            {[...personal].sort((a, b) => a.nombre.localeCompare(b.nombre)).map(p => (
               <option key={p.id} value={p.id}>{p.nombre} ({p.seccion})</option>
             ))}
           </select>
-        </label>
-        <div>
-          {["usoCofia", "usoMascarilla", "higieneManos", "unasCortas", "afeitado", "uniformeLimpio", "sinAccesorios"].map((field) => (
-            <label key={field}>
-              <input
-                type="checkbox"
-                name={field}
-                defaultChecked={defaultValues[field] || false}
-              /> {field}
-            </label>
-          ))}
         </div>
-        <label>V°B° Cumplimiento:
-          <select name="vbCumplimiento" defaultValue={defaultValues.vbCumplimiento || "C"} required>
+
+        <div className="formulario-grupo">
+          <label className="formulario-etiqueta">Checklist de Higiene:</label>
+          <div className="checklist-container">            
+            {[
+              { id: "usoCofia", label: "Uso Cofia" },
+              { id: "usoMascarilla", label: "Uso Mascarilla" },
+              { id: "higieneManos", label: "Higiene de Manos" },
+              { id: "unasCortas", label: "Uñas Cortas" },
+              { id: "afeitado", label: "Afeitado" },
+              { id: "uniformeLimpio", label: "Uniforme Limpio" },
+              { id: "sinAccesorios", label: "Sin Accesorios" }
+            ].map(({ id, label }) => (
+              <div key={id} className="checkbox-grupo">
+                <input
+                  type="checkbox"
+                  id={id}
+                  name={id}
+                  defaultChecked={defaultValues[id] || false}
+                  className="checkbox-input"
+                />
+                <label htmlFor={id} className="checkbox-label">{label}</label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="formulario-grupo">
+          <label className="formulario-etiqueta">V°B° Cumplimiento:</label>
+          <select
+            name="vbCumplimiento"
+            defaultValue={defaultValues.vbCumplimiento || "C"}
+            required
+            className="formulario-input"
+          >
             <option value="C">C</option>
             <option value="NC">NC</option>
           </select>
-        </label>
-        <label>ACC:
-          <select name="nroAccionCorrectiva" defaultValue={defaultValues.nroAccionCorrectiva || "No Aplica"}>
+        </div>
+
+        <div className="formulario-grupo">
+          <label className="formulario-etiqueta">ACC:</label>
+          <select
+            name="nroAccionCorrectiva"
+            defaultValue={defaultValues.nroAccionCorrectiva || "No Aplica"}
+            className="formulario-input"
+          >
             {accOptions.map(opt => (
               <option key={opt} value={opt}>{opt}</option>
             ))}
           </select>
-        </label>
-        <label>Observación:
-          <textarea name="observacion" defaultValue={defaultValues.observacion || ""}></textarea>
-        </label>
-        <button type="submit">Guardar</button>
-      </form>
+        </div>
+
+        <div className="formulario-grupo">
+          <label className="formulario-etiqueta">Observación:</label>
+          <textarea
+            name="observacion"
+            defaultValue={defaultValues.observacion || ""}
+            className="formulario-input"
+            rows="3"
+          ></textarea>
+        </div>
+      </>
     );
   };
   // Renderiza un mensaje de carga o error cuando sea necesario
@@ -153,20 +239,234 @@ const ControlHigiene = () => {
           setCurrentControl(ctrl);
           setIsEditModalOpen(true);
         }}
-        onDelete={handleDelete}
+        onDelete={handleDeleteModalOpen}
+        onView={handleViewClick}
         showEditAllButton={false}
-        showViewButton={false}
+        showViewButton={true}
         entidad="controles"
-      />
-
-      <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)} ariaHideApp={false}>
-        <h2>Nuevo Registro Higiene</h2>
-        {renderForm(false)}
+      />      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        contentLabel="Crear Control de Higiene"
+        ariaHideApp={false}
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
+      >
+        <form onSubmit={(e) => handleSubmit(e, false)} className="modal-crear-formulario">          
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Nuevo Registro de Higiene</h2>
+            <button type="button" onClick={() => setIsModalOpen(false)} className="modal-crear-cerrar">×</button>
+            <button type="submit" className="modal-boton-crear">Guardar</button>
+          </div>
+          {renderFormContent(false)}
+        </form>
       </Modal>
 
-      <Modal isOpen={isEditModalOpen} onRequestClose={() => setIsEditModalOpen(false)} ariaHideApp={false}>
-        <h2>Editar Registro Higiene</h2>
-        {currentControl && renderForm(true)}
+      <Modal
+        isOpen={isEditModalOpen}
+        onRequestClose={() => setIsEditModalOpen(false)}
+        contentLabel="Editar Control de Higiene"
+        ariaHideApp={false}
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
+      >
+        <form onSubmit={(e) => handleSubmit(e, true)} className="modal-crear-formulario">
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Editar Registro de Higiene</h2>
+            <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
+            <button type="submit" className="modal-boton-crear">Guardar</button>
+          </div>
+          {currentControl && renderFormContent(true)}
+        </form>
+      </Modal>
+
+      {/* Modal de Eliminación */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={handleDeleteModalClose}
+        contentLabel="Confirmar Eliminación"
+        ariaHideApp={false}
+        className="modal-crear"
+        overlayClassName="modal-overlay"
+        style={{ content: { maxWidth: '500px' } }}
+      >
+        <div className="modal-crear-formulario">
+          <div className="modal-crear-header">
+            <h2 className="modal-crear-titulo">Confirmar Eliminación</h2>
+            <button onClick={handleDeleteModalClose} className="modal-crear-cerrar">×</button>
+          </div>
+          <div className="modal-detalles-content" style={{ padding: '20px 48px' }}>
+            <p style={{ marginBottom: '20px', textAlign: 'center' }}>¿Estás seguro de que deseas eliminar este registro?</p>
+            {controlToDelete && (
+              <div className="dato-grupo">
+                <div className="datos-grid">
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Fecha:</span>
+                    <span className="datos-valor">{controlToDelete.fecha}</span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Trabajador:</span>
+                    <span className="datos-valor">{controlToDelete.personal.nombre}</span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">V°B°:</span>
+                    <span className="datos-valor">{controlToDelete.vbCumplimiento}</span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">ACC:</span>
+                    <span className="datos-valor">{controlToDelete.nroAccionCorrectiva}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+              <button
+                onClick={confirmDelete}
+                className="btn-eliminar"
+                style={{ padding: '8px 16px', minWidth: '100px' }}
+              >
+                Eliminar
+              </button>
+              <button
+                onClick={handleDeleteModalClose}
+                className="btn-cancelar"
+                style={{ padding: '8px 16px', minWidth: '100px' }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal de Detalles */}
+      <Modal
+        isOpen={isViewModalOpen}
+        onRequestClose={handleViewModalClose}
+        contentLabel="Ver Detalles"
+        ariaHideApp={false}
+        className="modal-detalles"
+        overlayClassName="modal-overlay"
+        closeTimeoutMS={300}
+      >
+        {controlToView && (
+          <div className="modal-crear-formulario">
+            <div className="modal-detalles-header">          
+              <h2 className="modal-detalles-titulo">Detalles Control de Higiene de {controlToView?.personal.nombre}</h2>
+              <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
+              <button
+                onClick={() => {
+                  setCurrentControl(controlToView);
+                  setIsEditModalOpen(true);
+                  handleViewModalClose();
+                }}
+                className="modal-detalles-editar"
+              >
+                <MdOutlineEdit size={24} />
+              </button>
+            </div>
+            <div className="modal-detalles-content" style={{ padding: '20px 48px' }}>
+              <div className="dato-grupo">
+                <h3 className="dato-titulo">Información General</h3>
+                <div className="datos-grid">
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Fecha:</span>
+                    <span className="datos-valor">{controlToView.fecha}</span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Sección:</span> 
+                    <span className="datos-valor">{controlToView.personal.seccion}</span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">V°B° Cumplimiento:</span>
+                    <span className="datos-valor">{controlToView.vbCumplimiento}</span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">ACC:</span>
+                    <span className="datos-valor">{controlToView.nroAccionCorrectiva}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="dato-grupo">
+                <h3 className="dato-titulo">Checklist de Higiene</h3>
+                <div className="datos-grid">
+                  {/*
+                  */}
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Uso de Cofia:</span>
+                    <span className="datos-valor">
+                      <span className={`estado ${controlToView.usoCofia ? 'cumple' : 'no-cumple'}`}>
+                        {controlToView.usoCofia ? '✓' : '✗'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Uso de Mascarilla:</span>
+                    <span className="datos-valor">
+                      <span className={`estado ${controlToView.usoMascarilla ? 'cumple' : 'no-cumple'}`}>
+                        {controlToView.usoMascarilla ? '✓' : '✗'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Higiene de Manos:</span>
+                    <span className="datos-valor">
+                      <span className={`estado ${controlToView.higieneManos ? 'cumple' : 'no-cumple'}`}>
+                        {controlToView.higieneManos ? '✓' : '✗'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Uñas Cortas:</span>
+                    <span className="datos-valor">
+                      <span className={`estado ${controlToView.unasCortas ? 'cumple' : 'no-cumple'}`}>
+                        {controlToView.unasCortas ? '✓' : '✗'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Afeitado:</span>
+                    <span className="datos-valor">
+                      <span className={`estado ${controlToView.afeitado ? 'cumple' : 'no-cumple'}`}>
+                        {controlToView.afeitado ? '✓' : '✗'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Uniforme Limpio:</span>
+                    <span className="datos-valor">
+                      <span className={`estado ${controlToView.uniformeLimpio ? 'cumple' : 'no-cumple'}`}>
+                        {controlToView.uniformeLimpio ? '✓' : '✗'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="datos-fila">
+                    <span className="datos-etiqueta">Sin Accesorios:</span>
+                    <span className="datos-valor">
+                      <span className={`estado ${controlToView.sinAccesorios ? 'cumple' : 'no-cumple'}`}>
+                        {controlToView.sinAccesorios ? '✓' : '✗'}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {controlToView.observacion && (
+                <div className="dato-grupo">
+                  <h3 className="dato-titulo">Observaciones</h3>
+                  <div className="datos-grid">
+                    <div className="datos-fila">
+                      <span className="datos-valor" style={{gridColumn: '1 / -1', textAlign: 'left'}}>{controlToView.observacion}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

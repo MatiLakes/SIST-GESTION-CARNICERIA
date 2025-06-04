@@ -107,7 +107,8 @@ const Table = ({
           row.fechaEntrega,
           row.fechaPedido,
           row.fechaLimite,
-          row.fecha_entrega
+          row.fecha_entrega,
+          row.fecha
         ];
 
         // Recorre las fechas y verifica si alguna de ellas es válida y coincide con la fecha seleccionada
