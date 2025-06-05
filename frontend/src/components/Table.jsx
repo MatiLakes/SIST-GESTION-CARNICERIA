@@ -58,34 +58,79 @@ const Table = ({
     direction: 'asc'
   });
 
-  // Manejo del filtro de búsqueda
-  const handleSearch = (event) => {
-    const term = event.target.value.toLowerCase();
-    setSearchTerm(term);
-      setFilteredData(
-      data
-        .filter((row) =>
-          columns.some((col) =>
-            searchInObject(row[col.key], term) // Función que buscará en los objetos
-          )
-        )
-        .sort((a, b) => {
-          const valueA = typeof a[columns[0].key] === 'object' ? a[columns[0].key]?.nombre?.toLowerCase() || '' : String(a[columns[0].key] || '').toLowerCase();
-          const valueB = typeof b[columns[0].key] === 'object' ? b[columns[0].key]?.nombre?.toLowerCase() || '' : String(b[columns[0].key] || '').toLowerCase();
-          return valueA.localeCompare(valueB);
-        })
-    );
-    
-    setCurrentPage(1);
+  // Función para verificar si una cadena contiene solo caracteres especiales
+  const containsOnlySpecialChars = (str) => {
+    return /^[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ]+$/.test(str);
   };
 
-  // Función para realizar la búsqueda recursiva en objetos
-  const searchInObject = (value, term) => {
-    if (typeof value === "object" && value !== null) {
-      return Object.values(value).some((v) => searchInObject(v, term)); // Recurre en objetos
-    } else {
-      return String(value).toLowerCase().includes(term); // Comparación normal en valores primitivos
+  // Función para buscar en un valor específico
+  const searchInValue = (value, term) => {
+    if (value == null) return false;
+    
+    // Para números
+    if (typeof value === 'number') {
+      const numStr = value.toString();
+      return numStr.includes(term);
     }
+
+    // Para objetos (como cliente)
+    if (typeof value === 'object' && value !== null) {
+      if (value.id) { // Para objetos cliente
+        if (value.razonSocial) {
+          return value.razonSocial.toLowerCase().includes(term);
+        }
+        if (value.nombres || value.apellidos) {
+          const fullName = `${value.nombres || ''} ${value.apellidos || ''}`.toLowerCase();
+          return fullName.includes(term);
+        }
+      }
+      // Buscar en todos los valores del objeto
+      return Object.values(value).some(v => 
+        v !== null && String(v).toLowerCase().includes(term)
+      );
+    }
+
+    // Para strings
+    return String(value).toLowerCase().includes(term);
+  };
+
+  // Manejo del filtro de búsqueda
+  const handleSearch = (event) => {
+    const term = event.target.value.toLowerCase().trim();
+    setSearchTerm(event.target.value);
+
+    if (!term) {
+      setFilteredData(data);
+      setCurrentPage(1);
+      return;
+    }
+
+    const filtered = data.filter(row => {
+      if (!row) return false;
+      
+      // Buscar en todas las columnas definidas
+      return columns.some(col => {
+        if (!col.key) return false;
+        
+        let value;
+        // Manejar propiedades anidadas (como 'cliente')
+        if (col.key.includes('.')) {
+          value = col.key.split('.').reduce((obj, key) => obj?.[key], row);
+        } else {
+          value = row[col.key];
+        }
+
+        // Si es un monto, convertirlo a string sin el signo $
+        if (col.key === 'monto') {
+          return value?.toString().includes(term);
+        }
+
+        return searchInValue(value, term);
+      });
+    });
+
+    setFilteredData(filtered);
+    setCurrentPage(1);
   };
 
   // Filtrar datos por fecha

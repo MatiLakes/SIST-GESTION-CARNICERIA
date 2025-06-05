@@ -316,11 +316,12 @@ const PagosPendientes = () => {
       const date = new Date(value);
       // Ajustar la fecha a la zona horaria local
       const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-      return localDate.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
+      
+      // Formatear la fecha como AAAA-MM-DD
+      const year = localDate.getFullYear();
+      const month = String(localDate.getMonth() + 1).padStart(2, '0');
+      const day = String(localDate.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     // Formateo del monto
@@ -651,8 +652,7 @@ const PagosPendientes = () => {
           <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
             <p><strong>Cliente:</strong> {clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.tipoCliente === "Empresa" 
               ? clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.razonSocial 
-              : `${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.nombres} ${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.apellidos}`}</p>
-            <p><strong>Monto:</strong> ${currentPagoPendiente.monto?.toLocaleString('es-CL')}</p>
+              : `${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.nombres} ${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.apellidos}`}</p>  
             <p><strong>Estado:</strong> {currentPagoPendiente.estado}</p>
           </div>
         )}
