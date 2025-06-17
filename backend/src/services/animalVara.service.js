@@ -15,9 +15,14 @@ export async function createAnimalVaraService(data) {
     });
 
     const varaGuardada = await animalVaraRepository.save(nuevaVara);
-    return [varaGuardada, null];
-  } catch (error) {
+    return [varaGuardada, null];  } catch (error) {
     console.error("Error al crear la vara:", error);
+    
+    // Validación específica para el error de fecha de llegada
+    if (error.code === '23514' && error.constraint === 'fecha_llegada_valida') {
+      return [null, "La fecha de llegada debe ser igual o anterior al día actual"];
+    }
+    
     return [null, "Error interno del servidor"];
   }
 }

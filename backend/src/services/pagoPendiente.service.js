@@ -4,15 +4,28 @@ import { AppDataSource } from "../config/configDb.js";
 import PagoPendiente from "../entity/PagoPendiente.entity.js";
 import Cliente from "../entity/Cliente.entity.js";
 
-export const pagoPendienteService = {
-  async crearPagoPendiente(data) {
+export const pagoPendienteService = {  async crearPagoPendiente(data) {
     try {
+      const clienteRepository = AppDataSource.getRepository(Cliente);
       const pagoPendienteRepository = AppDataSource.getRepository(PagoPendiente);
+
+      // Verificar si el cliente existe
+      const cliente = await clienteRepository.findOneBy({ id: data.cliente.id });
+      if (!cliente) {
+        return [null, `El cliente con ID ${data.cliente.id} no existe.`];
+      }
+
       const nuevoPago = pagoPendienteRepository.create(data);
       await pagoPendienteRepository.save(nuevoPago);
       return [nuevoPago, null];
     } catch (error) {
       console.error("Error en crearPagoPendiente:", error);
+      
+      // Manejo específico de errores de clave foránea
+      if (error.code === '23503' && error.constraint && error.constraint.includes('cliente')) {
+        return [null, `El cliente especificado no existe.`];
+      }
+      
       return [null, "No se pudo crear el pago pendiente."];
     }
   },
@@ -45,14 +58,26 @@ export const pagoPendienteService = {
       console.error(error.stack);
       return [null, "Error al obtener los pagos pendientes."];
     }
-  },
-
-  async modificarPagoPendiente(id, data) {
+  },  async modificarPagoPendiente(id, data) {
     try {
       const pagoPendienteRepository = AppDataSource.getRepository(PagoPendiente);
-      const pago = await pagoPendienteRepository.findOneBy({ id });
+      const clienteRepository = AppDataSource.getRepository(Cliente);
+
+      // Buscar el pago pendiente con sus relaciones
+      const pago = await pagoPendienteRepository.findOne({
+        where: { id },
+        relations: ["cliente"]
+      });
 
       if (!pago) return [null, "Pago pendiente no encontrado."];
+
+      // Si se está actualizando el cliente, verificar que existe
+      if (data.cliente && data.cliente.id) {
+        const cliente = await clienteRepository.findOneBy({ id: data.cliente.id });
+        if (!cliente) {
+          return [null, `El cliente con ID ${data.cliente.id} no existe.`];
+        }
+      }
 
       Object.assign(pago, data);
       await pagoPendienteRepository.save(pago);
@@ -60,6 +85,12 @@ export const pagoPendienteService = {
       return [pago, null];
     } catch (error) {
       console.error("Error en modificarPagoPendiente:", error);
+      
+      // Manejo específico de errores de clave foránea
+      if (error.code === '23503' && error.constraint && error.constraint.includes('cliente')) {
+        return [null, `El cliente especificado no existe.`];
+      }
+      
       return [null, "No se pudo modificar el pago pendiente."];
     }
   },
