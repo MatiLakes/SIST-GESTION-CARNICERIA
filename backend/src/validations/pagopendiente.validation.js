@@ -41,7 +41,7 @@ export const pagoPendienteValidation = {
             .required()
             .messages({
                 "date.base": "La fecha del pedido debe ser una fecha válida.",
-                "date.strict": "La fecha del pedido debe ser la fecha actual (hora de Chile).",
+                "date.strict": "La fecha del pedido debe ser la fecha actual.",
                 "any.required": "La fecha del pedido es obligatoria."
             }),
 
@@ -131,7 +131,7 @@ export const pagoPendienteValidation = {
             })
             .messages({
                 "date.base": "La fecha del pedido debe ser una fecha válida.",
-                "date.strict": "La fecha del pedido debe ser la fecha actual (hora de Chile)."
+                "date.strict": "La fecha del pedido debe ser la fecha actual."
             }),
 
         fechaLimite: Joi.date()

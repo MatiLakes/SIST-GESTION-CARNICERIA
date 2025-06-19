@@ -24,8 +24,8 @@ const Proveedores = () => {
   const [proveedorToEdit, setProveedorToEdit] = useState(null);
   const [proveedorToDelete, setProveedorToDelete] = useState(null);
   const [proveedorToView, setProveedorToView] = useState(null);
-  
-  const initialProveedorData = {
+    const initialProveedorData = {
+    rut: "",
     nombre: "",
     direccion: "",
     banco: "",
@@ -57,10 +57,10 @@ const Proveedores = () => {
     setIsDeleteModalOpen(false);
     setProveedorToDelete(null);
   };
-
   const handleUpdateClick = (proveedor) => {
     setProveedorToEdit(proveedor);
     setFormData({
+      rut: proveedor.rut,
       nombre: proveedor.nombre,
       direccion: proveedor.direccion,
       banco: proveedor.banco,
@@ -267,8 +267,7 @@ const Proveedores = () => {
             <button type="submit" className="modal-boton-crear">Guardar</button>
           </div>
 
-          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
-            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Nombre</span>
               </div>
@@ -283,6 +282,27 @@ const Proveedores = () => {
                     className="formulario-input"
                     style={{ minWidth: '220px', textAlign: 'left' }}
                     required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">RUT</span>
+              </div>
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <input
+                    type="text"
+                    id="rut"
+                    name="rut"
+                    value={newProveedorData.rut}
+                    onChange={(e) => handleChange(e, false)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                    placeholder="Ej: 12.345.678-9"
                   />
                 </div>
               </div>
@@ -326,10 +346,10 @@ const Proveedores = () => {
                     >
                       <option value="">Seleccione Banco</option>
                       <option value="Banco de Chile">Banco de Chile</option>
-                      <option value="Banco Santander Chile">Banco Santander</option>
+                      <option value="Banco Santander">Banco Santander</option>
                       <option value="Banco BCI">Banco BCI</option>
-                      <option value="Banco Itaú Chile">Banco Itaú</option>
-                      <option value="Scotiabank Chile">Scotiabank</option>
+                      <option value="Banco Itaú">Banco Itaú</option>
+                      <option value="Scotiabank">Scotiabank</option>
                       <option value="Banco Estado">Banco Estado</option>
                       <option value="Banco BICE">Banco BICE</option>
                       <option value="Banco Security">Banco Security</option>
@@ -337,7 +357,7 @@ const Proveedores = () => {
                       <option value="Banco Ripley">Banco Ripley</option>
                       <option value="Banco Consorcio">Banco Consorcio</option>
                       <option value="Banco Internacional">Banco Internacional</option>
-                      <option value="Banco BTG Pactual Chile">Banco BTG Pactual</option>
+                      <option value="Banco BTG Pactual">Banco BTG Pactual</option>
                       <option value="HSBC Bank">HSBC Bank</option>
                       <option value="Deutsche Bank">Deutsche Bank</option>
                     </select>
@@ -425,7 +445,7 @@ const Proveedores = () => {
                           onChange={(e) => handleChange(e, false)}                          
                           pattern="^\+?(?:\d{9}|\d{11})$"
                           placeholder="+56 9 XXXX XXXX"
-                          title="Ejemplo: 912345678 o +56912345678, opcional el +)"
+                          title="Ejemplo: +56912345678)"
                           className="formulario-input"
                           style={{ width: '100%', paddingRight: '5px', textAlign: 'left' }}
                           required={index === 0}
@@ -479,8 +499,7 @@ const Proveedores = () => {
             <button type="submit" className="modal-boton-crear">Guardar</button>
           </div>
 
-          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
-            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Nombre</span>
               </div>
@@ -495,6 +514,27 @@ const Proveedores = () => {
                     className="formulario-input"
                     style={{ minWidth: '220px', textAlign: 'left' }}
                     required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">RUT</span>
+              </div>
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <input
+                    type="text"
+                    id="edit-rut"
+                    name="rut"
+                    value={formData.rut}
+                    onChange={(e) => handleChange(e, true)}
+                    className="formulario-input"
+                    style={{ minWidth: '220px', textAlign: 'left' }}
+                    required
+                    placeholder="Ej: 12.345.678-9"
                   />
                 </div>
               </div>
@@ -735,10 +775,15 @@ const Proveedores = () => {
             </button>
           </div>
             {proveedorToView && (
-            <div className="modal-detalles-contenido">
-              <div className="datos-grid">                <div className="dato-item">
+            <div className="modal-detalles-contenido">              
+            <div className="datos-grid">
+                <div className="dato-item">
                   <span className="dato-label">Nombre:</span>
                   <span className="dato-value">{proveedorToView.nombre}</span>
+                </div>
+                 <div className="dato-item">
+                  <span className="dato-label">RUT:</span>
+                  <span className="dato-value">{proveedorToView.rut}</span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Banco:</span>

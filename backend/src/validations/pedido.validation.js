@@ -67,7 +67,7 @@ const schemas = {
         "any.required": "La fecha de entrega es obligatoria.",
         "date.base": "La fecha de entrega debe ser una fecha válida.",
         "date.empty": "La fecha de entrega es obligatoria.",
-        "date.min": "La fecha de entrega no puede ser anterior a ayer."
+        "date.min": "La fecha de entrega debe ser igual o posterior a la fecha actual."
       }),
 
     productos: Joi.string()
@@ -107,7 +107,7 @@ const schemas = {
       .custom(validateDate)
       .messages({
         "date.base": "La fecha de entrega debe ser una fecha válida.",
-        "date.min": "La fecha de entrega no puede ser anterior a ayer."
+        "date.min": "La fecha de entrega debe ser igual o posterior a la fecha del pedido."
       }),
 
     productos: Joi.string()

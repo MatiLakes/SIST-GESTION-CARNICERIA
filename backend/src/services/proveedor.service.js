@@ -7,12 +7,17 @@ export async function createProveedorService(data) {
   try {
     const proveedorRepository = AppDataSource.getRepository(Proveedor);
 
+    // Verificar si ya existe un proveedor con el mismo RUT
+    const existingRut = await proveedorRepository.findOneBy({ rut: data.rut });
+    if (existingRut) return [null, `Ya existe un proveedor con el RUT ${data.rut}.`];
+
     // Verificar si ya existe un proveedor con el mismo nombre
-    const existing = await proveedorRepository.findOneBy({ nombre: data.nombre });
-    if (existing) return [null, "Ya existe un proveedor con este nombre."];
+    const existingNombre = await proveedorRepository.findOneBy({ nombre: data.nombre });
+    if (existingNombre) return [null, "Ya existe un proveedor con este nombre."];
 
     // Crear el nuevo proveedor
     const nuevoProveedor = proveedorRepository.create({
+      rut: data.rut,
       nombre: data.nombre || "",
       direccion: data.direccion || "",
       banco: data.banco || "",
@@ -38,10 +43,15 @@ export async function updateProveedorService(id, data) {
 
     // Buscar el proveedor por ID
     const proveedor = await proveedorRepository.findOneBy({ id });
-    if (!proveedor) return [null, "Proveedor no encontrado."];
+    if (!proveedor) return [null, "Proveedor no encontrado."];    // Verificar si el nuevo RUT ya existe en otro proveedor
+    if (data.rut && data.rut !== proveedor.rut) {
+      const existingRut = await proveedorRepository.findOneBy({ rut: data.rut });
+      if (existingRut) return [null, `Ya existe un proveedor con el RUT ${data.rut}.`];
+    }
 
     // Actualizar los campos del proveedor con los nuevos valores
     Object.assign(proveedor, {
+      rut: data.rut || proveedor.rut,
       nombre: data.nombre || proveedor.nombre,
       direccion: data.direccion || proveedor.direccion,
       banco: data.banco || proveedor.banco,

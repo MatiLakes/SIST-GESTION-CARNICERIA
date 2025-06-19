@@ -3,11 +3,16 @@ import { EntitySchema } from "typeorm";
 const ProveedorSchema = new EntitySchema({
   name: "Proveedor",
   tableName: "proveedores",
-  columns: {
-    id: {
+  columns: {    id: {
       type: "int",
       primary: true,
       generated: true,
+    },
+    rut: {
+      type: "varchar",
+      length: 12,
+      nullable: false,
+      unique: true,
     },
     nombre: {
       type: "varchar",

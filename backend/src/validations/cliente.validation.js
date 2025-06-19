@@ -279,9 +279,9 @@ export const clienteValidation = {
             .pattern(/^\+56[0-9]{9}$/)
             .required()
             .messages({
-                "string.base": "El teléfono debe ser un texto.",
-                "string.pattern.base": "El teléfono debe tener el formato +56 seguido de 9 dígitos.",
-                "any.required": "El teléfono es obligatorio."
+                "string.pattern.base": "El número telefónico debe tener el formato +56 seguido de 9 dígitos (ejemplo: +56912345678)",
+                "string.empty": "El número telefónico no puede estar vacío",
+                "any.required": "El teléfono es obligatorio"
             }),
 
         email: Joi.string()
@@ -449,8 +449,12 @@ export const clienteValidation = {
         telefono: Joi.string()
             .pattern(/^\+56[0-9]{9}$/)
             .messages({
-                "string.base": "El teléfono debe ser un texto.",
-                "string.pattern.base": "El teléfono debe tener el formato +56 seguido de 9 dígitos."
+                "string.pattern.base": "Los números telefónicos deben tener el formato +56 seguido de 9 dígitos (ejemplo: +56912345678)",
+                "string.empty": "Los números telefónicos no pueden estar vacíos"
+            })
+            .required()
+            .messages({
+                "any.required": "El campo teléfono es obligatorio"
             }),
 
         email: Joi.string()

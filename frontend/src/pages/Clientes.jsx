@@ -20,6 +20,20 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
   const [currentCliente, setCurrentCliente] = useState(null);
   const [error, setError] = useState(null);
   const [clienteType, setClienteType] = useState("Persona");
+  const [newClienteData, setNewClienteData] = useState({
+    tipoCliente: "Persona",
+    rut: "",
+    email: "",
+    telefono: [""],
+    direccion: "",
+    comuna: "",
+    ciudad: "",
+    region: "",
+    nombres: "",
+    apellidos: "",
+    razonSocial: "",
+    giro: ""
+  });
 
   useEffect(() => {
     // Verificar los permisos del usuario
@@ -208,6 +222,70 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
 
   const handleTipoClienteChange = (event) => {
     setClienteType(event.target.value);
+  };
+
+  const handleAddTelefono = (isEditing = false) => {
+    if (isEditing) {
+      const cliente = {...currentCliente};
+      if (!Array.isArray(cliente.telefono)) {
+        cliente.telefono = [cliente.telefono || ""];
+      }
+      cliente.telefono = [...cliente.telefono, ""];
+      setCurrentCliente(cliente);
+    } else {
+      setNewClienteData(prev => ({
+        ...prev,
+        telefono: Array.isArray(prev.telefono) ? [...prev.telefono, ""] : [prev.telefono || "", ""]
+      }));
+    }
+  };
+
+  const handleRemoveTelefono = (index, isEditing = false) => {
+    if (isEditing) {
+      const cliente = {...currentCliente};
+      if (Array.isArray(cliente.telefono)) {
+        cliente.telefono = cliente.telefono.filter((_, i) => i !== index);
+      }
+      setCurrentCliente(cliente);
+    } else {
+      setNewClienteData(prev => ({
+        ...prev,
+        telefono: prev.telefono.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const handleTelefonoChange = (e, isEditing = false) => {
+    let value = e.target.value;
+    let cleanValue = value.replace(/[^\d+]/g, '');
+    const startsWithPlus = cleanValue.startsWith('+');
+    
+    // Remover todos los + excepto el primero si existe
+    cleanValue = cleanValue.replace(/\+/g, '');
+    if (startsWithPlus) {
+      cleanValue = '+' + cleanValue;
+    }
+
+    // Limitar el número a 11 dígitos después del +
+    const digitsOnly = cleanValue.replace(/^\+/, '');
+    const digitLength = digitsOnly.length;
+    
+    if (digitLength > 11) {
+      const truncatedDigits = digitsOnly.slice(0, 11);
+      cleanValue = startsWithPlus ? '+' + truncatedDigits : truncatedDigits;
+    }
+
+    if (isEditing) {
+      setCurrentCliente(prev => ({
+        ...prev,
+        telefono: cleanValue
+      }));
+    } else {
+      setNewClienteData(prev => ({
+        ...prev,
+        telefono: cleanValue
+      }));
+    }
   };
 
   if (loading) return <p>Cargando datos...</p>;
@@ -494,15 +572,18 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <span className="subproducto-nombre">Teléfono</span>
                     </div>
                     <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
-                        <input
+                      <div className="input-grupo" style={{ width: '100%' }}>                        <input
                           type="text"
                           id="telefono"
                           name="telefono"
-                          dir="ltr"
-                          className="formulario-input"
+                          value={newClienteData.telefono}
+                          onChange={(e) => handleTelefonoChange(e, false)}
+                          pattern="^\+56[0-9]{9}$"
                           placeholder="+56 9 XXXX XXXX"
-                          style={{ minWidth: '220px', textAlign: 'left' }}
+                          title="Ejemplo: +56912345678"
+                          className="formulario-input"
+                          style={{ width: '100%', textAlign: 'left' }}
+                          required
                         />
                       </div>
                     </div>
@@ -800,16 +881,18 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                         <span className="subproducto-nombre">Teléfono</span>
                       </div>
                       <div className="subproducto-inputs-grupo">
-                        <div className="input-grupo" style={{ width: '100%' }}>
-                          <input
+                        <div className="input-grupo" style={{ width: '100%' }}>                          <input
                             type="text"
                             id="telefono"
                             name="telefono"
-                            dir="ltr"
-                            className="formulario-input"
+                            value={currentCliente.telefono}
+                            onChange={(e) => handleTelefonoChange(e, true)}
+                            pattern="^\+56[0-9]{9}$"
                             placeholder="+56 9 XXXX XXXX"
-                            style={{ minWidth: '220px', textAlign: 'left' }}
-                            defaultValue={currentCliente.telefono}
+                            title="Ejemplo: +56912345678"
+                            className="formulario-input"
+                            style={{ width: '100%', textAlign: 'left' }}
+                            required
                           />
                         </div>
                       </div>
