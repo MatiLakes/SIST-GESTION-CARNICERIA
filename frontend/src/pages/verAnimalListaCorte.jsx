@@ -8,7 +8,6 @@ import { useErrorHandlerAnimalCorte } from "@hooks/animalCorte/useErrorHandlerAn
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
-import "@styles/formulariotable.css";
 import "@styles/modalDetalles.css";
 import "@styles/modalCrear.css";
 
@@ -20,6 +19,7 @@ const VerAnimalListaCorte = () => {
   const { handleUpdate } = useUpdateAnimalCorte(fetchAnimalCortes);
   const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerAnimalCorte();
 
+  const [formError, setFormError] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -167,7 +167,7 @@ const VerAnimalListaCorte = () => {
     precioTapaposta: "",
     malaya: "",
     precioMalaya: "" });
-  const [formError, setFormError] = useState("");
+
 
   useEffect(() => {
     if (animalCortes && animalCortes[0]) {
@@ -277,12 +277,23 @@ const VerAnimalListaCorte = () => {
   const handleCreateClick = () => {
     setIsCreateModalOpen(true);
   };
-
   const handleCreateModalChange = (e) => {
-    setNewAnimalCorteData({ ...newAnimalCorteData, [e.target.name]: e.target.value });
-  };  
+    const { name, value, type } = e.target;
+    
+    // Para campos numéricos, eliminar ceros a la izquierda
+    if (type === 'number') {
+      let numberValue = value;
+      // Si es un número válido, eliminar ceros a la izquierda
+      if (numberValue !== '') {
+        numberValue = parseFloat(numberValue) + ''; // Convierte a número y luego a string para eliminar ceros a la izquierda
+      }
+      setNewAnimalCorteData({ ...newAnimalCorteData, [name]: numberValue });
+    } else {
+      setNewAnimalCorteData({ ...newAnimalCorteData, [name]: value });
+    }
+  };
 
-  const handleCreateModalSubmit = (e) => {
+  const handleCreateModalSubmit = async (e) => {
     e.preventDefault();
 
     const validatedData = { ...newAnimalCorteData };
@@ -290,22 +301,134 @@ const VerAnimalListaCorte = () => {
       if (validatedData[key] === '') {
         validatedData[key] = 0;
       }
+    }    // Validar primero
+    const hasErrors = handleCreateError(validatedData, animalCortes[0] || []);
+    if (hasErrors) {
+      return;
     }
 
+    try {
+      await handleCreate(validatedData);
+      setIsCreateModalOpen(false);
+      setNewAnimalCorteData({
+        nombreLista: "",
+        abastero: "",
+        precioAbastero: "",
+        asadoTira: "",
+        precioAsadoTira: "",
+        asadoCarnicero: "",
+        precioAsadoCarnicero: "",
+        asiento: "",
+        precioAsiento: "",
+        choclillo: "",
+        precioChoclillo: "",
+        cogote: "",
+        precioCogote: "",
+        entraña: "",
+        precioEntraña: "",
+        filete: "",
+        precioFilete: "",
+        ganso: "",
+        precioGanso: "",
+        huachalomo: "",
+        precioHuachalomo: "",
+        lomoLiso: "",
+        precioLomoLiso: "",
+        lomoVetado: "",
+        precioLomoVetado: "",
+        palanca: "",
+        precioPalanca: "",
+        plateada: "",
+        precioPlateada: "",
+        polloBarriga: "",
+        precioPolloBarriga: "",
+        polloGanso: "",
+        precioPolloGanso: "",
+        postaNegra: "",
+        precioPostaNegra: "",
+        postaPaleta: "",
+        precioPostaPaleta: "",
+        postaRosada: "",
+        precioPostaRosada: "",
+        puntaGanso: "",
+        precioPuntaGanso: "",
+        puntaPicana: "",
+        precioPuntaPicana: "",
+        puntaPaleta: "",
+        precioPuntaPaleta: "",
+        sobrecostilla: "",
+        precioSobrecostilla: "",
+        tapabarriga: "",
+        precioTapabarriga: "",
+        tapapecho: "",
+        precioTapapecho: "",
+        huesoCarnudo: "",
+        precioHuesoCarnudo: "",
+        huesoCConCarne: "",
+        precioHuesoCConCarne: "",
+        pataVacuno: "",
+        precioPataVacuno: "",
+        huachalomoOlla: "",
+        precioHuachalomoOlla: "",
+        cazuelaPaleta: "",
+        precioCazuelaPaleta: "",
+        osobuco: "",
+        precioOsobuco: "",
+        lagarto: "",
+        precioLagarto: "",
+        costillaVacuno: "",
+        precioCostillaVacuno: "",
+        tapaposta: "",
+        precioTapaposta: "",
+        malaya: "",
+        precioMalaya: ""
+      });
+    } catch (error) {
+      // Pasar el error al manejador de errores
+      const errorMessage = error.message;
+      if (errorMessage.includes("Ya existe un tipo de animal con este nombre")) {
+        handleCreateError(validatedData, { message: errorMessage });
+      }
+    }
+  };
+  const handleEditChange = (e) => {
+    const { name, value, type } = e.target;
+    
+    // Para campos numéricos, eliminar ceros a la izquierda
+    if (type === 'number') {
+      let numberValue = value;
+      // Si es un número válido, eliminar ceros a la izquierda
+      if (numberValue !== '') {
+        numberValue = parseFloat(numberValue) + ''; // Convierte a número y luego a string para eliminar ceros a la izquierda
+      }
+      setFormData({ ...formData, [name]: numberValue });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    
+    const validatedData = { ...formData };
+    for (let key in validatedData) {
+      if (validatedData[key] === '') {
+        validatedData[key] = 0;
+      }
+    }
+    
     // Usar el hook de manejo de errores
-    const hasErrors = handleCreateError(validatedData);
+    const hasErrors = handleEditError(validatedData);
     if (hasErrors) {
-      setFormError(createError);
+      setFormError(editError);
       return;
-    }    
+    }
 
-    setFormError(null);
-    handleCreate(validatedData)
-      .then(() => {
-        // Solo cerramos el modal y reseteamos si la creación fue exitosa
-        setIsCreateModalOpen(false);
-        setFormError(null);
-        setNewAnimalCorteData({
+    setFormError("");
+
+    if (animalCorteToEdit) {
+      try {
+        await handleUpdate(animalCorteToEdit.id, validatedData);
+        setIsEditModalOpen(false);
+        setFormData({
           nombreLista: "",
           abastero: "",
           precioAbastero: "",
@@ -378,8 +501,7 @@ const VerAnimalListaCorte = () => {
           malaya: "",
           precioMalaya: ""
         });
-      })
-      .catch(error => {
+      } catch (error) {
         const errorMessage = error.message === "Ya existe un tipo de animal con este nombre de lista."
           ? `Ya existe un tipo de animal con el nombre "${validatedData.nombreLista}"`
           : "El nombre de la lista ya existe.";
@@ -388,48 +510,6 @@ const VerAnimalListaCorte = () => {
           field: 'nombreLista',
           message: errorMessage
         });
-      });
-  };
-
-  const handleEditChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validar los datos antes de proceder
-    const validatedData = { ...formData };
-    for (let key in validatedData) {
-      if (validatedData[key] === '') {
-        validatedData[key] = 0;
-      }
-    }
-    
-    // Usar el hook de manejo de errores
-    const hasErrors = handleEditError(validatedData);
-    if (hasErrors) {
-      setFormError(editError);
-      return;
-    }
-    
-    setFormError("");
-
-    if (animalCorteToEdit) {
-      try {
-        await handleUpdate(animalCorteToEdit.id, validatedData);
-        // Solo cerramos el modal y limpiamos el form si la actualización fue exitosa
-        setIsEditModalOpen(false);
-        setFormData({
-          nombreLista: ""
-        });
-      } catch (error) {
-        const errorData = {
-          status: "Client error",
-          message: error.message === "Ya existe un tipo de animal con este nombre de lista." 
-            ? `Ya existe un tipo de animal con el nombre "${validatedData.nombreLista}"`
-            : "El nombre de la lista de precio está siendo utilizado en Vara.",
-          details: {}
-        };
-        setFormError(errorData);
       }
     }
   };
@@ -480,15 +560,11 @@ const VerAnimalListaCorte = () => {
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}
       >
-        <form onSubmit={handleCreateModalSubmit} className="modal-crear-formulario">
-          <div className="modal-crear-header">
+        <form onSubmit={handleCreateModalSubmit} className="modal-crear-formulario">          <div className="modal-crear-header">
             <h2 className="modal-crear-titulo">Crear lista de Precios</h2>
             <button type="button" onClick={() => setIsCreateModalOpen(false)} className="modal-crear-cerrar">×</button>
             <button type="submit" className="modal-boton-crear">Guardar</button>
-          </div>
-          {formError && <div className="error-message" style={{color: 'red', marginBottom: '10px', textAlign: 'center'}}>
-            {typeof formError === 'object' ? formError.message : formError}
-          </div>}          <div className="subproducto-fila" style={{ 
+          </div><div className="subproducto-fila" style={{ 
               maxWidth: '500px', 
               margin: '0 auto', 
               padding: '10px', 
@@ -500,25 +576,25 @@ const VerAnimalListaCorte = () => {
             <div style={{ minWidth: '120px' }}>
               <span className="subproducto-nombre">Nombre de la lista:</span>
             </div>
-            <div style={{ flex: 1, marginLeft: '10px' }}>
-              <input
-                type="text"
-                id="nombreLista"
-                name="nombreLista"
-                value={newAnimalCorteData.nombreLista}
-                onChange={handleCreateModalChange}
-                required
-                className="formulario-input"
-                placeholder="Ingrese el nombre de la lista"
-                style={{ 
-                  width: '250px',
-                  background: 'white',
-                  border: '1px solid #ccc'
-                }}
-              />
-              {createError?.message && createError.field === 'nombreLista' && (
-                <div className="error-message">{createError.message}</div>
-              )}
+            <div style={{ flex: 1, marginLeft: '10px' }}>              <div className="input-container">
+                <input
+                  type="text"
+                  id="nombreLista"
+                  name="nombreLista"
+                  value={newAnimalCorteData.nombreLista}
+                  onChange={handleCreateModalChange}
+                  required                  className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'nombreLista') ? 'input-error' : ''}`}
+                  placeholder="Ingrese el nombre de la lista"
+                  style={{ 
+                    width: '250px',
+                    background: 'white'
+                  }}                />
+                {createError && createError.errors && createError.errors.map((error, index) => (
+                  error.field === 'nombreLista' && (
+                    <div key={index} className="error-message">{error.message}</div>
+                  )
+                ))}
+              </div>
             </div>
           </div>
 
@@ -528,32 +604,42 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
-                  type="number"
-                  id="abastero"
-                  name="abastero"
-                  value={newAnimalCorteData.abastero || 0}
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
+                <label>kg</label>                <div className="input-container">
+                  <input
+                    type="number"
+                    id="abastero"
+                    name="abastero"
+                    value={newAnimalCorteData.abastero || 0}
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'abastero') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'abastero' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioAbastero"
-                  name="precioAbastero"
-                  value={newAnimalCorteData.precioAbastero || 0}
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <label>Precio</label>                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioAbastero"
+                    name="precioAbastero"
+                    value={newAnimalCorteData.precioAbastero || 0}
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioAbastero') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioAbastero' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -782,12 +868,13 @@ const VerAnimalListaCorte = () => {
           
           <div className="subproducto-fila">
             <div className="subproducto-nombre-grupo">
+
               <span className="subproducto-nombre">Filete</span>
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
                 <label>kg</label>
-                <input
+                               <input
                   type="number"
                   id="filete"
                   name="filete"
@@ -1853,10 +1940,7 @@ const VerAnimalListaCorte = () => {
             <h2 className="modal-crear-titulo">Editar lista de Precios</h2>
             <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
             <button type="submit" className="modal-boton-crear">Guardar</button>
-          </div>
-          {formError && <div className="error-message" style={{color: 'red', marginBottom: '10px', textAlign: 'center'}}>
-            {typeof formError === 'object' ? formError.message : formError}
-          </div>}          <div className="subproducto-fila" style={{ maxWidth: '500px', margin: '0 auto', padding: '10px', display: 'flex', alignItems: 'center', background: 'none', border: 'none' }}>
+          </div><div className="subproducto-fila" style={{ maxWidth: '500px', margin: '0 auto', padding: '10px', display: 'flex', alignItems: 'center', background: 'none', border: 'none' }}>
             <div style={{ minWidth: '120px' }}>
               <span className="subproducto-nombre">Nombre de la lista:</span>
             </div>
@@ -1871,12 +1955,13 @@ const VerAnimalListaCorte = () => {
                 className="formulario-input"
                 placeholder="Ingrese el nombre de la lista"
                 style={{ width: '250px', background: 'white', border: '1px solid #ccc' }}
-              />
-              {editError?.message && editError.field === 'nombreLista' && (
-                <div className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                  {editError.message}
-                </div>
-              )}
+              />              {editError && editError.errors?.map((error, index) => (
+                error.field === 'nombreLista' && (
+                  <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    {error.message}
+                  </div>
+                )
+              ))}
             </div>
           </div>
 
@@ -2141,12 +2226,13 @@ const VerAnimalListaCorte = () => {
           
           <div className="subproducto-fila">
             <div className="subproducto-nombre-grupo">
+
               <span className="subproducto-nombre">Filete</span>
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
                 <label>kg</label>
-                <input
+                               <input
                   type="number"
                   id="filete"
                   name="filete"
@@ -3175,8 +3261,21 @@ const VerAnimalListaCorte = () => {
               </div>
             </div>
           </div>
+                <div className="modal-crear-acciones">
+            <button type="submit" className="modal-boton-crear">
+              Crear
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(false)}
+              className="modal-crear-cerrar"
+            >
+              Cancelar
+            </button>
+          </div>
         </form>
       </Modal>
+
 
 
 

@@ -99,10 +99,19 @@ export async function updateAnimalCorteService(id, data) {
     const animalCorte = await animalCorteRepository.findOneBy({ id });
     if (!animalCorte) return [null, "AnimalCorte no encontrado."];
 
-    Object.keys(data).forEach((key) => {
-      if (data[key] !== undefined) animalCorte[key] = data[key];
-    });
+    // Verificar si existe otro animal corte con el mismo nombre (excluyendo el actual)
+    const existing = await animalCorteRepository
+      .createQueryBuilder("animalCorte")
+      .where("animalCorte.nombreLista = :nombreLista", { nombreLista: data.nombreLista })
+      .andWhere("animalCorte.id != :id", { id })
+      .getOne();
 
+    if (existing) {
+      return [null, "Ya existe un tipo de animal con este nombre de lista."];
+    }
+
+    // Continuar con la actualización si el nombre es único
+    Object.assign(animalCorte, data);
     const animalCorteActualizado = await animalCorteRepository.save(animalCorte);
     return [animalCorteActualizado, null];
   } catch (error) {
