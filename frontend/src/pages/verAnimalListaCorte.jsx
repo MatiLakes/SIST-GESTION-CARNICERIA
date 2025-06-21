@@ -409,14 +409,15 @@ const VerAnimalListaCorte = () => {
     e.preventDefault();
     
     const validatedData = { ...formData };
-    for (let key in validatedData) {
+    for (let key in validatedData) {validatedData, animalCortes[0] || []
       if (validatedData[key] === '') {
         validatedData[key] = 0;
       }
     }
     
+    
     // Usar el hook de manejo de errores
-    const hasErrors = handleEditError(validatedData);
+    const hasErrors = handleEditError(validatedData, animalCortes[0] || []);
     if (hasErrors) {
       setFormError(editError);
       return;
@@ -604,7 +605,8 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>                <div className="input-container">
+                <label>kg</label>                
+                <div className="input-container">
                   <input
                     type="number"
                     id="abastero"
@@ -648,35 +650,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Asado Tira</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
-                <label>kg</label>
-                <input
-                  type="number"
-                  id="CantidadAsadoTira"
-                  name="asadoTira"
-                  value={newAnimalCorteData.asadoTira || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
+                <label>kg</label>                
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="CantidadAsadoTira"
+                    name="asadoTira"
+                    value={newAnimalCorteData.asadoTira || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'asadoTira') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'asadoTira' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioAsadoTira"
-                  name="precioAsadoTira"
-                  value={newAnimalCorteData.precioAsadoTira || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioAsadoTira"
+                    name="precioAsadoTira"
+                    value={newAnimalCorteData.precioAsadoTira || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioAsadoTira') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioAsadoTira' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -685,35 +698,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Asado Carnicero</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="asadoCarniceror"
-                  name="asadoCarnicero"
-                  value={newAnimalCorteData.asadoCarnicero || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="asadoCarniceror"
+                    name="asadoCarnicero"
+                    value={newAnimalCorteData.asadoCarnicero || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'asadoCarnicero') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'asadoCarnicero' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioAsadoCarnicero"
-                  name="precioAsadoCarnicero"
-                  value={newAnimalCorteData.precioAsadoCarnicero || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioAsadoCarnicero"
+                    name="precioAsadoCarnicero"
+                    value={newAnimalCorteData.precioAsadoCarnicero || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioAsadoCarnicero') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioAsadoCarnicero' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -722,35 +746,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Asiento</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="asientor"
-                  name="asiento"
-                  value={newAnimalCorteData.asiento || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="asientor"
+                    name="asiento"
+                    value={newAnimalCorteData.asiento || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'asiento') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'asiento' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioAsiento"
-                  name="precioAsiento"
-                  value={newAnimalCorteData.precioAsiento || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioAsiento"
+                    name="precioAsiento"
+                    value={newAnimalCorteData.precioAsiento || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioAsiento') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioAsiento' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -759,35 +794,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Choclillo</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="choclillo"
-                  name="choclillo"
-                  value={newAnimalCorteData.choclillo || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="choclillo"
+                    name="choclillo"
+                    value={newAnimalCorteData.choclillo || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'choclillo') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'choclillo' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioChoclillo"
-                  name="precioChoclillo"
-                  value={newAnimalCorteData.precioChoclillo || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioChoclillo"
+                    name="precioChoclillo"
+                    value={newAnimalCorteData.precioChoclillo || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioChoclillo') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioChoclillo' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -796,35 +842,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Cogote</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="cogote"
-                  name="cogote"
-                  value={newAnimalCorteData.cogote || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="cogote"
+                    name="cogote"
+                    value={newAnimalCorteData.cogote || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'cogote') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'cogote' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioCogote"
-                  name="precioCogote"
-                  value={newAnimalCorteData.precioCogote || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioCogote"
+                    name="precioCogote"
+                    value={newAnimalCorteData.precioCogote || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioCogote') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioCogote' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -833,35 +890,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Entraña</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="entraña"
-                  name="entraña"
-                  value={newAnimalCorteData.entraña || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="entraña"
+                    name="entraña"
+                    value={newAnimalCorteData.entraña || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'entraña') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'entraña' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioEntraña"
-                  name="precioEntraña"
-                  value={newAnimalCorteData.precioEntraña || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioEntraña"
+                    name="precioEntraña"
+                    value={newAnimalCorteData.precioEntraña || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioEntraña') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioEntraña' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -871,35 +939,46 @@ const VerAnimalListaCorte = () => {
 
               <span className="subproducto-nombre">Filete</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                               <input
-                  type="number"
-                  id="filete"
-                  name="filete"
-                  value={newAnimalCorteData.filete || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="filete"
+                    name="filete"
+                    value={newAnimalCorteData.filete || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'filete') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'filete' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioFilete"
-                  name="precioFilete"
-                  value={newAnimalCorteData.precioFilete || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioFilete"
+                    name="precioFilete"
+                    value={newAnimalCorteData.precioFilete || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioFilete') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioFilete' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -908,35 +987,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Ganso</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="ganso"
-                  name="ganso"
-                  value={newAnimalCorteData.ganso || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="ganso"
+                    name="ganso"
+                    value={newAnimalCorteData.ganso || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'ganso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'ganso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioGanso"
-                  name="precioGanso"
-                  value={newAnimalCorteData.precioGanso || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioGanso"
+                    name="precioGanso"
+                    value={newAnimalCorteData.precioGanso || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioGanso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioGanso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -945,35 +1035,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Huachalomo</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="huachalomo"
-                  name="huachalomo"
-                  value={newAnimalCorteData.huachalomo || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="huachalomo"
+                    name="huachalomo"
+                    value={newAnimalCorteData.huachalomo || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'huachalomo') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'huachalomo' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioHuachalomo"
-                  name="precioHuachalomo"
-                  value={newAnimalCorteData.precioHuachalomo|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioHuachalomo"
+                    name="precioHuachalomo"
+                    value={newAnimalCorteData.precioHuachalomo|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioHuachalomo') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioHuachalomo' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -982,35 +1083,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Lomo Liso</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="lomoLiso"
-                  name="lomoLiso"
-                  value={newAnimalCorteData.lomoLiso || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="lomoLiso"
+                    name="lomoLiso"
+                    value={newAnimalCorteData.lomoLiso || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'lomoLiso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'lomoLiso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioLomoLiso"
-                  name="precioLomoLiso"
-                  value={newAnimalCorteData.precioLomoLiso || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioLomoLiso"
+                    name="precioLomoLiso"
+                    value={newAnimalCorteData.precioLomoLiso || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioLomoLiso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioLomoLiso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1019,36 +1131,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Lomo Vetado</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="lomoVetado"
-                  name="lomoVetado"
-                  value={newAnimalCorteData.lomoVetado|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="lomoVetado"
+                    name="lomoVetado"
+                    value={newAnimalCorteData.lomoVetado|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'lomoVetado') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'lomoVetado' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioLomoVetado"
-                  name="precioLomoVetado"
-                  value={newAnimalCorteData.precioLomoVetado || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioLomoVetado"
+                    name="precioLomoVetado"
+                    value={newAnimalCorteData.precioLomoVetado || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioLomoVetado') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioLomoVetado' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1057,35 +1179,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Palanca</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="palanca"
-                  name="palanca"
-                  value={newAnimalCorteData.palanca|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="palanca"
+                    name="palanca"
+                    value={newAnimalCorteData.palanca|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'palanca') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'palanca' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPalanca"
-                  name="precioPalanca"
-                  value={newAnimalCorteData.precioPalanca|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPalanca"
+                    name="precioPalanca"
+                    value={newAnimalCorteData.precioPalanca|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPalanca') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPalanca' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1094,35 +1227,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Plateada</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="plateada"
-                  name="plateada"
-                  value={newAnimalCorteData.plateada|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="plateada"
+                    name="plateada"
+                    value={newAnimalCorteData.plateada|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'plateada') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'plateada' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPlateada"
-                  name="precioPlateada"
-                  value={newAnimalCorteData.precioPlateada|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPlateada"
+                    name="precioPlateada"
+                    value={newAnimalCorteData.precioPlateada|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPlateada') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPlateada' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1131,35 +1275,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Pollo Barriga</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="polloBarriga"
-                  name="polloBarriga"
-                  value={newAnimalCorteData.polloBarriga|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="polloBarriga"
+                    name="polloBarriga"
+                    value={newAnimalCorteData.polloBarriga|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'polloBarriga') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'polloBarriga' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPolloBarriga"
-                  name="precioPolloBarriga"
-                  value={newAnimalCorteData.precioPolloBarriga || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPolloBarriga"
+                    name="precioPolloBarriga"
+                    value={newAnimalCorteData.precioPolloBarriga || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPolloBarriga') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPolloBarriga' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1168,35 +1323,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Pollo Ganso</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="polloGanso"
-                  name="polloGanso"
-                  value={newAnimalCorteData.polloGanso|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="polloGanso"
+                    name="polloGanso"
+                    value={newAnimalCorteData.polloGanso|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'polloGanso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'polloGanso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPolloGanso"
-                  name="precioPolloGanso"
-                  value={newAnimalCorteData.precioPolloGanso || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPolloGanso"
+                    name="precioPolloGanso"
+                    value={newAnimalCorteData.precioPolloGanso || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPolloGanso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPolloGanso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1205,35 +1371,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Posta Negra</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="postaNegra"
-                  name="postaNegra"
-                  value={newAnimalCorteData.postaNegra|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="postaNegra"
+                    name="postaNegra"
+                    value={newAnimalCorteData.postaNegra|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'postaNegra') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'postaNegra' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPostaNegra"
-                  name="precioPostaNegra"
-                  value={newAnimalCorteData.precioPostaNegra|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPostaNegra"
+                    name="precioPostaNegra"
+                    value={newAnimalCorteData.precioPostaNegra|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPostaNegra') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPostaNegra' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1242,35 +1419,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Posta Paleta</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="postaPaleta"
-                  name="postaPaleta"
-                  value={newAnimalCorteData.postaPaleta|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="postaPaleta"
+                    name="postaPaleta"
+                    value={newAnimalCorteData.postaPaleta|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'postaPaleta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'postaPaleta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPostaPaleta"
-                  name="precioPostaPaleta"
-                  value={newAnimalCorteData.precioPostaPaleta|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPostaPaleta"
+                    name="precioPostaPaleta"
+                    value={newAnimalCorteData.precioPostaPaleta|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPostaPaleta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPostaPaleta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1279,35 +1467,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Posta Rosada</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="postaRosada"
-                  name="postaRosada"
-                  value={newAnimalCorteData.postaRosada|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="postaRosada"
+                    name="postaRosada"
+                    value={newAnimalCorteData.postaRosada|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'postaRosada') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'postaRosada' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPostaRosada"
-                  name="precioPostaRosada"
-                  value={newAnimalCorteData.precioPostaRosada || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPostaRosada"
+                    name="precioPostaRosada"
+                    value={newAnimalCorteData.precioPostaRosada || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPostaRosada') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPostaRosada' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1316,35 +1515,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Punta Ganso</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="puntaGanso"
-                  name="puntaGanso"
-                  value={newAnimalCorteData.puntaGanso|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="puntaGanso"
+                    name="puntaGanso"
+                    value={newAnimalCorteData.puntaGanso|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'puntaGanso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'puntaGanso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPuntaGanso"
-                  name="precioPuntaGanso"
-                  value={newAnimalCorteData.precioPuntaGanso || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPuntaGanso"
+                    name="precioPuntaGanso"
+                    value={newAnimalCorteData.precioPuntaGanso || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPuntaGanso') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPuntaGanso' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1353,35 +1563,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Punta Picana</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="puntaPicana"
-                  name="puntaPicana"
-                  value={newAnimalCorteData.puntaPicana|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="puntaPicana"
+                    name="puntaPicana"
+                    value={newAnimalCorteData.puntaPicana|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'puntaPicana') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'puntaPicana' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPuntaPicana"
-                  name="precioPuntaPicana"
-                  value={newAnimalCorteData.precioPuntaPicana || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPuntaPicana"
+                    name="precioPuntaPicana"
+                    value={newAnimalCorteData.precioPuntaPicana || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPuntaPicana') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPuntaPicana' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1390,35 +1611,45 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Punta Paleta</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="puntaPaleta"
-                  name="puntaPaleta"
-                  value={newAnimalCorteData.puntaPaleta|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="puntaPaleta"
+                    name="puntaPaleta"                    value={newAnimalCorteData.puntaPaleta|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'puntaPaleta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'puntaPaleta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPuntaPaleta"
-                  name="precioPuntaPaleta"
-                  value={newAnimalCorteData.precioPuntaPaleta|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPuntaPaleta"
+                    name="precioPuntaPaleta"
+                    value={newAnimalCorteData.precioPuntaPaleta|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPuntaPaleta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPuntaPaleta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1427,35 +1658,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Sobrecostilla</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="sobrecostilla"
-                  name="sobrecostilla"
-                  value={newAnimalCorteData.sobrecostilla|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="sobrecostilla"
+                    name="sobrecostilla"
+                    value={newAnimalCorteData.sobrecostilla|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'sobrecostilla') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'sobrecostilla' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioSobrecostilla"
-                  name="precioSobrecostilla"
-                  value={newAnimalCorteData.precioSobrecostilla|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioSobrecostilla"
+                    name="precioSobrecostilla"
+                    value={newAnimalCorteData.precioSobrecostilla|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioSobrecostilla') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioSobrecostilla' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1464,35 +1706,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Tapabarriga</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="tapabarriga"
-                  name="tapabarriga"
-                  value={newAnimalCorteData.tapabarriga|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="tapabarriga"
+                    name="tapabarriga"
+                    value={newAnimalCorteData.tapabarriga|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tapabarriga') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'tapabarriga' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioTapabarriga"
-                  name="precioTapabarriga"
-                  value={newAnimalCorteData.precioTapabarriga|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioTapabarriga"
+                    name="precioTapabarriga"
+                    value={newAnimalCorteData.precioTapabarriga|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioTapabarriga') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioTapabarriga' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1501,35 +1754,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Tapapecho</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="tapapecho"
-                  name="tapapecho"
-                  value={newAnimalCorteData.tapapecho|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="tapapecho"
+                    name="tapapecho"
+                    value={newAnimalCorteData.tapapecho|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tapapecho') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'tapapecho' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioTapapecho"
-                  name="precioTapapecho"
-                  value={newAnimalCorteData.precioTapapecho || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioTapapecho"
+                    name="precioTapapecho"
+                    value={newAnimalCorteData.precioTapapecho || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioTapapecho') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioTapapecho' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1538,35 +1802,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Hueso Carnudo</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="huesoCarnudo"
-                  name="huesoCarnudo"
-                  value={newAnimalCorteData.huesoCarnudo|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="huesoCarnudo"
+                    name="huesoCarnudo"
+                    value={newAnimalCorteData.huesoCarnudo|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'huesoCarnudo') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'huesoCarnudo' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioHuesoCarnudo"
-                  name="precioHuesoCarnudo"
-                  value={newAnimalCorteData.precioHuesoCarnudo || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioHuesoCarnudo"
+                    name="precioHuesoCarnudo"
+                    value={newAnimalCorteData.precioHuesoCarnudo || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioHuesoCarnudo') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioHuesoCarnudo' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1575,35 +1850,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Hueso con Carne</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="huesoCConCarne"
-                  name="huesoCConCarne"
-                  value={newAnimalCorteData.huesoCConCarne|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="huesoCConCarne"
+                    name="huesoCConCarne"
+                    value={newAnimalCorteData.huesoCConCarne|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'huesoCConCarne') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'huesoCConCarne' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioHuesoCConCarne"
-                  name="precioHuesoCConCarne"
-                  value={newAnimalCorteData.precioHuesoCConCarne || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioHuesoCConCarne"
+                    name="precioHuesoCConCarne"
+                    value={newAnimalCorteData.precioHuesoCConCarne || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioHuesoCConCarne') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioHuesoCConCarne' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1612,35 +1898,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Pata Vacuno</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="pataVacuno"
-                  name="pataVacuno"
-                  value={newAnimalCorteData.pataVacuno|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="pataVacuno"
+                    name="pataVacuno"
+                    value={newAnimalCorteData.pataVacuno|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'pataVacuno') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'pataVacuno' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioPataVacuno"
-                  name="precioPataVacuno"
-                  value={newAnimalCorteData.precioPataVacuno|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioPataVacuno"
+                    name="precioPataVacuno"
+                    value={newAnimalCorteData.precioPataVacuno|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioPataVacuno') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioPataVacuno' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1649,35 +1946,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Huachalomo Olla</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="huachalomoOlla"
-                  name="huachalomoOlla"
-                  value={newAnimalCorteData.huachalomoOlla|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="huachalomoOlla"
+                    name="huachalomoOlla"
+                    value={newAnimalCorteData.huachalomoOlla|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'huachalomoOlla') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'huachalomoOlla' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioHuachalomoOlla"
-                  name="precioHuachalomoOlla"
-                  value={newAnimalCorteData.precioHuachalomoOlla || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioHuachalomoOlla"
+                    name="precioHuachalomoOlla"
+                    value={newAnimalCorteData.precioHuachalomoOlla || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioHuachalomoOlla') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioHuachalomoOlla' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1686,35 +1994,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Cazuela Paleta</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="cazuelaPaleta"
-                  name="cazuelaPaleta"
-                  value={newAnimalCorteData.cazuelaPaleta|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="cazuelaPaleta"
+                    name="cazuelaPaleta"
+                    value={newAnimalCorteData.cazuelaPaleta|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'cazuelaPaleta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'cazuelaPaleta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioCazuelaPaleta"
-                  name="precioCazuelaPaleta"
-                  value={newAnimalCorteData.precioCazuelaPaleta || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioCazuelaPaleta"
+                    name="precioCazuelaPaleta"
+                    value={newAnimalCorteData.precioCazuelaPaleta || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioCazuelaPaleta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioCazuelaPaleta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1723,35 +2042,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Osobuco</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="osobuco"
-                  name="osobuco"
-                  value={newAnimalCorteData.osobuco|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="osobuco"
+                    name="osobuco"
+                    value={newAnimalCorteData.osobuco|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'osobuco') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'osobuco' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioOsobuco"
-                  name="precioOsobuco"
-                  value={newAnimalCorteData.precioOsobuco || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioOsobuco"
+                    name="precioOsobuco"
+                    value={newAnimalCorteData.precioOsobuco || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioOsobuco') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioOsobuco' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1760,35 +2090,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Lagarto</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="lagarto"
-                  name="lagarto"
-                  value={newAnimalCorteData.lagarto|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="lagarto"
+                    name="lagarto"
+                    value={newAnimalCorteData.lagarto|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'lagarto') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'lagarto' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioLagarto"
-                  name="precioLagarto"
-                  value={newAnimalCorteData.precioLagarto || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioLagarto"
+                    name="precioLagarto"
+                    value={newAnimalCorteData.precioLagarto || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioLagarto') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioLagarto' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1797,35 +2138,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Costilla Vacuno</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="costillaVacuno"
-                  name="costillaVacuno"
-                  value={newAnimalCorteData.costillaVacuno|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="costillaVacuno"
+                    name="costillaVacuno"
+                    value={newAnimalCorteData.costillaVacuno|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'costillaVacuno') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'costillaVacuno' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioCostillaVacuno"
-                  name="precioCostillaVacuno"
-                  value={newAnimalCorteData.precioCostillaVacuno || 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioCostillaVacuno"
+                    name="precioCostillaVacuno"
+                    value={newAnimalCorteData.precioCostillaVacuno || 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioCostillaVacuno') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioCostillaVacuno' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1834,35 +2186,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Tapaposta</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="tapaposta"
-                  name="tapaposta"
-                  value={newAnimalCorteData.tapaposta|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="tapaposta"
+                    name="tapaposta"
+                    value={newAnimalCorteData.tapaposta|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tapaposta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'tapaposta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioTapaposta"
-                  name="precioTapaposta"
-                  value={newAnimalCorteData.precioTapaposta|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioTapaposta"
+                    name="precioTapaposta"
+                    value={newAnimalCorteData.precioTapaposta|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioTapaposta') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioTapaposta' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1871,35 +2234,46 @@ const VerAnimalListaCorte = () => {
             <div className="subproducto-nombre-grupo">
               <span className="subproducto-nombre">Malaya</span>
             </div>
-            <div className="subproducto-inputs-grupo">
-              <div className="input-grupo">
+            <div className="subproducto-inputs-grupo">              <div className="input-grupo">
                 <label>kg</label>
-                <input
-                  type="number"
-                  id="malaya"
-                  name="malaya"
-                  value={newAnimalCorteData.malaya|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="0.1"
-                  className="formulario-input"
-                />
-              </div>
-
-              <div className="input-grupo">
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="malaya"
+                    name="malaya"
+                    value={newAnimalCorteData.malaya|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="0.1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'malaya') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'malaya' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="input-grupo">
                 <label>Precio</label>
-                <input
-                  type="number"
-                  id="precioMalaya"
-                  name="precioMalaya"
-                  value={newAnimalCorteData.precioMalaya|| 0} 
-                  onChange={handleCreateModalChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="precioMalaya"
+                    name="precioMalaya"
+                    value={newAnimalCorteData.precioMalaya|| 0} 
+                    onChange={handleCreateModalChange}
+                    required
+                    min="0"
+                    step="1"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioMalaya') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'precioMalaya' && (
+                      <div key={index} className="error-message">{error.message}</div>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1948,11 +2322,10 @@ const VerAnimalListaCorte = () => {
               <input
                 type="text"
                 id="nombreLista"
-                name="nombreLista"
-                value={formData.nombreLista}
+                name="nombreLista"                value={formData.nombreLista}
                 onChange={handleEditChange}
                 required
-                className="formulario-input"
+                className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'nombreLista') ? 'input-error' : ''}`}
                 placeholder="Ingrese el nombre de la lista"
                 style={{ width: '250px', background: 'white', border: '1px solid #ccc' }}
               />              {editError && editError.errors?.map((error, index) => (
@@ -1971,8 +2344,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="abastero"
                   name="abastero"
@@ -1981,13 +2353,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'abastero') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'abastero' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioAbastero"
                   name="precioAbastero"
@@ -1996,8 +2374,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAbastero') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioAbastero' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2008,8 +2393,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="CantidadAsadoTira"
                   name="asadoTira"
@@ -2018,13 +2402,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'asadoTira') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'asadoTira' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioAsadoTira"
                   name="precioAsadoTira"
@@ -2033,8 +2423,14 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
-                />
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAsadoTira') ? 'input-error' : ''}`}
+                />                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioAsadoTira' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2045,8 +2441,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="asadoCarniceror"
                   name="asadoCarnicero"
@@ -2055,13 +2450,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'asadoCarnicero') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'asadoCarnicero' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioAsadoCarnicero"
                   name="precioAsadoCarnicero"
@@ -2070,8 +2471,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAsadoCarnicero') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioAsadoCarnicero' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2082,8 +2490,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="asientor"
                   name="asiento"
@@ -2092,13 +2499,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'asiento') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'asiento' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioAsiento"
                   name="precioAsiento"
@@ -2107,8 +2520,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAsiento') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioAsiento' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2119,8 +2539,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="choclillo"
                   name="choclillo"
@@ -2129,13 +2548,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'choclillo') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'choclillo' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioChoclillo"
                   name="precioChoclillo"
@@ -2144,8 +2569,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioChoclillo') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioChoclillo' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2156,8 +2588,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="cogote"
                   name="cogote"
@@ -2166,13 +2597,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'cogote') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'cogote' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioCogote"
                   name="precioCogote"
@@ -2181,8 +2618,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioCogote') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioCogote' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2193,8 +2637,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="entraña"
                   name="entraña"
@@ -2203,13 +2646,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'entraña') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'entraña' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioEntraña"
                   name="precioEntraña"
@@ -2218,8 +2667,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioEntraña') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioEntraña' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2231,8 +2687,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                               <input
+                <label>kg</label>                               <input
                   type="number"
                   id="filete"
                   name="filete"
@@ -2241,13 +2696,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'filete') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'filete' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioFilete"
                   name="precioFilete"
@@ -2256,8 +2717,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioFilete') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioFilete' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2268,8 +2736,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="ganso"
                   name="ganso"
@@ -2278,13 +2745,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'ganso') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'ganso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioGanso"
                   name="precioGanso"
@@ -2293,8 +2766,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioGanso') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioGanso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2305,8 +2785,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="huachalomo"
                   name="huachalomo"
@@ -2315,13 +2794,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huachalomo') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'huachalomo' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioHuachalomo"
                   name="precioHuachalomo"
@@ -2330,8 +2815,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuachalomo') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioHuachalomo' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2342,8 +2834,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="lomoLiso"
                   name="lomoLiso"
@@ -2352,13 +2843,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'lomoLiso') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'lomoLiso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioLomoLiso"
                   name="precioLomoLiso"
@@ -2367,8 +2864,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioLomoLiso') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioLomoLiso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2379,8 +2883,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="lomoVetado"
                   name="lomoVetado"
@@ -2389,14 +2892,20 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'lomoVetado') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'lomoVetado' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioLomoVetado"
                   name="precioLomoVetado"
@@ -2405,8 +2914,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioLomoVetado') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioLomoVetado' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2417,8 +2933,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="palanca"
                   name="palanca"
@@ -2427,13 +2942,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'palanca') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'palanca' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPalanca"
                   name="precioPalanca"
@@ -2442,8 +2963,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPalanca') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPalanca' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2454,8 +2982,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="plateada"
                   name="plateada"
@@ -2464,13 +2991,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'plateada') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'plateada' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPlateada"
                   name="precioPlateada"
@@ -2479,8 +3012,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPlateada') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPlateada' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2491,8 +3031,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="polloBarriga"
                   name="polloBarriga"
@@ -2501,13 +3040,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'polloBarriga') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'polloBarriga' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPolloBarriga"
                   name="precioPolloBarriga"
@@ -2516,8 +3061,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPolloBarriga') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPolloBarriga' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2528,8 +3080,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="polloGanso"
                   name="polloGanso"
@@ -2538,13 +3089,18 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
-                />
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'polloGanso') ? 'input-error' : ''}`}
+                />                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'polloGanso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPolloGanso"
                   name="precioPolloGanso"
@@ -2553,8 +3109,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPolloGanso') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPolloGanso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2565,8 +3128,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="postaNegra"
                   name="postaNegra"
@@ -2575,13 +3137,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'postaNegra') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'postaNegra' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPostaNegra"
                   name="precioPostaNegra"
@@ -2590,8 +3158,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPostaNegra') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPostaNegra' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2602,8 +3177,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="postaPaleta"
                   name="postaPaleta"
@@ -2612,13 +3186,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'postaPaleta') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'postaPaleta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPostaPaleta"
                   name="precioPostaPaleta"
@@ -2627,8 +3207,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPostaPaleta') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPostaPaleta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2639,8 +3226,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="postaRosada"
                   name="postaRosada"
@@ -2649,13 +3235,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'postaRosada') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'postaRosada' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPostaRosada"
                   name="precioPostaRosada"
@@ -2664,8 +3256,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPostaRosada') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPostaRosada' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2676,8 +3275,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="puntaGanso"
                   name="puntaGanso"
@@ -2686,13 +3284,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'puntaGanso') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'puntaGanso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPuntaGanso"
                   name="precioPuntaGanso"
@@ -2701,8 +3305,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPuntaGanso') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPuntaGanso' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2713,8 +3324,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="puntaPicana"
                   name="puntaPicana"
@@ -2723,13 +3333,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'puntaPicana') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'puntaPicana' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPuntaPicana"
                   name="precioPuntaPicana"
@@ -2738,8 +3354,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPuntaPicana') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPuntaPicana' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2750,8 +3373,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="puntaPaleta"
                   name="puntaPaleta"
@@ -2760,13 +3382,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'puntaPaleta') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'puntaPaleta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPuntaPaleta"
                   name="precioPuntaPaleta"
@@ -2775,8 +3403,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPuntaPaleta') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPuntaPaleta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2787,8 +3422,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="sobrecostilla"
                   name="sobrecostilla"
@@ -2797,13 +3431,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'sobrecostilla') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'sobrecostilla' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioSobrecostilla"
                   name="precioSobrecostilla"
@@ -2812,8 +3452,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioSobrecostilla') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioSobrecostilla' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2824,8 +3471,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="tapabarriga"
                   name="tapabarriga"
@@ -2834,13 +3480,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tapabarriga') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'tapabarriga' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioTapabarriga"
                   name="precioTapabarriga"
@@ -2849,8 +3501,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTapabarriga') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioTapabarriga' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2861,8 +3520,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="tapapecho"
                   name="tapapecho"
@@ -2871,13 +3529,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tapapecho') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'tapapecho' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioTapapecho"
                   name="precioTapapecho"
@@ -2886,8 +3550,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTapapecho') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioTapapecho' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2898,8 +3569,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="huesoCarnudo"
                   name="huesoCarnudo"
@@ -2908,13 +3578,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huesoCarnudo') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'huesoCarnudo' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioHuesoCarnudo"
                   name="precioHuesoCarnudo"
@@ -2923,8 +3599,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuesoCarnudo') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioHuesoCarnudo' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2935,8 +3618,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="huesoCConCarne"
                   name="huesoCConCarne"
@@ -2945,13 +3627,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huesoCConCarne') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'huesoCConCarne' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioHuesoCConCarne"
                   name="precioHuesoCConCarne"
@@ -2960,8 +3648,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuesoCConCarne') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioHuesoCConCarne' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -2972,8 +3667,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="pataVacuno"
                   name="pataVacuno"
@@ -2982,13 +3676,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'pataVacuno') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'pataVacuno' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioPataVacuno"
                   name="precioPataVacuno"
@@ -2997,8 +3697,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPataVacuno') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioPataVacuno' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -3009,8 +3716,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="huachalomoOlla"
                   name="huachalomoOlla"
@@ -3019,13 +3725,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huachalomoOlla') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'huachalomoOlla' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioHuachalomoOlla"
                   name="precioHuachalomoOlla"
@@ -3034,8 +3746,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuachalomoOlla') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioHuachalomoOlla' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -3046,8 +3765,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="cazuelaPaleta"
                   name="cazuelaPaleta"
@@ -3056,13 +3774,18 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
-                />
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'cazuelaPaleta') ? 'input-error' : ''}`}
+                />                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'cazuelaPaleta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioCazuelaPaleta"
                   name="precioCazuelaPaleta"
@@ -3071,8 +3794,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioCazuelaPaleta') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioCazuelaPaleta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -3083,8 +3813,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="osobuco"
                   name="osobuco"
@@ -3093,13 +3822,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'osobuco') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'osobuco' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioOsobuco"
                   name="precioOsobuco"
@@ -3108,8 +3843,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioOsobuco') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioOsobuco' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -3120,8 +3862,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="lagarto"
                   name="lagarto"
@@ -3130,13 +3871,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'lagarto') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'lagarto' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioLagarto"
                   name="precioLagarto"
@@ -3145,8 +3892,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioLagarto') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioLagarto' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -3157,8 +3911,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="costillaVacuno"
                   name="costillaVacuno"
@@ -3167,13 +3920,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'costillaVacuno') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'costillaVacuno' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioCostillaVacuno"
                   name="precioCostillaVacuno"
@@ -3182,8 +3941,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioCostillaVacuno') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioCostillaVacuno' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -3194,8 +3960,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="tapaposta"
                   name="tapaposta"
@@ -3204,13 +3969,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tapaposta') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'tapaposta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioTapaposta"
                   name="precioTapaposta"
@@ -3219,8 +3990,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTapaposta') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioTapaposta' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
@@ -3231,8 +4009,7 @@ const VerAnimalListaCorte = () => {
             </div>
             <div className="subproducto-inputs-grupo">
               <div className="input-grupo">
-                <label>kg</label>
-                <input
+                <label>kg</label>                <input
                   type="number"
                   id="malaya"
                   name="malaya"
@@ -3241,13 +4018,19 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="0.1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'malaya') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'malaya' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
 
               <div className="input-grupo">
-                <label>Precio</label>
-                <input
+                <label>Precio</label>                <input
                   type="number"
                   id="precioMalaya"
                   name="precioMalaya"
@@ -3256,8 +4039,15 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className="formulario-input"
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioMalaya') ? 'input-error' : ''}`}
                 />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioMalaya' && (
+                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                      {error.message}
+                    </div>
+                  )
+                ))}
               </div>
             </div>
           </div>
