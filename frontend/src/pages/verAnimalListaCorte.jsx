@@ -409,15 +409,14 @@ const VerAnimalListaCorte = () => {
     e.preventDefault();
     
     const validatedData = { ...formData };
-    for (let key in validatedData) {validatedData, animalCortes[0] || []
+    for (let key in validatedData) {
       if (validatedData[key] === '') {
         validatedData[key] = 0;
       }
     }
     
-    
-    // Usar el hook de manejo de errores
-    const hasErrors = handleEditError(validatedData, animalCortes[0] || []);
+    // Usar el hook de manejo de errores, pasando el ID actual para excluirlo de la validación de duplicados
+    const hasErrors = handleEditError(validatedData, animalCortes[0] || [], animalCorteToEdit?.id);
     if (hasErrors) {
       setFormError(editError);
       return;
@@ -2330,9 +2329,7 @@ const VerAnimalListaCorte = () => {
                 style={{ width: '250px', background: 'white', border: '1px solid #ccc' }}
               />              {editError && editError.errors?.map((error, index) => (
                 error.field === 'nombreLista' && (
-                  <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                    {error.message}
-                  </div>
+                  <div key={index} className="error-message">{error.message}</div>
                 )
               ))}
             </div>
@@ -2354,12 +2351,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'abastero') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'abastero' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2376,11 +2370,8 @@ const VerAnimalListaCorte = () => {
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAbastero') ? 'input-error' : ''}`}
                 />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'precioAbastero' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                {editError && editError.errors?.map((error, index) => (                  error.field === 'precioAbastero' && (
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2404,11 +2395,8 @@ const VerAnimalListaCorte = () => {
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'asadoTira') ? 'input-error' : ''}`}
                 />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'asadoTira' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                {editError && editError.errors?.map((error, index) => (                  error.field === 'asadoTira' && (
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2423,12 +2411,9 @@ const VerAnimalListaCorte = () => {
                   required
                   min="0"
                   step="1"
-                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAsadoTira') ? 'input-error' : ''}`}
-                />                {editError && editError.errors?.map((error, index) => (
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAsadoTira') ? 'input-error' : ''}`}                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioAsadoTira' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2451,12 +2436,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'asadoCarnicero') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'asadoCarnicero' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2472,12 +2454,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAsadoCarnicero') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioAsadoCarnicero' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2500,12 +2479,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'asiento') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'asiento' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2521,12 +2497,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioAsiento') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioAsiento' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2549,12 +2522,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'choclillo') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'choclillo' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2570,12 +2540,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioChoclillo') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioChoclillo' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2598,12 +2565,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'cogote') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'cogote' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2619,12 +2583,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioCogote') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioCogote' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2647,12 +2608,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'entraña') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'entraña' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2668,12 +2626,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioEntraña') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioEntraña' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2697,12 +2652,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'filete') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'filete' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2718,12 +2670,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioFilete') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioFilete' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2746,12 +2695,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'ganso') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'ganso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2768,11 +2714,8 @@ const VerAnimalListaCorte = () => {
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioGanso') ? 'input-error' : ''}`}
                 />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'precioGanso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                {editError && editError.errors?.map((error, index) => (                  error.field === 'precioGanso' && (
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2796,11 +2739,8 @@ const VerAnimalListaCorte = () => {
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huachalomo') ? 'input-error' : ''}`}
                 />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'huachalomo' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                {editError && editError.errors?.map((error, index) => (                  error.field === 'huachalomo' && (
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2816,12 +2756,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuachalomo') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioHuachalomo' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2844,12 +2781,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'lomoLiso') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'lomoLiso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2865,12 +2799,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioLomoLiso') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioLomoLiso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2893,12 +2824,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'lomoVetado') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'lomoVetado' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2915,12 +2843,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioLomoVetado') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioLomoVetado' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2943,12 +2868,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'palanca') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'palanca' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2964,12 +2886,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPalanca') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPalanca' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -2992,12 +2911,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'plateada') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'plateada' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -3013,12 +2929,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPlateada') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPlateada' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -3041,12 +2954,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'polloBarriga') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'polloBarriga' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -3062,12 +2972,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPolloBarriga') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPolloBarriga' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
-                      {error.message}
-                    </div>
+                    <div key={index} className="error-message">{error.message}</div>
                   )
                 ))}
               </div>
@@ -3092,7 +2999,7 @@ const VerAnimalListaCorte = () => {
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'polloGanso') ? 'input-error' : ''}`}
                 />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'polloGanso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3110,10 +3017,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPolloGanso') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPolloGanso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3138,10 +3044,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'postaNegra') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'postaNegra' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3159,10 +3064,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPostaNegra') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPostaNegra' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3187,10 +3091,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'postaPaleta') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'postaPaleta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3209,9 +3112,8 @@ const VerAnimalListaCorte = () => {
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPostaPaleta') ? 'input-error' : ''}`}
                 />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'precioPostaPaleta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                {editError && editError.errors?.map((error, index) => (                  error.field === 'precioPostaPaleta' && (
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3236,10 +3138,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'postaRosada') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'postaRosada' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3257,10 +3158,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPostaRosada') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPostaRosada' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3285,10 +3185,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'puntaGanso') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'puntaGanso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3306,10 +3205,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPuntaGanso') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPuntaGanso' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3334,10 +3232,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'puntaPicana') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'puntaPicana' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3355,10 +3252,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPuntaPicana') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPuntaPicana' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3383,10 +3279,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'puntaPaleta') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'puntaPaleta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3404,10 +3299,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPuntaPaleta') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPuntaPaleta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3432,10 +3326,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'sobrecostilla') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'sobrecostilla' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3453,10 +3346,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioSobrecostilla') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioSobrecostilla' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3482,9 +3374,8 @@ const VerAnimalListaCorte = () => {
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tapabarriga') ? 'input-error' : ''}`}
                 />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'tapabarriga' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                {editError && editError.errors?.map((error, index) => (                  error.field === 'tapabarriga' && (
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3502,10 +3393,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTapabarriga') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioTapabarriga' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3530,10 +3420,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tapapecho') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'tapapecho' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3551,10 +3440,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTapapecho') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioTapapecho' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3579,10 +3467,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huesoCarnudo') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'huesoCarnudo' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3600,10 +3487,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuesoCarnudo') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioHuesoCarnudo' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3628,10 +3514,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huesoCConCarne') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'huesoCConCarne' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3649,10 +3534,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuesoCConCarne') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioHuesoCConCarne' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3677,10 +3561,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'pataVacuno') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'pataVacuno' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3698,10 +3581,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioPataVacuno') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioPataVacuno' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3726,10 +3608,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'huachalomoOlla') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'huachalomoOlla' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3747,10 +3628,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioHuachalomoOlla') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioHuachalomoOlla' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3777,7 +3657,7 @@ const VerAnimalListaCorte = () => {
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'cazuelaPaleta') ? 'input-error' : ''}`}
                 />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'cazuelaPaleta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3795,10 +3675,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioCazuelaPaleta') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioCazuelaPaleta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3823,10 +3702,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'osobuco') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'osobuco' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3845,9 +3723,8 @@ const VerAnimalListaCorte = () => {
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioOsobuco') ? 'input-error' : ''}`}
                 />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'precioOsobuco' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                {editError && editError.errors?.map((error, index) => (                  error.field === 'precioOsobuco' && (
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3872,10 +3749,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'lagarto') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'lagarto' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3893,10 +3769,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioLagarto') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioLagarto' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3921,10 +3796,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'costillaVacuno') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'costillaVacuno' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3942,10 +3816,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioCostillaVacuno') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioCostillaVacuno' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3970,10 +3843,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tapaposta') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'tapaposta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -3991,10 +3863,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTapaposta') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioTapaposta' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -4019,10 +3890,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="0.1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'malaya') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'malaya' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )
@@ -4040,10 +3910,9 @@ const VerAnimalListaCorte = () => {
                   min="0"
                   step="1"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioMalaya') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
+                />                {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioMalaya' && (
-                    <div key={index} className="error-message" style={{color: 'red', fontSize: '0.8em', marginTop: '5px'}}>
+                    <div key={index} className="error-message">
                       {error.message}
                     </div>
                   )

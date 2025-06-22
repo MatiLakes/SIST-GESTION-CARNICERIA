@@ -143,12 +143,11 @@ export const useErrorHandlerAnimalCorte = () => {
 
     setCreateError(null);
     return false;
-  };
-  const handleEditError = (data, listaExistente = []) => {
+  };  const handleEditError = (data, listaExistente = [], currentId = null) => {
     const errors = [];
 
     // Validar nombre incluyendo verificación de duplicados
-    const nombreListaError = validateNombreLista(data.nombreLista, listaExistente);
+    const nombreListaError = validateNombreLista(data.nombreLista, listaExistente, currentId);
     if (nombreListaError) {
       errors.push({
         field: 'nombreLista',
