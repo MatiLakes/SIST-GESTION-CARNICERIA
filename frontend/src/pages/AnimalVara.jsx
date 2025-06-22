@@ -211,134 +211,98 @@ const handleEditSubmit = (e) => {
                         <h2 className="modal-crear-titulo">Crear Vara</h2>
                         <button type="button" onClick={() => setIsCreateModalOpen(false)} className="modal-crear-cerrar">×</button>
                         <button type="submit" className="modal-boton-crear">Guardar</button>
-                    </div>
-
-                    {/* Fecha de Llegada */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Fecha de Llegada</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>Fecha</label>
-                                <div className="input-container">
-                                    <input
-                                        type="date"
-                                        id="fechaLlegada"
-                                        name="fechaLlegada"
-                                        value={newAnimalVaraData.fechaLlegada}
-                                        onChange={handleCreateModalChange}
-                                        required
-                                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fechaLlegada') ? 'input-error' : ''}`}
-                                    />
-                                    {createError && createError.errors?.map((error, index) => (
-                                      error.field === 'fechaLlegada' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Fecha de Llegada */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Fecha de Llegada:</label>
+                        <div className="input-container">
+                            <input
+                                type="date"
+                                id="fechaLlegada"
+                                name="fechaLlegada"
+                                value={newAnimalVaraData.fechaLlegada}
+                                onChange={handleCreateModalChange}
+                                required
+                                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fechaLlegada') ? 'input-error' : ''}`}
+                            />
+                            {createError && createError.errors?.map((error, index) => (
+                              error.field === 'fechaLlegada' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
-                    </div>
-
-                    {/* Temperatura de Llegada */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Temperatura de Llegada</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>°C</label>
-                                <div className="input-container">
-                                    <input
-                                        type="number"
-                                        id="temperaturaLlegada"
-                                        name="temperaturaLlegada"
-                                        value={newAnimalVaraData.temperaturaLlegada}
-                                        onChange={handleCreateModalChange}
-                                        required
-                                        step="0.1"
-                                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'temperaturaLlegada') ? 'input-error' : ''}`}
-                                    />
-                                    {createError && createError.errors?.map((error, index) => (
-                                      error.field === 'temperaturaLlegada' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Temperatura de Llegada */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Temperatura de Llegada (°C):</label>
+                        <div className="input-container">
+                            <input
+                                type="number"
+                                id="temperaturaLlegada"
+                                name="temperaturaLlegada"
+                                value={newAnimalVaraData.temperaturaLlegada}
+                                onChange={handleCreateModalChange}
+                                required
+                                step="0.1"
+                                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'temperaturaLlegada') ? 'input-error' : ''}`}
+                            />
+                            {createError && createError.errors?.map((error, index) => (
+                              error.field === 'temperaturaLlegada' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
-                    </div>
-
-                    {/* Precio Total Vara */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Precio Total Vara</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>$</label>
-                                <div className="input-container">
-                                    <input
-                                        type="number"
-                                        id="precioTotalVara"
-                                        name="precioTotalVara"
-                                        value={newAnimalVaraData.precioTotalVara}
-                                        onChange={handleCreateModalChange}
-                                        required
-                                        min="0"
-                                        step="1"
-                                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioTotalVara') ? 'input-error' : ''}`}
-                                    />
-                                    {createError && createError.errors?.map((error, index) => (
-                                      error.field === 'precioTotalVara' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Precio Total Vara */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Precio Total Vara ($):</label>
+                        <div className="input-container">
+                            <input
+                                type="number"
+                                id="precioTotalVara"
+                                name="precioTotalVara"
+                                value={newAnimalVaraData.precioTotalVara}
+                                onChange={handleCreateModalChange}
+                                required
+                                min="0"
+                                step="1"
+                                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioTotalVara') ? 'input-error' : ''}`}
+                            />
+                            {createError && createError.errors?.map((error, index) => (
+                              error.field === 'precioTotalVara' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
-                    </div>
-
-                    {/* Lista de Precios */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Lista de Precios</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>Categoría</label>
-                                <div className="input-container">
-                                    <select
-                                        id="nombreLista"
-                                        name="tipoAnimal.nombreLista"
-                                        value={newAnimalVaraData.tipoAnimal.nombreLista}
-                                        onChange={handleCreateModalChange}
-                                        required
-                                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tipoAnimal') ? 'input-error' : ''}`}
-                                    >
-                                        <option value="">Selecciona una Lista de Precios</option>
-                                        {tiposAnimales.map((tipo) => (
-                                            <option key={tipo.id} value={tipo.nombreLista}>
-                                                {tipo.nombreLista}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {createError && createError.errors?.map((error, index) => (
-                                      error.field === 'tipoAnimal' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Lista de Precios */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Lista de Precios:</label>
+                        <div className="input-container">
+                            <select
+                                id="nombreLista"
+                                name="tipoAnimal.nombreLista"
+                                value={newAnimalVaraData.tipoAnimal.nombreLista}
+                                onChange={handleCreateModalChange}
+                                required
+                                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tipoAnimal') ? 'input-error' : ''}`}
+                            >
+                                <option value="">Selecciona una Lista de Precios</option>
+                                {tiposAnimales.map((tipo) => (
+                                    <option key={tipo.id} value={tipo.nombreLista}>
+                                        {tipo.nombreLista}
+                                    </option>
+                                ))}
+                            </select>
+                            {createError && createError.errors?.map((error, index) => (
+                              error.field === 'tipoAnimal' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
                     </div>
                     
@@ -359,134 +323,98 @@ const handleEditSubmit = (e) => {
                         <h2 className="modal-crear-titulo">Editar Vara</h2>
                         <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
                         <button type="submit" className="modal-boton-crear">Guardar</button>
-                    </div>
-
-                    {/* Fecha de Llegada */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Fecha de Llegada</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>Fecha</label>
-                                <div className="input-container">
-                                    <input
-                                        type="date"
-                                        id="fechaLlegada"
-                                        name="fechaLlegada"
-                                        value={formData.fechaLlegada}
-                                        onChange={handleEditChange}
-                                        required
-                                        className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fechaLlegada') ? 'input-error' : ''}`}
-                                    />
-                                    {editError && editError.errors?.map((error, index) => (
-                                      error.field === 'fechaLlegada' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Fecha de Llegada */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Fecha de Llegada:</label>
+                        <div className="input-container">
+                            <input
+                                type="date"
+                                id="fechaLlegada"
+                                name="fechaLlegada"
+                                value={formData.fechaLlegada}
+                                onChange={handleEditChange}
+                                required
+                                className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fechaLlegada') ? 'input-error' : ''}`}
+                            />
+                            {editError && editError.errors?.map((error, index) => (
+                              error.field === 'fechaLlegada' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
-                    </div>
-
-                    {/* Temperatura de Llegada */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Temperatura de Llegada</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>°C</label>
-                                <div className="input-container">
-                                    <input
-                                        type="number"
-                                        id="temperaturaLlegada"
-                                        name="temperaturaLlegada"
-                                        value={formData.temperaturaLlegada}
-                                        onChange={handleEditChange}
-                                        required
-                                        step="0.1"
-                                        className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'temperaturaLlegada') ? 'input-error' : ''}`}
-                                    />
-                                    {editError && editError.errors?.map((error, index) => (
-                                      error.field === 'temperaturaLlegada' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Temperatura de Llegada */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Temperatura de Llegada (°C):</label>
+                        <div className="input-container">
+                            <input
+                                type="number"
+                                id="temperaturaLlegada"
+                                name="temperaturaLlegada"
+                                value={formData.temperaturaLlegada}
+                                onChange={handleEditChange}
+                                required
+                                step="0.1"
+                                className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'temperaturaLlegada') ? 'input-error' : ''}`}
+                            />
+                            {editError && editError.errors?.map((error, index) => (
+                              error.field === 'temperaturaLlegada' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
-                    </div>
-
-                    {/* Precio Total Vara */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Precio Total Vara</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>$</label>
-                                <div className="input-container">
-                                    <input
-                                        type="number"
-                                        id="precioTotalVara"
-                                        name="precioTotalVara"
-                                        value={formData.precioTotalVara}
-                                        onChange={handleEditChange}
-                                        required
-                                        min="0"
-                                        step="1"
-                                        className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTotalVara') ? 'input-error' : ''}`}
-                                    />
-                                    {editError && editError.errors?.map((error, index) => (
-                                      error.field === 'precioTotalVara' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Precio Total Vara */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Precio Total Vara ($):</label>
+                        <div className="input-container">
+                            <input
+                                type="number"
+                                id="precioTotalVara"
+                                name="precioTotalVara"
+                                value={formData.precioTotalVara}
+                                onChange={handleEditChange}
+                                required
+                                min="0"
+                                step="1"
+                                className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTotalVara') ? 'input-error' : ''}`}
+                            />
+                            {editError && editError.errors?.map((error, index) => (
+                              error.field === 'precioTotalVara' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
-                    </div>
-
-                    {/* Lista de Precios */}
-                    <div className="subproducto-fila">
-                        <div className="subproducto-nombre-grupo">
-                            <span className="subproducto-nombre">Lista de Precios</span>
-                        </div>
-                        <div className="subproducto-inputs-grupo">
-                            <div className="input-grupo">
-                                <label>Categoría</label>
-                                <div className="input-container">
-                                    <select
-                                        id="nombreLista"
-                                        name="tipoAnimal"
-                                        value={formData.tipoAnimal}
-                                        onChange={handleEditChange}
-                                        required
-                                        className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tipoAnimal') ? 'input-error' : ''}`}
-                                    >
-                                        <option value="">Selecciona una Lista de Precios</option>
-                                        {tiposAnimales.map((tipo) => (
-                                            <option key={tipo.id} value={tipo.nombreLista}>
-                                                {tipo.nombreLista}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {editError && editError.errors?.map((error, index) => (
-                                      error.field === 'tipoAnimal' && (
-                                        <div key={index} className="error-message">
-                                          {error.message}
-                                        </div>
-                                      )
-                                    ))}
+                    </div>                    {/* Lista de Precios */}
+                    <div className="formulario-grupo">
+                        <label className="formulario-etiqueta">Lista de Precios:</label>
+                        <div className="input-container">
+                            <select
+                                id="nombreLista"
+                                name="tipoAnimal"
+                                value={formData.tipoAnimal}
+                                onChange={handleEditChange}
+                                required
+                                className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tipoAnimal') ? 'input-error' : ''}`}
+                            >
+                                <option value="">Selecciona una Lista de Precios</option>
+                                {tiposAnimales.map((tipo) => (
+                                    <option key={tipo.id} value={tipo.nombreLista}>
+                                        {tipo.nombreLista}
+                                    </option>
+                                ))}
+                            </select>
+                            {editError && editError.errors?.map((error, index) => (
+                              error.field === 'tipoAnimal' && (
+                                <div key={index} className="error-message">
+                                  {error.message}
                                 </div>
-                            </div>
+                              )
+                            ))}
                         </div>
                     </div>
                 </form>

@@ -11,17 +11,14 @@ const getChileanDate = () => {
 };
 
 export const pagoPendienteValidation = {
-    create: Joi.object({
-        monto: Joi.number()
+    create: Joi.object({        monto: Joi.number()
             .min(1)
             .max(99999999)
-            .precision(2)
             .required()
             .messages({
                 "number.base": "El monto debe ser un número.",
                 "number.min": "El monto debe ser mayor a 0.",
                 "number.max": "El monto no puede tener más de 8 cifras.",
-                "number.precision": "El monto debe tener máximo 2 decimales.",
                 "any.required": "El monto es obligatorio."
             }),
 
@@ -102,16 +99,13 @@ export const pagoPendienteValidation = {
             "any.required": "Los datos del cliente son obligatorios."    })
     }),
 
-    update: Joi.object({
-        monto: Joi.number()
+    update: Joi.object({        monto: Joi.number()
             .min(1)
             .max(99999999)
-            .precision(2)
             .messages({
                 "number.base": "El monto debe ser un número.",
                 "number.min": "El monto debe ser mayor a 0.",
-                "number.max": "El monto no puede tener más de 8 cifras.",
-                "number.precision": "El monto debe tener máximo 2 decimales."
+                "number.max": "El monto no puede tener más de 8 cifras."
             }),
 
         fechaPedido: Joi.date()

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { MdOutlineEdit } from "react-icons/md";
 import useGetClientes from "@hooks/clientes/useGetClientes.jsx";
 import useCreateCliente from "@hooks/clientes/useCreateCliente.jsx";
 import {useDeleteCliente} from "@hooks/clientes/useDeleteCliente.jsx";
 import useEditCliente from "@hooks/clientes/useEditCliente.jsx";
+import { useErrorHandlerCliente } from "@hooks/clientes/useErrorHandlerCliente.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
 import "@styles/formulariotable.css";
+import "@styles/modalDetalles.css";
+import "@styles/modalCrear.css";
 import "@styles/selectFix.css";
 import styles from "@styles/categoria.module.css";
 
@@ -14,10 +18,12 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
   const { create } = useCreateCliente(fetchClientes);
   const { handleDelete } = useDeleteCliente(fetchClientes);
   const { edit } = useEditCliente(fetchClientes);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerCliente();const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [currentCliente, setCurrentCliente] = useState(null);
+  const [clienteToView, setClienteToView] = useState(null);
   const [error, setError] = useState(null);
   const [clienteType, setClienteType] = useState("Persona");
   const [newClienteData, setNewClienteData] = useState({
@@ -61,11 +67,20 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
     setCurrentCliente(cliente);
     setIsDeleteModalOpen(true);
   };
-
   const handleDeleteModalClose = () => {
     setIsDeleteModalOpen(false);
     setCurrentCliente(null);
-  };  const confirmDelete = () => {
+  };
+
+  const handleViewModalOpen = (cliente) => {
+    setClienteToView(cliente);
+    setIsViewModalOpen(true);
+  };
+
+  const handleViewModalClose = () => {
+    setIsViewModalOpen(false);
+    setClienteToView(null);
+  };const confirmDelete = () => {
     handleDelete(currentCliente.id);
     setIsDeleteModalOpen(false);
     setCurrentCliente(null);
@@ -74,20 +89,7 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
   const handleCreateCliente = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const tipoCliente = formData.get("tipoCliente");
-    const rut = formData.get("rut");
-    
-    // Validar el formato del RUT (formato chileno XX.XXX.XXX-X o sin puntos)
-    const rutRegex = /^(\d{1,2}(?:\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])$/;
-    if (!rutRegex.test(rut)) {
-      Swal.fire({
-        title: 'Error de validación',
-        text: 'El RUT debe tener un formato válido (Ej: 12.345.678-9 o 12345678-9)',
-        icon: 'error',
-        confirmButtonColor: '#000000',
-      });
-      return;
-    }
+    const tipoCliente = formData.get("tipoCliente");    const rut = formData.get("rut");
     
     // Construir objeto de cliente según el tipo
     const newCliente = {
@@ -108,6 +110,10 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
     } else if (tipoCliente === "Persona") {
       newCliente.nombres = formData.get("nombres");
       newCliente.apellidos = formData.get("apellidos");
+    }    // Validar antes de enviar
+    const hasErrors = handleCreateError(newCliente, clientes);
+    if (hasErrors) {
+      return;
     }
 
     try {
@@ -159,20 +165,7 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
   const handleEditCliente = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const tipoCliente = formData.get("tipoCliente");
-    const rut = formData.get("rut");
-    
-    // Validar el formato del RUT (formato chileno XX.XXX.XXX-X o sin puntos)
-    const rutRegex = /^(\d{1,2}(?:\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])$/;
-    if (!rutRegex.test(rut)) {
-      Swal.fire({
-        title: 'Error de validación',
-        text: 'El RUT debe tener un formato válido (Ej: 12.345.678-9 o 12345678-9)',
-        icon: 'error',
-        confirmButtonColor: '#000000',
-      });
-      return;
-    }
+    const tipoCliente = formData.get("tipoCliente");    const rut = formData.get("rut");
     
     // Construir objeto de cliente según el tipo
     const updatedCliente = {
@@ -193,6 +186,10 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
     } else if (tipoCliente === "Persona") {
       updatedCliente.nombres = formData.get("nombres");
       updatedCliente.apellidos = formData.get("apellidos");
+    }    // Validar antes de enviar
+    const hasErrors = handleEditError(updatedCliente, clientes, currentCliente.id);
+    if (hasErrors) {
+      return;
     }
 
     try {
@@ -287,18 +284,12 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
       }));
     }
   };
-
   if (loading) return <p>Cargando datos...</p>;
   const columns = [
     { header: "Tipo Cliente", key: "tipoCliente" },
     { header: "RUT", key: "rut" },
     { header: "Nombre/Razón Social", key: "nombreCompleto" },
-    { header: "Dirección", key: "direccion" }, // Usamos una clave personalizada para el nombre
-    { header: "Región", key: "region" },
-    { header: "Comuna", key: "comuna" },
-    { header: "Ciudad", key: "ciudad" },
-    { header: "Teléfono", key: "telefono" },
-    { header: "Email", key: "email" }
+    { header: "Teléfono", key: "telefono" }
   ];
   
   // Función para formatear los datos de forma personalizada
@@ -388,7 +379,8 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
             }}
             onDelete={handleDeleteModalOpen}
             showEditAllButton={false}
-            showViewButton={false}
+            showViewButton={true}
+            onView={handleViewModalOpen}
             entidad="clientes"
             customFormat={customFormat}
             showCalendarButton={false}
@@ -409,15 +401,13 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                 <h2 className="modal-crear-titulo">Crear Nuevo Cliente</h2>
                 <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
                 <button type="submit" className="modal-boton-crear">Guardar</button>
-              </div>
-
-              <div className="formulario-grupo">
+              </div>              <div className="formulario-grupo">
                 <label className="formulario-etiqueta">Tipo de Cliente:</label>
                 <select
                   id="tipoCliente"
                   name="tipoCliente"
                   required
-                  className="formulario-input"
+                  className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tipoCliente') ? 'input-error' : ''}`}
                   onChange={(e) => {
                     const form = e.target.form;
                     const isEmpresa = e.target.value === "Empresa";
@@ -451,20 +441,34 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                   <option value="Persona">Persona</option>
                   <option value="Empresa">Empresa</option>
                 </select>
-              </div>
-              
-              <div className="formulario-grupo">
+                {createError && createError.errors?.map((error, index) => (
+                  error.field === 'tipoCliente' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>              <div className="formulario-grupo">
                 <label className="formulario-etiqueta">RUT:</label>
-                <input
-                  type="text"
-                  id="rut"
-                  name="rut"
-                  required
-                  className="formulario-input"
-                  placeholder="Ej: 12345678-9"
-                  pattern="(\d{1,2}(\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])"
-                  title="Formato válido: 12.345.678-9 o 12345678-9"
-                />
+                <div className="input-container">
+                  <input
+                    type="text"
+                    id="rut"
+                    name="rut"
+                    required
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'rut') ? 'input-error' : ''}`}
+                    placeholder="Ej: 12345678-9"
+                    pattern="(\d{1,2}(\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])"
+                    title="Formato válido: 12.345.678-9 o 12345678-9"
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'rut' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
+                </div>
               </div>
 
               {/* Campos para Persona */}
@@ -474,15 +478,21 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <span className="subproducto-nombre">Nombres</span>
                   </div>
                   <div className="subproducto-inputs-grupo">
-                    <div className="input-grupo" style={{ width: '100%' }}>
-                      <input
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <input
                         type="text"
                         id="nombres"
                         name="nombres"
                         dir="ltr"
-                        className="formulario-input"
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'nombres') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                       />
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'nombres' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -492,15 +502,21 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <span className="subproducto-nombre">Apellidos</span>
                   </div>
                   <div className="subproducto-inputs-grupo">
-                    <div className="input-grupo" style={{ width: '100%' }}>
-                      <input
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <input
                         type="text"
                         id="apellidos"
                         name="apellidos"
                         dir="ltr"
-                        className="formulario-input"
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'apellidos') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                       />
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'apellidos' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -513,15 +529,21 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <span className="subproducto-nombre">Razón Social</span>
                   </div>
                   <div className="subproducto-inputs-grupo">
-                    <div className="input-grupo" style={{ width: '100%' }}>
-                      <input
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <input
                         type="text"
                         id="razonSocial"
                         name="razonSocial"
                         dir="ltr"
-                        className="formulario-input"
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'razonSocial') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                       />
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'razonSocial' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -531,15 +553,21 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <span className="subproducto-nombre">Giro</span>
                   </div>
                   <div className="subproducto-inputs-grupo">
-                    <div className="input-grupo" style={{ width: '100%' }}>
-                      <input
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <input
                         type="text"
                         id="giro"
                         name="giro"
                         dir="ltr"
-                        className="formulario-input"
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'giro') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                       />
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'giro' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -553,16 +581,22 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <span className="subproducto-nombre">Email</span>
                     </div>
                     <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
-                        <input
+                      <div className="input-grupo" style={{ width: '100%' }}>                        <input
                           type="email"
                           id="email"
                           name="email"
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'email') ? 'input-error' : ''}`}
                           placeholder="correo@ejemplo.com"
                           style={{ minWidth: '220px', textAlign: 'left' }}
                         />
+                        {createError && createError.errors?.map((error, index) => (
+                          error.field === 'email' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -581,10 +615,17 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                           pattern="^\+56[0-9]{9}$"
                           placeholder="+56 9 XXXX XXXX"
                           title="Ejemplo: +56912345678"
-                          className="formulario-input"
+                          className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'telefono') ? 'input-error' : ''}`}
                           style={{ width: '100%', textAlign: 'left' }}
                           required
                         />
+                        {createError && createError.errors?.map((error, index) => (
+                          error.field === 'telefono' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -598,16 +639,22 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <span className="subproducto-nombre">Dirección</span>
                   </div>
                   <div className="subproducto-inputs-grupo">
-                    <div className="input-grupo" style={{ width: '100%' }}>
-                      <input
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <input
                         type="text"
                         id="direccion"
                         name="direccion"
                         required
                         dir="ltr"
-                        className="formulario-input"
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'direccion') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                       />
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'direccion' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -618,16 +665,22 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <span className="subproducto-nombre">Comuna</span>
                     </div>
                     <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
-                        <input
+                      <div className="input-grupo" style={{ width: '100%' }}>                        <input
                           type="text"
                           id="comuna"
                           name="comuna"
                           required
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'comuna') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                         />
+                        {createError && createError.errors?.map((error, index) => (
+                          error.field === 'comuna' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -637,16 +690,22 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <span className="subproducto-nombre">Ciudad</span>
                     </div>
                     <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
-                        <input
+                      <div className="input-grupo" style={{ width: '100%' }}>                        <input
                           type="text"
                           id="ciudad"
                           name="ciudad"
                           required
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'ciudad') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                         />
+                        {createError && createError.errors?.map((error, index) => (
+                          error.field === 'ciudad' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -657,12 +716,11 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <span className="subproducto-nombre">Región</span>
                   </div>
                   <div className="subproducto-inputs-grupo">
-                    <div className="input-grupo" style={{ width: '100%' }}>
-                      <select
+                    <div className="input-grupo" style={{ width: '100%' }}>                      <select
                         id="region"
                         name="region"
                         required
-                        className="formulario-input"
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'region') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                       >
                         <option value="">Seleccione Región</option>
@@ -683,6 +741,13 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                         <option value="Aysén">Aysén</option>
                         <option value="Magallanes y la Antártica Chilena">Magallanes y la Antártica Chilena</option>
                       </select>
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'region' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -706,15 +771,13 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                   <h2 className="modal-crear-titulo">Editar Cliente</h2>
                   <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
                   <button type="submit" className="modal-boton-crear">Guardar</button>
-                </div>
-
-                <div className="formulario-grupo">
+                </div>                <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Tipo de Cliente:</label>
                   <select
                     id="tipoCliente"
                     name="tipoCliente"
                     required
-                    className="formulario-input"
+                    className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tipoCliente') ? 'input-error' : ''}`}
                     onChange={(e) => {
                       setClienteType(e.target.value);
                       const form = e.target.form;
@@ -750,21 +813,35 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <option value="Persona">Persona</option>
                     <option value="Empresa">Empresa</option>
                   </select>
-                </div>
-                
-                <div className="formulario-grupo">
+                  {editError && editError.errors?.map((error, index) => (
+                    error.field === 'tipoCliente' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
+                </div>                <div className="formulario-grupo">
                   <label className="formulario-etiqueta">RUT:</label>
-                  <input
-                    type="text"
-                    id="rut"
-                    name="rut"
-                    required
-                    className="formulario-input"
-                    placeholder="Ej: 12345678-9"
-                    pattern="(\d{1,2}(\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])"
-                    title="Formato válido: 12.345.678-9 o 12345678-9"
-                    defaultValue={currentCliente.rut}
-                  />
+                  <div className="input-container">
+                    <input
+                      type="text"
+                      id="rut"
+                      name="rut"
+                      required
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'rut') ? 'input-error' : ''}`}
+                      placeholder="Ej: 12345678-9"
+                      pattern="(\d{1,2}(\.\d{3}){2}-[\dkK]|\d{7,8}-[\dkK])"
+                      title="Formato válido: 12.345.678-9 o 12345678-9"
+                      defaultValue={currentCliente.rut}
+                    />
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'rut' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
 
                 {/* Campos para Persona */}
@@ -773,18 +850,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <div className="subproducto-nombre-grupo">
                       <span className="subproducto-nombre">Nombres</span>
                     </div>
-                    <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
+                    <div className="subproducto-inputs-grupo">                      <div className="input-grupo" style={{ width: '100%' }}>
                         <input
                           type="text"
                           id="nombres"
                           name="nombres"
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'nombres') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                           required={clienteType === 'Persona'}
                           defaultValue={currentCliente.nombres}
                         />
+                        {editError && editError.errors?.map((error, index) => (
+                          error.field === 'nombres' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -793,18 +876,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <div className="subproducto-nombre-grupo">
                       <span className="subproducto-nombre">Apellidos</span>
                     </div>
-                    <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
+                    <div className="subproducto-inputs-grupo">                      <div className="input-grupo" style={{ width: '100%' }}>
                         <input
                           type="text"
                           id="apellidos"
                           name="apellidos"
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'apellidos') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                           required={clienteType === 'Persona'}
                           defaultValue={currentCliente.apellidos}
                         />
+                        {editError && editError.errors?.map((error, index) => (
+                          error.field === 'apellidos' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -816,18 +905,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <div className="subproducto-nombre-grupo">
                       <span className="subproducto-nombre">Razón Social</span>
                     </div>
-                    <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
+                    <div className="subproducto-inputs-grupo">                      <div className="input-grupo" style={{ width: '100%' }}>
                         <input
                           type="text"
                           id="razonSocial"
                           name="razonSocial"
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'razonSocial') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                           required={clienteType === 'Empresa'}
                           defaultValue={currentCliente.razonSocial}
                         />
+                        {editError && editError.errors?.map((error, index) => (
+                          error.field === 'razonSocial' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -836,18 +931,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <div className="subproducto-nombre-grupo">
                       <span className="subproducto-nombre">Giro</span>
                     </div>
-                    <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
+                    <div className="subproducto-inputs-grupo">                      <div className="input-grupo" style={{ width: '100%' }}>
                         <input
                           type="text"
                           id="giro"
                           name="giro"
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'giro') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                           required={clienteType === 'Empresa'}
                           defaultValue={currentCliente.giro}
                         />
+                        {editError && editError.errors?.map((error, index) => (
+                          error.field === 'giro' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -860,18 +961,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <div className="subproducto-nombre-grupo">
                         <span className="subproducto-nombre">Email</span>
                       </div>
-                      <div className="subproducto-inputs-grupo">
-                        <div className="input-grupo" style={{ width: '100%' }}>
+                      <div className="subproducto-inputs-grupo">                        <div className="input-grupo" style={{ width: '100%' }}>
                           <input
                             type="email"
                             id="email"
                             name="email"
                             dir="ltr"
-                            className="formulario-input"
+                            className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'email') ? 'input-error' : ''}`}
                             placeholder="correo@ejemplo.com"
                             style={{ minWidth: '220px', textAlign: 'left' }}
                             defaultValue={currentCliente.email}
                           />
+                          {editError && editError.errors?.map((error, index) => (
+                            error.field === 'email' && (
+                              <div key={index} className="error-message">
+                                {error.message}
+                              </div>
+                            )
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -880,8 +987,7 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <div className="subproducto-nombre-grupo">
                         <span className="subproducto-nombre">Teléfono</span>
                       </div>
-                      <div className="subproducto-inputs-grupo">
-                        <div className="input-grupo" style={{ width: '100%' }}>                          <input
+                      <div className="subproducto-inputs-grupo">                        <div className="input-grupo" style={{ width: '100%' }}>                          <input
                             type="text"
                             id="telefono"
                             name="telefono"
@@ -890,10 +996,17 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                             pattern="^\+56[0-9]{9}$"
                             placeholder="+56 9 XXXX XXXX"
                             title="Ejemplo: +56912345678"
-                            className="formulario-input"
+                            className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'telefono') ? 'input-error' : ''}`}
                             style={{ width: '100%', textAlign: 'left' }}
                             required
                           />
+                          {editError && editError.errors?.map((error, index) => (
+                            error.field === 'telefono' && (
+                              <div key={index} className="error-message">
+                                {error.message}
+                              </div>
+                            )
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -906,18 +1019,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <div className="subproducto-nombre-grupo">
                       <span className="subproducto-nombre">Dirección</span>
                     </div>
-                    <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
+                    <div className="subproducto-inputs-grupo">                      <div className="input-grupo" style={{ width: '100%' }}>
                         <input
                           type="text"
                           id="direccion"
                           name="direccion"
                           required
                           dir="ltr"
-                          className="formulario-input"
+                          className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'direccion') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                           defaultValue={currentCliente.direccion}
                         />
+                        {editError && editError.errors?.map((error, index) => (
+                          error.field === 'direccion' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -927,18 +1046,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <div className="subproducto-nombre-grupo">
                         <span className="subproducto-nombre">Comuna</span>
                       </div>
-                      <div className="subproducto-inputs-grupo">
-                        <div className="input-grupo" style={{ width: '100%' }}>
+                      <div className="subproducto-inputs-grupo">                        <div className="input-grupo" style={{ width: '100%' }}>
                           <input
                             type="text"
                             id="comuna"
                             name="comuna"
                             required
                             dir="ltr"
-                            className="formulario-input"
+                            className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'comuna') ? 'input-error' : ''}`}
                             style={{ minWidth: '220px', textAlign: 'left' }}
                             defaultValue={currentCliente.comuna}
                           />
+                          {editError && editError.errors?.map((error, index) => (
+                            error.field === 'comuna' && (
+                              <div key={index} className="error-message">
+                                {error.message}
+                              </div>
+                            )
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -947,18 +1072,24 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                       <div className="subproducto-nombre-grupo">
                         <span className="subproducto-nombre">Ciudad</span>
                       </div>
-                      <div className="subproducto-inputs-grupo">
-                        <div className="input-grupo" style={{ width: '100%' }}>
+                      <div className="subproducto-inputs-grupo">                        <div className="input-grupo" style={{ width: '100%' }}>
                           <input
                             type="text"
                             id="ciudad"
                             name="ciudad"
                             required
                             dir="ltr"
-                            className="formulario-input"
+                            className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'ciudad') ? 'input-error' : ''}`}
                             style={{ minWidth: '220px', textAlign: 'left' }}
                             defaultValue={currentCliente.ciudad}
                           />
+                          {editError && editError.errors?.map((error, index) => (
+                            error.field === 'ciudad' && (
+                              <div key={index} className="error-message">
+                                {error.message}
+                              </div>
+                            )
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -968,13 +1099,12 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                     <div className="subproducto-nombre-grupo">
                       <span className="subproducto-nombre">Región</span>
                     </div>
-                    <div className="subproducto-inputs-grupo">
-                      <div className="input-grupo" style={{ width: '100%' }}>
+                    <div className="subproducto-inputs-grupo">                      <div className="input-grupo" style={{ width: '100%' }}>
                         <select
                           id="region"
                           name="region"
                           required
-                          className="formulario-input"
+                          className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'region') ? 'input-error' : ''}`}
                           style={{ minWidth: '220px', textAlign: 'left' }}
                           defaultValue={currentCliente.region}
                         >
@@ -996,12 +1126,76 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
                           <option value="Aysén">Aysén</option>
                           <option value="Magallanes y la Antártica Chilena">Magallanes y la Antártica Chilena</option>
                         </select>
+                        {editError && editError.errors?.map((error, index) => (
+                          error.field === 'region' && (
+                            <div key={index} className="error-message">
+                              {error.message}
+                            </div>
+                          )
+                        ))}
                       </div>
                     </div>
                   </div>
                 </div>
               </form>
-            )}
+            )}          </Modal>
+
+          {/* Modal de Ver Detalles */}
+          <Modal
+            isOpen={isViewModalOpen}
+            onRequestClose={handleViewModalClose}
+            contentLabel="Ver Detalles"
+            ariaHideApp={false}
+            className="modal-detalles"
+            overlayClassName="modal-overlay"
+            closeTimeoutMS={300}
+          >
+            <div className="modal-crear-formulario">
+              <div className="modal-detalles-header">          
+                <h2 className="modal-detalles-titulo">
+                  Detalles del Cliente {clienteToView?.tipoCliente === "Empresa" 
+                    ? clienteToView?.razonSocial 
+                    : `${clienteToView?.nombres || ''} ${clienteToView?.apellidos || ''}`.trim()}
+                </h2>
+                <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
+                <button
+                  onClick={() => {
+                    setCurrentCliente(clienteToView);
+                    setIsEditModalOpen(true);
+                    setClienteType(clienteToView.tipoCliente);
+                    handleViewModalClose();
+                  }}
+                  className="modal-detalles-editar"
+                >
+                  <MdOutlineEdit size={24} />
+                </button>
+              </div>              {clienteToView && (
+                <div className="modal-detalles-contenido">
+                  <div className="datos-grid">
+                    <div className="dato-item">
+                      <span className="dato-label">Email:</span>
+                      <span className="dato-value">{clienteToView.email || "No disponible"}</span>
+                    </div>                    <div className="dato-item">
+                      <span className="dato-label">Región:</span>
+                      <span className="dato-value">{clienteToView.region || "No disponible"}</span>
+                    </div>
+
+                    <div className="dato-item">
+                      <span className="dato-label">Ciudad:</span>
+                      <span className="dato-value">{clienteToView.ciudad || "No disponible"}</span>
+                    </div>                    <div className="dato-item">
+                      <span className="dato-label">Comuna:</span>
+                      <span className="dato-value">{clienteToView.comuna || "No disponible"}</span>
+                    </div>
+
+                    <div className="dato-item">
+                      <span className="dato-label">Dirección:</span>
+                      <span className="dato-value">{clienteToView.direccion || "No disponible"}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </Modal>
 
           {/* Modal de Confirmación de Eliminación */}
