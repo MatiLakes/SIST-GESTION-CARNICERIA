@@ -62,10 +62,24 @@ const Table = ({
   const containsOnlySpecialChars = (str) => {
     return /^[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ]+$/.test(str);
   };
+  // Función para normalizar RUT (quitar puntos y guión)
+  const normalizeRut = (rut) => {
+    if (!rut) return '';
+    return String(rut).replace(/[.\-]/g, '').toLowerCase();
+  };
 
   // Función para buscar en un valor específico
-  const searchInValue = (value, term) => {
+  const searchInValue = (value, term, columnKey = '') => {
     if (value == null) return false;
+    
+    // Búsqueda especial para RUTs
+    if (columnKey === 'rut' || (typeof value === 'string' && /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-?[0-9kK]?$/.test(value))) {
+      const normalizedValue = normalizeRut(value);
+      const normalizedTerm = normalizeRut(term);
+      
+      // Buscar tanto en formato normalizado como en formato original
+      return normalizedValue.includes(normalizedTerm) || String(value).toLowerCase().includes(term);
+    }
     
     // Para números
     if (typeof value === 'number') {
@@ -118,14 +132,12 @@ const Table = ({
           value = col.key.split('.').reduce((obj, key) => obj?.[key], row);
         } else {
           value = row[col.key];
-        }
-
-        // Si es un monto, convertirlo a string sin el signo $
+        }        // Si es un monto, convertirlo a string sin el signo $
         if (col.key === 'monto') {
           return value?.toString().includes(term);
         }
 
-        return searchInValue(value, term);
+        return searchInValue(value, term, col.key);
       });
     });
 
@@ -194,8 +206,7 @@ const Table = ({
     const updatedData = [...filteredData];
     updatedData[rowIndex][columnKey] = value;
     setFilteredData(updatedData);
-  };
-  const formatObject = (obj) => {
+  };  const formatObject = (obj) => {
     if (Array.isArray(obj)) {
       return obj.map((item, index) => (
         <div key={index}>
@@ -220,12 +231,38 @@ const Table = ({
         .join(", ");
     } else if (typeof obj === "boolean") {
       return obj ? "Sí" : "No";
+    } else if (typeof obj === "string" && obj.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Detectar fechas en formato YYYY-MM-DD y convertirlas a DD/MM/YYYY
+      const fecha = new Date(obj + 'T00:00:00');
+      if (!isNaN(fecha.getTime())) {
+        return fecha.toLocaleDateString('es-CL', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
     }
     return obj || "No disponible";
-  };
-  const formatData = (value, key) => {
-    // Usa la función personalizada si está definida, de lo contrario usa la genérica
-    return customFormat ? customFormat(value, key) : formatObject(value);
+  };  const formatData = (value, key) => {
+    // Verificar si es una fecha en formato YYYY-MM-DD y formatearla primero
+    if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const fecha = new Date(value + 'T00:00:00');
+      if (!isNaN(fecha.getTime())) {
+        return fecha.toLocaleDateString('es-CL', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+    }
+    
+    // Si hay función personalizada, aplicarla para valores que no son fechas
+    if (customFormat) {
+      return customFormat(value, key);
+    }
+    
+    // De lo contrario, usar formateo genérico
+    return formatObject(value);
   };
 
   // Paginación de la tabla

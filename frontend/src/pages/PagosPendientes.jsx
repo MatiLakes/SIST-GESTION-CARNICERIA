@@ -339,15 +339,30 @@ const PagosPendientes = () => {
     // Formateo de fechas
     if (key === 'fechaPedido' || key === 'fechaLimite') {
       if (!value) return 'No disponible';
-      const date = new Date(value);
-      // Ajustar la fecha a la zona horaria local
-      const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
       
-      // Formatear la fecha como AAAA-MM-DD
-      const year = localDate.getFullYear();
-      const month = String(localDate.getMonth() + 1).padStart(2, '0');
-      const day = String(localDate.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+      // Si ya es una fecha en formato YYYY-MM-DD, convertir a DD/MM/YYYY
+      if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const fecha = new Date(value + 'T00:00:00');
+        if (!isNaN(fecha.getTime())) {
+          return fecha.toLocaleDateString('es-CL', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+        }
+      }
+      
+      // Si es un objeto Date
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString('es-CL', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+      
+      return 'Fecha inválida';
     }
 
     // Formateo del monto

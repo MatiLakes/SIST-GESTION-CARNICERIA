@@ -11,6 +11,7 @@ import { useDeleteTipo } from "@hooks/productos/useDeleteTipo.jsx";
 import useEditTipo from "@hooks/productos/useEditTipo.jsx";
 import { useDeleteMarca } from "@hooks/productos/useDeleteMarca.jsx";
 import useEditMarca from "@hooks/productos/useEditMarca.jsx";
+import { useErrorHandlerProducto } from "@hooks/productos/useErrorHandlerProducto.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import styles from "@styles/categoria.module.css";
@@ -32,6 +33,20 @@ const Productos = () => {
   const { edit: editTipo } = useEditTipo(fetchTipos);
   const { handleDelete: deleteMarca } = useDeleteMarca(fetchMarcas);
   const { edit: editMarca } = useEditMarca(fetchMarcas);
+  const { 
+    createError, 
+    editError, 
+    createTipoError, 
+    editTipoError, 
+    createMarcaError, 
+    editMarcaError,
+    handleCreateError, 
+    handleEditError,
+    handleCreateTipoError,
+    handleEditTipoError,
+    handleCreateMarcaError,
+    handleEditMarcaError
+  } = useErrorHandlerProducto();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -102,73 +117,86 @@ const Productos = () => {
         });
       }
     }
-  };
-  const handleCreateProducto = async (event) => {
+  };  const handleCreateProducto = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const precioVenta = parseFloat(formData.get("precioVenta"));
+    
+    const tipoId = parseInt(formData.get("tipo"), 10);
+    const marcaId = parseInt(formData.get("marca"), 10);
   
     const newProducto = {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta,
       fechaVencimiento: formData.get("fechaVencimiento"),
-      tipo: {
-        id: parseInt(formData.get("tipo"), 10),
-      },
-      marca: {
-        id: parseInt(formData.get("marca"), 10),
-      },
+      tipo: { id: tipoId },
+      marca: { id: marcaId },
     };
-  
-    try {
-      await createProducto(newProducto);
-      closeModal();
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: "Producto creado correctamente.",
-        confirmButtonColor: "#000000"
-      });
-    } catch (error) {
-      console.error("Error al crear el producto:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo crear el producto.",
-        confirmButtonColor: "#000000"
-      });
-    }
-  };
 
-  const handleEditProducto = async (event) => {
+    // Usar el hook de validación de errores
+    const hasErrors = handleCreateError(newProducto, productos, tipos, marcas);
+    
+    if (!hasErrors) {
+      try {
+        // Enviar directamente el producto con objetos tipo y marca
+        await createProducto(newProducto);
+        closeModal();
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Producto creado correctamente.",
+          confirmButtonColor: "#000000"
+        });
+      } catch (error) {
+        console.error("Error al crear el producto:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo crear el producto.",
+          confirmButtonColor: "#000000"
+        });
+      }
+    }
+  };  const handleEditProducto = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);    const updatedProducto = {
+    const formData = new FormData(event.target);
+
+    const tipoId = parseInt(formData.get("tipo"), 10);
+    const marcaId = parseInt(formData.get("marca"), 10);
+
+    const updatedProducto = {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta: parseFloat(formData.get("precioVenta")),
       fechaVencimiento: formData.get("fechaVencimiento"),
-      tipo: parseInt(formData.get("tipo"), 10),
-      marca: parseInt(formData.get("marca"), 10),
+      tipo: { id: tipoId },
+      marca: { id: marcaId },
     };
 
-    try {
-      await edit(currentProducto.id, updatedProducto);
-      closeEditModal();
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: "Producto actualizado correctamente.",
-        confirmButtonColor: "#000000"
-      });
-    } catch (error) {
-      console.error("Error al editar producto:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo actualizar el producto.",
-        confirmButtonColor: "#000000"
-      });
+    // Usar el hook de validación de errores
+    const hasErrors = handleEditError(updatedProducto, productos, tipos, marcas, currentProducto.id);
+    
+    if (!hasErrors) {
+      try {
+        // Enviar directamente el producto con objetos tipo y marca
+        await edit(currentProducto.id, updatedProducto);
+        closeEditModal();
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Producto actualizado correctamente.",
+          confirmButtonColor: "#000000"
+        });
+      } catch (error) {
+        console.error("Error al editar producto:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo actualizar el producto.",
+          confirmButtonColor: "#000000"
+        });
+      }
     }
   };
 
@@ -192,28 +220,33 @@ const Productos = () => {
 
   const handleMarcaSelect = (marca) => {
     setSelectedMarca(marca);
-  };
-  const handleEditMarca = async (e) => {
+  };  const handleEditMarca = async (e) => {
     e.preventDefault();
     const marcaNombre = e.target.marcaNombre.value;
-    try {
-      await editMarca(selectedMarca.id, { nombre: marcaNombre });
-      setIsEditMarcaMode(false);
-      setSelectedMarca(null);
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: "Marca actualizada correctamente.",
-        confirmButtonColor: "#000000"
-      });
-    } catch (error) {
-      console.error("Error al editar marca:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo actualizar la marca.",
-        confirmButtonColor: "#000000"
-      });
+
+    // Usar el hook de validación de errores
+    const hasErrors = handleEditMarcaError({ nombre: marcaNombre }, marcas, selectedMarca?.id);
+    
+    if (!hasErrors) {
+      try {
+        await editMarca(selectedMarca.id, { nombre: marcaNombre });
+        setIsEditMarcaMode(false);
+        setSelectedMarca(null);
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Marca actualizada correctamente.",
+          confirmButtonColor: "#000000"
+        });
+      } catch (error) {
+        console.error("Error al editar marca:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo actualizar la marca.",
+          confirmButtonColor: "#000000"
+        });
+      }
     }
   };
 
@@ -225,29 +258,33 @@ const Productos = () => {
     } catch (error) {
       console.error("Error al eliminar marca:", error);
     }
-  };
-
-  const handleEditTipo = async (e) => {
+  };  const handleEditTipo = async (e) => {
     e.preventDefault();
     const tipoNombre = e.target.tipoNombre.value;
-    try {
-      await editTipo(selectedTipo.id, { nombre: tipoNombre });
-      setIsEditTipoMode(false);
-      setSelectedTipo(null);
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: "Tipo actualizado correctamente.",
-        confirmButtonColor: "#000000"
-      });
-    } catch (error) {
-      console.error("Error al editar tipo:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo actualizar el tipo.",
-        confirmButtonColor: "#000000"
-      });
+
+    // Usar el hook de validación de errores
+    const hasErrors = handleEditTipoError({ nombre: tipoNombre }, tipos, selectedTipo?.id);
+    
+    if (!hasErrors) {
+      try {
+        await editTipo(selectedTipo.id, { nombre: tipoNombre });
+        setIsEditTipoMode(false);
+        setSelectedTipo(null);
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Tipo actualizado correctamente.",
+          confirmButtonColor: "#000000"
+        });
+      } catch (error) {
+        console.error("Error al editar tipo:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo actualizar el tipo.",
+          confirmButtonColor: "#000000"
+        });
+      }
     }
   };
 
@@ -312,55 +349,89 @@ const Productos = () => {
             <h2 className="modal-crear-titulo">Crear Nuevo Producto</h2>
             <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
             <button type="submit" className="modal-boton-crear">Guardar</button>
+          </div>          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Nombre del Producto:</label>
+            <div className="input-container">
+              <input
+                type="text"
+                id="nombre"
+                name="nombre"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'nombre' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
           </div>
           <div className="formulario-grupo">
-            <label className="formulario-etiqueta">Nombre del Producto:</label>
-            <input
-              type="text"
-              id="nombre"
-              name="nombre"
-              required
-              className="formulario-input"
-            />          </div>
-          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Variante:</label>
-            <input
-              type="text"
-              id="variante"
-              name="variante"
-              className="formulario-input"
-            />
+            <div className="input-container">
+              <input
+                type="text"
+                id="variante"
+                name="variante"
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'variante') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'variante' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
           </div>
           <div className="formulario-grupo">
             <label className="formulario-etiqueta">Precio Venta:</label>
-            <input
-              type="number"
-              id="precioVenta"
-              name="precioVenta"
-              required
-              className="formulario-input"
-            />
-          </div>
-          <div className="formulario-grupo">
+            <div className="input-container">
+              <input
+                type="number"
+                id="precioVenta"
+                name="precioVenta"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioVenta') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'precioVenta' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
+          </div>          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
-            <input
-              type="date"
-              id="fechaVencimiento"
-              name="fechaVencimiento"
-              className="formulario-input"
-            />
+            <div className="input-container">
+              <input
+                type="date"
+                id="fechaVencimiento"
+                name="fechaVencimiento"
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fechaVencimiento') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'fechaVencimiento' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
           </div>
           <div style={{ display: 'flex', gap: '1rem', width: '100%', margin: '0 auto', maxWidth: '800px' }}>                <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Tipo</span>
               </div>
-              <div className="subproducto-inputs-grupo">
-                <div className="input-grupo" style={{ width: '100%' }}>                  
+              <div className="subproducto-inputs-grupo">                <div className="input-grupo" style={{ width: '100%' }}>                  
                   <select
                     id="tipo"
                     name="tipo"
                     required
-                    className="formulario-input"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tipo') ? 'input-error' : ''}`}
                     style={{ minWidth: '180px' }}
                   >
                     <option value="">Seleccione un Tipo</option>
@@ -370,6 +441,13 @@ const Productos = () => {
                       </option>
                     ))}
                   </select>
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'tipo' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
                 </div>
                 <div className="input-grupo" style={{ display: 'flex', gap: '8px' }}>                  <button
                     type="button"
@@ -386,13 +464,12 @@ const Productos = () => {
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Marca</span>
               </div>
-              <div className="subproducto-inputs-grupo">
-                <div className="input-grupo" style={{ width: '100%' }}>                  
+              <div className="subproducto-inputs-grupo">                <div className="input-grupo" style={{ width: '100%' }}>                  
                   <select
                     id="marca"
                     name="marca"
                     required
-                    className="formulario-input"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'marca') ? 'input-error' : ''}`}
                     style={{ minWidth: '180px' }}
                   >
                     <option value="">Seleccione una Marca</option>
@@ -402,6 +479,13 @@ const Productos = () => {
                       </option>
                     ))}
                   </select>
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'marca' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
                 </div>
                 <div className="input-grupo">
                   <button
@@ -432,60 +516,95 @@ const Productos = () => {
               <h2 className="modal-crear-titulo">Editar Producto</h2>
               <button type="button" onClick={closeEditModal} className="modal-crear-cerrar">×</button>
               <button type="submit" className="modal-boton-crear">Guardar</button>
-            </div>
-            <div className="formulario-grupo">
+            </div>            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Nombre del Producto:</label>
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                defaultValue={currentProducto.nombre}
-                required
-                className="formulario-input"
-              />            </div>
+              <div className="input-container">
+                <input
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  defaultValue={currentProducto.nombre}
+                  required
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'nombre' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>
             <div className="formulario-grupo">
               <label className="formulario-etiqueta">Variante:</label>
-              <input
-                type="text"
-                id="variante"
-                name="variante"
-                defaultValue={currentProducto.variante}
-                className="formulario-input"
-              />
-            </div>
-            <div className="formulario-grupo">
+              <div className="input-container">
+                <input
+                  type="text"
+                  id="variante"
+                  name="variante"
+                  defaultValue={currentProducto.variante}
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'variante') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'variante' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Precio Venta:</label>
-              <input
-                type="number"
-                id="precioVenta"
-                name="precioVenta"
-                defaultValue={currentProducto.precioVenta}
-                required
-                className="formulario-input"
-              />
+              <div className="input-container">
+                <input
+                  type="number"
+                  id="precioVenta"
+                  name="precioVenta"
+                  defaultValue={currentProducto.precioVenta}
+                  required
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioVenta') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'precioVenta' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
             </div>
             <div className="formulario-grupo">
               <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
-              <input
-                type="date"
-                id="fechaVencimiento"
-                name="fechaVencimiento"
-                defaultValue={currentProducto.fechaVencimiento || ""}
-                className="formulario-input"
-              />
+              <div className="input-container">
+                <input
+                  type="date"
+                  id="fechaVencimiento"
+                  name="fechaVencimiento"
+                  defaultValue={currentProducto.fechaVencimiento || ""}
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fechaVencimiento') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'fechaVencimiento' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
             </div>
             <div style={{ display: 'flex', gap: '1rem', width: '100%', margin: '0 auto', maxWidth: '800px' }}>
               <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Tipo</span>
                 </div>
-                <div className="subproducto-inputs-grupo">
-                  <div className="input-grupo" style={{ width: '100%' }}>                    <select
+                <div className="subproducto-inputs-grupo">                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <select
                       id="tipo"
                       name="tipo"
                       defaultValue={currentProducto.tipo.id}
                       required
-                      className="formulario-input"
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tipo') ? 'input-error' : ''}`}
                       style={{ minWidth: '220px' }}
                     >
                       {[...tipos].sort((a, b) => a.nombre.localeCompare(b.nombre)).map((tipo) => (
@@ -494,6 +613,13 @@ const Productos = () => {
                         </option>
                       ))}
                     </select>
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'tipo' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
                   </div>
                 </div>
               </div>
@@ -502,13 +628,13 @@ const Productos = () => {
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Marca</span>
                 </div>
-                <div className="subproducto-inputs-grupo">
-                  <div className="input-grupo" style={{ width: '100%' }}>                    <select
+                <div className="subproducto-inputs-grupo">                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <select
                       id="marca"
                       name="marca"
                       defaultValue={currentProducto.marca.id}
                       required
-                      className="formulario-input"
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'marca') ? 'input-error' : ''}`}
                       style={{ minWidth: '220px' }}
                     >
                       {[...marcas].sort((a, b) => a.nombre.localeCompare(b.nombre)).map((marca) => (
@@ -517,6 +643,13 @@ const Productos = () => {
                         </option>
                       ))}
                     </select>
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'marca' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
                   </div>
                 </div>
               </div>
@@ -566,46 +699,58 @@ const Productos = () => {
         className="modal-crear"
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}      >        
-        <div className="modal-crear-formulario">         
-          <form
+        <div className="modal-crear-formulario">           <form
             onSubmit={async (e) => {
               e.preventDefault();
               const tipoNombre = e.target.tipoNombre.value;
-              try {
-                await createTipo({ nombre: tipoNombre });
-                e.target.reset();
-                closeModalTipo();
-                Swal.fire({
-                  icon: "success",
-                  title: "¡Éxito!",
-                  text: "Tipo creado correctamente.",
-                  confirmButtonColor: "#000000"
-                });
-                fetchTipos();
-              } catch (error) {
-                console.error("Error al crear tipo:", error);
-                Swal.fire({
-                  icon: "error",
-                  title: "Error",
-                  text: "No se pudo crear el tipo.",
-                  confirmButtonColor: "#000000"
-                });
+
+              // Usar el hook de validación de errores
+              const hasErrors = handleCreateTipoError({ nombre: tipoNombre }, tipos);
+              
+              if (!hasErrors) {
+                try {
+                  await createTipo({ nombre: tipoNombre });
+                  e.target.reset();
+                  closeModalTipo();
+                  Swal.fire({
+                    icon: "success",
+                    title: "¡Éxito!",
+                    text: "Tipo creado correctamente.",
+                    confirmButtonColor: "#000000"
+                  });
+                  fetchTipos();
+                } catch (error) {
+                  console.error("Error al crear tipo:", error);
+                  Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo crear el tipo.",
+                    confirmButtonColor: "#000000"
+                  });
+                }
               }
             }}
           >            <div className="modal-crear-header">
               <h2 className="modal-crear-titulo">Crear Nuevo Tipo</h2>
               <button type="button" onClick={closeModalTipo} className="modal-crear-cerrar">×</button>
               <button type="submit" className="modal-boton-crear">Crear</button>
-            </div>
-            <div className="formulario-grupo" style={{ marginTop: '20px' }}>
-              <label className="formulario-etiqueta">Nombre del Tipo:</label>
-              <input
-                type="text"
-                id="tipoNombre"
-                name="tipoNombre"
-                required
-                className="formulario-input"
-              />
+            </div>            <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+              <label className="formulario-etiqueta">Nombre del Tipo:</label>              <div className="input-container">
+                <input
+                  type="text"
+                  id="tipoNombre"
+                  name="tipoNombre"
+                  required
+                  className={`formulario-input ${createTipoError && createTipoError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+                />
+                {createTipoError && createTipoError.errors?.map((error, index) => (
+                  error.field === 'nombre' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
             </div>
           </form>          <div className="gestion-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -667,16 +812,23 @@ const Productos = () => {
                     <h2 className="modal-crear-titulo">Editar Tipo</h2>
                     <button type="button" onClick={() => setIsEditTipoMode(false)} className="modal-crear-cerrar">×</button>
                     <button type="submit" className="modal-boton-crear">Guardar</button>
-                  </div>
-                  <div className="formulario-grupo" style={{ marginTop: '20px' }}>
-                    <label className="formulario-etiqueta">Editar Nombre:</label>
-                    <input
-                      type="text"
-                      name="tipoNombre"
-                      defaultValue={selectedTipo?.nombre}
-                      className="formulario-input"
-                      required
-                    />
+                  </div>                  <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+                    <label className="formulario-etiqueta">Editar Nombre:</label>                    <div className="input-container">
+                      <input
+                        type="text"
+                        name="tipoNombre"
+                        defaultValue={selectedTipo?.nombre}
+                        className={`formulario-input ${editTipoError && editTipoError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+                        required
+                      />
+                      {editTipoError && editTipoError.errors?.map((error, index) => (
+                        error.field === 'nombre' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </form>
               </div>
@@ -691,30 +843,35 @@ const Productos = () => {
         className="modal-crear"
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}
-      >        <div className="modal-crear-formulario">
-          <form
+      >        <div className="modal-crear-formulario">          <form
             onSubmit={async (e) => {
               e.preventDefault();
               const marcaNombre = e.target.marcaNombre.value;
-              try {
-                await createMarca({ nombre: marcaNombre });
-                e.target.reset();
-                closeModalMarca();
-                Swal.fire({
-                  icon: "success",
-                  title: "¡Éxito!",
-                  text: "Marca creada correctamente.",
-                  confirmButtonColor: "#000000"
-                });
-                fetchMarcas();
-              } catch (error) {
-                console.error("Error al crear marca:", error);
-                Swal.fire({
-                  icon: "error",
-                  title: "Error",
-                  text: "No se pudo crear la marca.",
-                  confirmButtonColor: "#000000"
-                });
+
+              // Usar el hook de validación de errores
+              const hasErrors = handleCreateMarcaError({ nombre: marcaNombre }, marcas);
+              
+              if (!hasErrors) {
+                try {
+                  await createMarca({ nombre: marcaNombre });
+                  e.target.reset();
+                  closeModalMarca();
+                  Swal.fire({
+                    icon: "success",
+                    title: "¡Éxito!",
+                    text: "Marca creada correctamente.",
+                    confirmButtonColor: "#000000"
+                  });
+                  fetchMarcas();
+                } catch (error) {
+                  console.error("Error al crear marca:", error);
+                  Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo crear la marca.",
+                    confirmButtonColor: "#000000"
+                  });
+                }
               }
             }}
           >            <div className="modal-crear-header">
@@ -722,16 +879,23 @@ const Productos = () => {
               <button type="button" onClick={closeModalMarca} className="modal-crear-cerrar">×</button>
               <button type="submit" className="modal-boton-crear">Crear</button>
             </div>
-            
-            <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+              <div className="formulario-grupo" style={{ marginTop: '20px' }}>
               <label className="formulario-etiqueta">Nombre de la Marca:</label>
-              <input
-                type="text"
-                id="marcaNombre"
-                name="marcaNombre"
-                required
-                className="formulario-input"
-              />
+              <div className="input-container">                <input
+                  type="text"
+                  id="marcaNombre"
+                  name="marcaNombre"
+                  required
+                  className={`formulario-input ${createMarcaError && createMarcaError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+                />
+                {createMarcaError && createMarcaError.errors?.map((error, index) => (
+                  error.field === 'nombre' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
             </div>
           </form>          <div className="gestion-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -793,16 +957,23 @@ const Productos = () => {
                     <h2 className="modal-crear-titulo">Editar Marca</h2>
                     <button type="button" onClick={() => setIsEditMarcaMode(false)} className="modal-crear-cerrar">×</button>
                     <button type="submit" className="modal-boton-crear">Guardar</button>
-                  </div>
-                  <div className="formulario-grupo" style={{ marginTop: '20px' }}>
+                  </div>                  <div className="formulario-grupo" style={{ marginTop: '20px' }}>
                     <label className="formulario-etiqueta">Editar Nombre:</label>
-                    <input
-                      type="text"
-                      name="marcaNombre"
-                      defaultValue={selectedMarca?.nombre}
-                      className="formulario-input"
-                      required
-                    />
+                    <div className="input-container">                      <input
+                        type="text"
+                        name="marcaNombre"
+                        defaultValue={selectedMarca?.nombre}
+                        className={`formulario-input ${editMarcaError && editMarcaError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+                        required
+                      />
+                      {editMarcaError && editMarcaError.errors?.map((error, index) => (
+                        error.field === 'nombre' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </form>
               </div>

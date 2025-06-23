@@ -45,15 +45,14 @@ export const proveedorValidation = Joi.object({    rut: Joi.string()
             "string.pattern.base": "El RUT debe tener el formato correcto (ej: 12.345.678-9 o 12345678-9).",
             "string.base": "El RUT debe ser una cadena de texto.",
             "any.required": "El RUT es obligatorio."
-        }),
-    nombre: Joi.string()
-        .max(255)
+        }),    nombre: Joi.string()
+        .max(100)
         .required()
         .messages({
             "string.base": "El nombre debe ser una cadena de texto.",
-            "string.max": "El nombre no puede tener más de 255 caracteres.",
+            "string.max": "El nombre no puede tener más de 100 caracteres.",
             "any.required": "El nombre es obligatorio."
-        }),    direccion: Joi.string()
+        }),direccion: Joi.string()
         .max(200)
         .required()
         .messages({

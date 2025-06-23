@@ -291,21 +291,12 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
     { header: "Nombre/Razón Social", key: "nombreCompleto" },
     { header: "Teléfono", key: "telefono" }
   ];
-  
-  // Función para formatear los datos de forma personalizada
+    // Función para formatear los datos de forma personalizada
   const customFormat = (value, key) => {
     // Para formatear el nombre/razón social según el tipo de cliente
     if (key === "nombreCompleto") {
-      // El valor aquí será el cliente completo
-      const cliente = clientes.find(c => c.id === value);
-      if (cliente) {
-        if (cliente.tipoCliente === "Empresa") {
-          return cliente.razonSocial || "No disponible";
-        } else {
-          return `${cliente.nombres || ''} ${cliente.apellidos || ''}`.trim() || "No disponible";
-        }
-      }
-      return "No disponible";
+      // El valor aquí ya es el nombre/razón social formateado
+      return value;
     }
     
     if (key === "tipoCliente") {
@@ -361,12 +352,13 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
             </>
           )}
         </div>
-      ) : (        <>
-          <Table 
+      ) : (        <>          <Table 
             data={clientes.map(cliente => ({
               ...cliente,
-              // Añadimos el campo nombreCompleto con el ID para que el customFormat lo procese
-              nombreCompleto: cliente.id
+              // Añadimos el campo nombreCompleto con el valor real para la búsqueda
+              nombreCompleto: cliente.tipoCliente === "Empresa" 
+                ? cliente.razonSocial || "No disponible"
+                : `${cliente.nombres || ''} ${cliente.apellidos || ''}`.trim() || "No disponible"
             }))}
             columns={columns}
             headerTitle="Clientes"
