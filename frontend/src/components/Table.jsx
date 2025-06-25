@@ -31,22 +31,44 @@ const Table = ({
   showExcelButton = true, // Nueva prop para controlar la visibilidad del botón de exportar a Excel
   entidad = "", // Nueva prop para identificar la entidad
   customFormat = null, // Nueva prop para formatear datos de forma personalizada
-}) => {  const [searchTerm, setSearchTerm] = useState("");  const [filteredData, setFilteredData] = useState(data.sort((a, b) => {
-    // Identificar si la columna es una fecha
-    const isDateColumn = columns[0].key.toLowerCase().includes('fecha');
-    
-    if (isDateColumn) {
-      // Ordenar fechas de más reciente a más antigua
-      const dateA = a[columns[0].key] ? new Date(a[columns[0].key]) : new Date(0);
-      const dateB = b[columns[0].key] ? new Date(b[columns[0].key]) : new Date(0);
-      return dateB - dateA;
-    } else {
-      // Ordenar texto alfabéticamente
-      const valueA = typeof a[columns[0].key] === 'object' ? a[columns[0].key]?.nombre?.toLowerCase() || '' : String(a[columns[0].key] || '').toLowerCase();
-      const valueB = typeof b[columns[0].key] === 'object' ? b[columns[0].key]?.nombre?.toLowerCase() || '' : String(b[columns[0].key] || '').toLowerCase();
-      return valueA.localeCompare(valueB);
+}) => {  const [searchTerm, setSearchTerm] = useState("");  const [filteredData, setFilteredData] = useState(() => {
+    // Verificar que hay columnas y data antes de ordenar
+    if (columns.length === 0 || data.length === 0) {
+      return data || [];
     }
-  }));
+
+    return [...data].sort((a, b) => {
+      // Verificar que la primera columna existe y tiene la propiedad key
+      if (!columns[0] || !columns[0].key) {
+        return 0; // No ordenar si no hay una clave válida
+      }
+
+      // Identificar si la columna es una fecha
+      const isDateColumn = columns[0].key.toLowerCase().includes('fecha');
+      
+      if (isDateColumn) {
+        // Ordenar fechas de más reciente a más antigua
+        const dateA = a[columns[0].key] ? new Date(a[columns[0].key]) : new Date(0);
+        const dateB = b[columns[0].key] ? new Date(b[columns[0].key]) : new Date(0);
+        return dateB - dateA;
+      } else {
+        // Ordenar texto alfabéticamente, con manejo seguro de valores
+        const valueA = a && columns[0].key in a ? 
+          (typeof a[columns[0].key] === 'object' ? 
+            (a[columns[0].key]?.nombre?.toLowerCase() || '') : 
+            String(a[columns[0].key] || '').toLowerCase()) : 
+          '';
+          
+        const valueB = b && columns[0].key in b ? 
+          (typeof b[columns[0].key] === 'object' ? 
+            (b[columns[0].key]?.nombre?.toLowerCase() || '') : 
+            String(b[columns[0].key] || '').toLowerCase()) : 
+          '';
+          
+        return valueA.localeCompare(valueB);
+      }
+    });
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(7);
   const [pageInput, setPageInput] = useState(currentPage);
@@ -322,6 +344,9 @@ const Table = ({
                                   handleCellChange(e.target.value, rowIndex, col.key);
                                 }}
                               />                            ) : (
+                              // Si hay una función de celda personalizada, úsala
+                              col.cell ? 
+                                col.cell(row) :
                               // Manejar propiedades anidadas como "personal.nombre"
                               col.key.includes('.') ? 
                                 (() => {

@@ -4,10 +4,11 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState, useEffect } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket, FaFileAlt, FaHardHat } from "react-icons/fa";
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket, FaFileAlt, FaHardHat, FaTemperatureLow, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { GiMilkCarton } from "react-icons/gi";
 import { GiCow } from "react-icons/gi";
+import { RiFileTextLine } from "react-icons/ri";
 
 const Navbar2 = () => {
   const navigate = useNavigate();
@@ -15,11 +16,25 @@ const Navbar2 = () => {
   const user = JSON.parse(sessionStorage.getItem("usuario")) || "";
   const userRole = user?.rol;
   const [menuOpen, setMenuOpen] = useState(false);
-  const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const [documentosOpen, setDocumentosOpen] = useState(false);
 
   useEffect(() => {
     document.body.setAttribute("data-navbar-collapsed", !menuOpen);
   }, [menuOpen]);
+
+  useEffect(() => {
+    // Verificar si la ruta actual está relacionada con documentos
+    const isDocumentosRoute = [
+      "/control-higiene",
+      "/control-temperatura",
+      "/control-trazabilidad"
+    ].some(route => location.pathname.startsWith(route));
+    
+    // Abrir el menú documentos si estamos en una de sus rutas
+    if (isDocumentosRoute && menuOpen) {
+      setDocumentosOpen(true);
+    }
+  }, [location.pathname, menuOpen]);
 
   const logoutSubmit = () => {
     try {
@@ -49,13 +64,13 @@ const Navbar2 = () => {
 
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
-    if (subMenuOpen) {
-      setSubMenuOpen(false);
+    if (!menuOpen) {
+      setDocumentosOpen(false);
     }
   };
 
-  const toggleSubMenu = () => {
-    setSubMenuOpen((prevSubMenuOpen) => !prevSubMenuOpen);
+  const toggleDocumentosMenu = () => {
+    setDocumentosOpen((prev) => !prev);
   };
 
   return (
@@ -93,7 +108,7 @@ const Navbar2 = () => {
                     <span>Pedidos</span>
                   </NavLink>
                 </li>
-                 <li>
+                <li>
                   <NavLink to="/pagos-pendientes" className={location.pathname === "/pagos-pendientes" ? "active" : ""}>
                     <FaMoneyBillWave className="nav-icon" />
                     <span>Pagos Pendientes</span>
@@ -111,12 +126,48 @@ const Navbar2 = () => {
                     <span>Productos</span>
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/control-higiene" className={location.pathname === "/control-higiene" ? "active" : ""}>
-                    <FaFileAlt className="nav-icon" />
-                    <span>Control Higiene</span>
-                  </NavLink>
+                  {/* Nuevo menú de Documentos con submenú */}                <li>
+                  <div className="documentos-link">
+                    <NavLink 
+                      to="#" 
+                      className={`${["/control-higiene", "/control-temperatura", "/control-trazabilidad"].some(route => location.pathname.startsWith(route)) ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleDocumentosMenu();
+                      }}
+                    >
+                      <FaFileAlt className="nav-icon" />
+                      <span>Documentos</span>
+                    </NavLink>
+                    <div className="submenu-arrow" onClick={toggleDocumentosMenu}>
+                      {documentosOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    </div>
+                  </div>
                 </li>
+
+                {/* Submenú de Documentos */}
+                {documentosOpen && (
+                  <>
+                    <li className="submenu-item">
+                      <NavLink to="/control-higiene" className={location.pathname === "/control-higiene" ? "active" : ""}>
+                        <FaFileAlt className="nav-icon" />
+                        <span>Control Higiene</span>
+                      </NavLink>
+                    </li>
+                    <li className="submenu-item">
+                      <NavLink to="/control-temperatura" className={location.pathname === "/control-temperatura" ? "active" : ""}>
+                        <FaTemperatureLow className="nav-icon" />
+                        <span>Control Temperatura</span>
+                      </NavLink>
+                    </li>
+                    <li className="submenu-item">
+                      <NavLink to="/control-trazabilidad" className={location.pathname === "/control-trazabilidad" ? "active" : ""}>
+                        <FaFileAlt className="nav-icon" />
+                        <span>Registro Carne Molida</span>
+                      </NavLink>
+                    </li>
+                  </>
+                )}
 
                 <li>
                   <NavLink to="/personal" className={location.pathname === "/personal" ? "active" : ""}>
@@ -146,7 +197,7 @@ const Navbar2 = () => {
                   e.preventDefault();
                   handleLogoutClick();
                   setMenuOpen(false);
-                  setSubMenuOpen(false);
+                  setDocumentosOpen(false);
                 }}
                 className={`logout-link ${location.pathname === "/auth" ? "active" : ""}`}
               >

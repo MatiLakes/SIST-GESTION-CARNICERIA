@@ -143,11 +143,89 @@
 .navbar2 li:nth-child(10) {
     animation-delay: 1.7s;    
     
-}.navbar2 li:nth-child(11) {
+}
+.navbar2 li:nth-child(11) {
     animation-delay: 1.9s;    
     
 }
+.navbar2 li:nth-child(12) {
+    animation-delay: 2.1s;    
+    
+}
+.navbar2 li:nth-child(13) {
+    animation-delay: 2.3s;    
+    
+}
+.navbar2 li:nth-child(14) {
+    animation-delay: 2.5s;    
+    
+}
+.navbar2 li:nth-child(15) {
+    animation-delay: 2.7s;    
+    
+}
 
+/* Estilos para el menú desplegable de documentos */
+.menu-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 15px 0 20px;
+    cursor: pointer;
+    color: #f6f6f7;
+    height: 100%;
+}
+
+.menu-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.submenu-arrow {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+    position: absolute;
+    right: 15px;
+}
+
+/* Ajuste para el arrow dentro de NavLink */
+.navbar2 a .submenu-arrow {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.menu-item.submenu-active {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Estilos para los elementos del submenú */
+.submenu-item {
+    padding-left: 15px;
+    background-color: rgba(255, 255, 255, 0.03);
+    animation: slideDown 0.3s ease-in-out forwards !important;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 50px;
+    }
+}
+
+.submenu-item a {
+    padding-left: 35px;
+}
 
 /* Estilos responsivos */
 @media (max-width: 1024px) {
@@ -307,6 +385,48 @@
         margin-left: 0; /* Elimina el margen en pantallas pequeñas */
         width: 100%; /* El contenedor ocupa todo el ancho */
     }
+}
+
+/* Estilos para el contenedor de documentos */
+.documentos-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    padding-right: 15px;
+}
+
+.documentos-link a {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: calc(100% - 30px);
+}
+
+.documentos-link .submenu-arrow {
+    position: relative;
+    right: 0;
+    top: 0;
+    transform: none;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f6f6f7;
+    cursor: pointer;
+}
+
+/* Ajustes para mantener el hover correcto */
+.navbar2 li:hover .documentos-link {
+    background-color: transparent;
+}
+
+.navbar2 li:hover .submenu-arrow {
+    color: #ffffff;
 }
 
 

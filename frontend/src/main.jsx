@@ -17,6 +17,8 @@ import Subproductos from '@pages/Subproductos';
 import PagosPendientes from './pages/PagosPendientes';
 import Clientes from './pages/Clientes';
 import ControlHigiene from './pages/ControlHigiene';
+import DocumentoTemperatura from './pages/DocumentoTemperatura';
+import DocumentoTrazabilidad from './pages/DocumentoTrazabilidad';
 import Personal from './pages/Personal';
 
 import '@styles/styles.css';
@@ -90,13 +92,28 @@ const router = createBrowserRouter([
             <Clientes />
           </ProtectedRoute>
         ),
-      },
-
-      {
+      },      {
         path: '/control-higiene',
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <ControlHigiene />
+          </ProtectedRoute>
+        ),
+      },
+        {
+        path: '/control-temperatura',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <DocumentoTemperatura />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/control-trazabilidad',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <DocumentoTrazabilidad />
           </ProtectedRoute>
         ),
       },

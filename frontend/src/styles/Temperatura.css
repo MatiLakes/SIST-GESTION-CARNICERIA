@@ -1,0 +1,143 @@
+/* Estilos para la página de Control de Temperatura */
+
+.registro-titulo {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 24px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e5e5;
+  color: #333;
+}
+
+.registro-container {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.registro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.registro-subtitulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.registro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.boton-eliminar-registro {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  min-width: auto;
+  transition: background-color 0.2s;
+}
+
+.boton-eliminar-registro:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.boton-agregar-registro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px dashed #dc3545;
+  color: #dc3545;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.boton-agregar-registro:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.registro-detalle {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.checkbox-grupo {
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-input {
+  margin-right: 8px;
+}
+
+.checkbox-label {
+  user-select: none;
+  cursor: pointer;
+}
+
+.texto-sin-datos {
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+  padding: 24px;
+}
+
+.estado {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.estado.cumple {
+  background-color: #28a745;
+}
+
+.estado.no-cumple {
+  background-color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .registro-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .full-width {
+    grid-column: span 1;
+  }
+}

@@ -14,6 +14,8 @@ import pagoPendienteRoutes from "./pagoPendiente.routes.js";
 import clienteRoutes from "./cliente.routes.js";
 import personalRoutes from "./personal.routes.js";
 import controlHigieneRoutes from "./controlHigiene.routes.js";
+import documentoTemperaturaRoutes from "./documentoTemperatura.routes.js";
+import documentoTrazabilidadRoutes from "./documentoTrazabilidad.routes.js";
 
 const router = Router();
 
@@ -31,6 +33,8 @@ router
   .use("/pagos-pendientes", pagoPendienteRoutes)
   .use("/clientes", clienteRoutes)
   .use("/personal", personalRoutes)
-  .use("/control-higiene", controlHigieneRoutes);
+  .use("/control-higiene", controlHigieneRoutes)
+  .use("/documentos-temperatura", documentoTemperaturaRoutes)
+  .use("/documentos-trazabilidad", documentoTrazabilidadRoutes);
 
 export default router;
