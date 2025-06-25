@@ -4076,21 +4076,21 @@ const VerAnimalListaCorte = () => {
                 <div className="dato-item">
                   <span className="dato-label">Lomo Vetado</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.lomoVetado} kg</span>
-                    <span className="precio">${animalCorteToView.precioLomoVetado}</span>
+                    <span className="cantidad">{animalCorteToView.ganso} kg</span>
+                    <span className="precio">${animalCorteToView.precioGanso}</span>
                   </span>
                 </div>
                 <div className="dato-item">
-                  <span className="dato-label">Palanca</span>
+                  <span className="dato-label">Huachalomo</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.palanca} kg</span>
-                    <span className="precio">${animalCorteToView.precioPalanca}</span>
+                    <span className="cantidad">{animalCorteToView.huachalomo} kg</span>
+                    <span className="precio">${animalCorteToView.precioHuachalomo}</span>
                   </span>
                 </div>
                 <div className="dato-item">
-                  <span className="dato-label">Plateada</span>
+                  <span className="dato-label">Lomo Liso</span>
                   <span className="dato-value">
-                    <span className="cantidad">{animalCorteToView.plateada} kg</span>
+                    <span className="cantidad">{animalCorteToView.lomoLiso} kg</span>
                     <span className="precio">${animalCorteToView.precioPlateada}</span>
                   </span>
                 </div>

@@ -33,14 +33,14 @@ const AnimalVara = () => {
         fechaLlegada: "",
         temperaturaLlegada: "",
         precioTotalVara: "",
-        tipoAnimal: "", 
+        tipoAnimalId: "", // Usar id
     });
 
     const [formData, setFormData] = useState({
         fechaLlegada: "",
         temperaturaLlegada: "",
         precioTotalVara: "",
-        tipoAnimal: "",  // Solo guardamos el nombreLista (string) directamente
+        tipoAnimalId: "", // Usar id
     });
 
     useEffect(() => {
@@ -93,7 +93,7 @@ const handleUpdateClick = (animalVara) => {
         fechaLlegada: animalVara.fechaLlegada,
         temperaturaLlegada: animalVara.temperaturaLlegada,
         precioTotalVara: animalVara.precioTotalVara,
-        tipoAnimal: animalVara.tipoAnimal.nombreLista || "",  // Directamente asignamos solo el nombreLista
+        tipoAnimalId: animalVara.tipoAnimal.id, // Usar el id, no el nombreLista
     });
     setIsEditModalOpen(true);
 };
@@ -105,61 +105,35 @@ const handleUpdateClick = (animalVara) => {
 
     const handleCreateModalChange = (e) => {
         const { name, value } = e.target;
-        
-        // Comprobamos si el campo es de tipo "tipoAnimal.nombreLista"
-        if (name === "tipoAnimal.nombreLista") {
-            // Actualizamos tipoAnimal.nombreLista con el valor seleccionado
-            setNewAnimalVaraData({
-                ...newAnimalVaraData,
-                tipoAnimal: { nombreLista: value },  // Actualiza solo la propiedad nombreLista dentro de tipoAnimal
-            });
-        } else {
-            setNewAnimalVaraData({ ...newAnimalVaraData, [name]: value });
-        }
-    };    const handleCreateModalSubmit = (e) => {
+        setNewAnimalVaraData({ ...newAnimalVaraData, [name]: value });
+    };
+    // Manejo de cambios en el formulario de edición
+const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+};
+
+    const handleCreateModalSubmit = (e) => {
         e.preventDefault();
-    
-        // Usar el hook de validación de errores
         const hasErrors = handleCreateError(newAnimalVaraData, tiposAnimales);
-        
         if (!hasErrors) {
             handleCreate(newAnimalVaraData);  
             setNewAnimalVaraData({
                 fechaLlegada: "",
                 temperaturaLlegada: "",
                 precioTotalVara: "",
-                tipoAnimal: { nombreLista: "" },
+                tipoAnimalId: "",
             });
             setIsCreateModalOpen(false);
         }
     };
-// Manejo de cambios en el formulario de edición
-const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    
-    if (name === "tipoAnimal") {
-        // Actualizamos tipoAnimal con el valor directamente, que es el nombreLista
-        setFormData({
-            ...formData,
-            tipoAnimal: value,
-        });
-    } else {
-        setFormData({ ...formData, [name]: value });
-    }
-};
-
 const handleEditSubmit = (e) => {
     e.preventDefault();
-
-    // Preparar los datos para validación
     const updatedData = {
         ...formData,
-        tipoAnimal: { nombreLista: formData.tipoAnimal },
+        tipoAnimalId: formData.tipoAnimalId,
     };
-
-    // Usar el hook de validación de errores
     const hasErrors = handleEditError(updatedData, tiposAnimales);
-    
     if (!hasErrors) {
         handleUpdate(animalVaraToEdit.id, updatedData);  
         setIsEditModalOpen(false);
@@ -266,7 +240,12 @@ const handleEditSubmit = (e) => {
                                 onChange={handleCreateModalChange}
                                 required
                                 min="0"
-                                step="1"
+                                step="1"                                
+                                pattern="^[0-9]+$"
+                                inputMode="numeric"
+                                onKeyDown={e => {
+                                    if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                                }}
                                 className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioTotalVara') ? 'input-error' : ''}`}
                             />
                             {createError && createError.errors?.map((error, index) => (
@@ -277,21 +256,21 @@ const handleEditSubmit = (e) => {
                               )
                             ))}
                         </div>
-                    </div>                    {/* Lista de Precios */}
+                    </div>                    {/* Lista de Precios (Crear) */}
                     <div className="formulario-grupo">
                         <label className="formulario-etiqueta">Lista de Precios:</label>
                         <div className="input-container">
                             <select
-                                id="nombreLista"
-                                name="tipoAnimal.nombreLista"
-                                value={newAnimalVaraData.tipoAnimal.nombreLista}
+                                id="tipoAnimalId"
+                                name="tipoAnimalId"
+                                value={newAnimalVaraData.tipoAnimalId}
                                 onChange={handleCreateModalChange}
                                 required
                                 className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tipoAnimal') ? 'input-error' : ''}`}
                             >
                                 <option value="">Selecciona una Lista de Precios</option>
                                 {tiposAnimales.map((tipo) => (
-                                    <option key={tipo.id} value={tipo.nombreLista}>
+                                    <option key={tipo.id} value={tipo.id}>
                                         {tipo.nombreLista}
                                     </option>
                                 ))}
@@ -378,7 +357,12 @@ const handleEditSubmit = (e) => {
                                 onChange={handleEditChange}
                                 required
                                 min="0"
-                                step="1"
+                                step="1"                                
+                                pattern="^[0-9]+$"
+                                inputMode="numeric"
+                                onKeyDown={e => {
+                                    if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                                }}
                                 className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioTotalVara') ? 'input-error' : ''}`}
                             />
                             {editError && editError.errors?.map((error, index) => (
@@ -389,21 +373,21 @@ const handleEditSubmit = (e) => {
                               )
                             ))}
                         </div>
-                    </div>                    {/* Lista de Precios */}
+                    </div>                    {/* Lista de Precios (Editar) */}
                     <div className="formulario-grupo">
                         <label className="formulario-etiqueta">Lista de Precios:</label>
                         <div className="input-container">
                             <select
-                                id="nombreLista"
-                                name="tipoAnimal"
-                                value={formData.tipoAnimal}
+                                id="tipoAnimalId"
+                                name="tipoAnimalId"
+                                value={formData.tipoAnimalId}
                                 onChange={handleEditChange}
                                 required
                                 className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tipoAnimal') ? 'input-error' : ''}`}
                             >
                                 <option value="">Selecciona una Lista de Precios</option>
                                 {tiposAnimales.map((tipo) => (
-                                    <option key={tipo.id} value={tipo.nombreLista}>
+                                    <option key={tipo.id} value={tipo.id}>
                                         {tipo.nombreLista}
                                     </option>
                                 ))}

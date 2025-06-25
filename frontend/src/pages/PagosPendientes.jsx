@@ -495,8 +495,13 @@ const PagosPendientes = () => {
                     id="monto" 
                     name="monto"
                     required
-                    step="0.01"
-                    min="1"
+                    min="0"
+                    step="1"                    
+                    pattern="^[0-9]+$"
+                    inputMode="numeric"
+                    onKeyDown={e => {
+                      if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                    }}
                     className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'monto') ? 'input-error' : ''}`}
                   />
                   {createError && createError.errors?.map((error, index) => (
@@ -649,8 +654,13 @@ const PagosPendientes = () => {
                       name="monto"
                       defaultValue={currentPagoPendiente.monto}
                       required
-                      step="0.01"
-                      min="1"
+                      min="0"
+                      step="1"                      
+                      pattern="^[0-9]+$"
+                      inputMode="numeric"
+                      onKeyDown={e => {
+                        if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                      }}
                       className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'monto') ? 'input-error' : ''}`}
                     />
                     {editError && editError.errors?.map((error, index) => (

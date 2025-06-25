@@ -1,28 +1,33 @@
 "use strict";
 import AnimalVara from "../entity/AnimalVara.entity.js";
+import AnimalCorte from "../entity/AnimalCortes.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
 export async function createAnimalVaraService(data) {
   try {
     const animalVaraRepository = AppDataSource.getRepository(AnimalVara);
+    const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
+
+    // Buscar el corte por id
+    const corte = await animalCorteRepository.findOneBy({ id: data.tipoAnimalId });
+    if (!corte) {
+      return [null, `El tipo de animal con ID ${data.tipoAnimalId} no existe.`];
+    }
 
     const nuevaVara = animalVaraRepository.create({
-      varaId: data.varaId,
       fechaLlegada: data.fechaLlegada,
       temperaturaLlegada: data.temperaturaLlegada,
       precioTotalVara: data.precioTotalVara,
-      tipoAnimal: data.tipoAnimal, 
+      tipoAnimal: corte,
     });
 
     const varaGuardada = await animalVaraRepository.save(nuevaVara);
-    return [varaGuardada, null];  } catch (error) {
+    return [varaGuardada, null];
+  } catch (error) {
     console.error("Error al crear la vara:", error);
-    
-    // Validación específica para el error de fecha de llegada
     if (error.code === '23514' && error.constraint === 'fecha_llegada_valida') {
       return [null, "La fecha de llegada debe ser igual o anterior al día actual"];
     }
-    
     return [null, "Error interno del servidor"];
   }
 }
@@ -31,12 +36,18 @@ export async function createAnimalVaraService(data) {
 export async function updateAnimalVaraService(id, data) {
   try {
     const animalVaraRepository = AppDataSource.getRepository(AnimalVara);
-
+    const animalCorteRepository = AppDataSource.getRepository(AnimalCorte);
     const vara = await animalVaraRepository.findOneBy({ id });
     if (!vara) return [null, "Vara no encontrada."];
 
+    if (data.tipoAnimalId !== undefined) {
+      const corte = await animalCorteRepository.findOneBy({ id: data.tipoAnimalId });
+      if (!corte) return [null, `El tipo de animal con ID ${data.tipoAnimalId} no existe.`];
+      vara.tipoAnimal = corte;
+    }
+
     Object.keys(data).forEach((key) => {
-      if (data[key] !== undefined) vara[key] = data[key];
+      if (key !== "tipoAnimalId" && data[key] !== undefined) vara[key] = data[key];
     });
 
     const varaActualizada = await animalVaraRepository.save(vara);
@@ -69,14 +80,15 @@ export async function getAllAnimalVarasService() {
     const animalVaraRepository = AppDataSource.getRepository(AnimalVara);
     const varas = await animalVaraRepository.find({ relations: ["tipoAnimal"] });
 
-    // Modificar los datos para incluir solo "nombreLista" del "tipoAnimal"
+    // Modificar los datos para incluir id y nombreLista del tipoAnimal
     const varasModificadas = varas.map(vara => ({
       id: vara.id,
       fechaLlegada: vara.fechaLlegada,
       temperaturaLlegada: vara.temperaturaLlegada,
       precioTotalVara: vara.precioTotalVara,
       tipoAnimal: {
-        nombreLista: vara.tipoAnimal.nombreLista, // Solo incluir "nombreLista"
+        id: vara.tipoAnimal?.id, // Incluir id
+        nombreLista: vara.tipoAnimal?.nombreLista,
       }
     }));
 

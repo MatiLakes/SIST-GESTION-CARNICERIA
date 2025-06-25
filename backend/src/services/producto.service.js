@@ -110,24 +110,24 @@ export const productoService = {
 
         // Crear el workbook y la hoja
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet("Productos");        // Definir las columnas
+        const worksheet = workbook.addWorksheet("Productos");
+        // Definir las columnas
         worksheet.columns = [
             { header: "ID", key: "id", width: 10 },
             { header: "Nombre", key: "nombre", width: 20 },
             { header: "Variante", key: "variante", width: 15 },
             { header: "Precio Venta", key: "precioVenta", width: 15 },
-            { header: "Fecha Vencimiento", key: "fechaVencimiento", width: 20 },
             { header: "Tipo", key: "tipo", width: 15 },
             { header: "Marca", key: "marca", width: 15 },
         ];
 
         // Agregar las filas
-        productos.forEach((producto) => {            worksheet.addRow({
+        productos.forEach((producto) => {
+            worksheet.addRow({
                 id: producto.id,
                 nombre: producto.nombre,
                 variante: producto.variante,
                 precioVenta: producto.precioVenta,
-                fechaVencimiento: producto.fechaVencimiento || "N/A",
                 tipo: producto.tipo?.nombre || "N/A",
                 marca: producto.marca?.nombre || "N/A",
             });
@@ -142,5 +142,5 @@ export const productoService = {
         console.error("Error al generar el Excel de productos:", error);
         throw new Error("No se pudo generar el archivo Excel.");
     }
-}
+  }
 };

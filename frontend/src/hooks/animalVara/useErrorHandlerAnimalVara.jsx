@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-// Función para validar la fecha de llegada
+// Validar fecha de llegada
 const validateFechaLlegada = (fecha) => {
   if (!fecha) {
     return {
@@ -8,10 +8,9 @@ const validateFechaLlegada = (fecha) => {
       message: "La fecha de llegada es obligatoria.",
       details: {}
     };
-  }  // Crear fecha desde el input (formato YYYY-MM-DD) de manera local
+  }
   const [año, mes, dia] = fecha.split('-').map(Number);
-  const fechaIngresada = new Date(año, mes - 1, dia); // mes - 1 porque Date usa 0-11 para meses
-  
+  const fechaIngresada = new Date(año, mes - 1, dia);
   if (isNaN(fechaIngresada.getTime())) {
     return {
       status: "Client error",
@@ -19,11 +18,8 @@ const validateFechaLlegada = (fecha) => {
       details: {}
     };
   }
-
-  // Obtener la fecha actual solo con año, mes y día (sin hora)
   const fechaActual = new Date();
   const fechaHoy = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), fechaActual.getDate());
-
   if (fechaIngresada > fechaHoy) {
     return {
       status: "Client error",
@@ -31,97 +27,109 @@ const validateFechaLlegada = (fecha) => {
       details: {}
     };
   }
-
   return null;
 };
 
-// Función para validar la temperatura de llegada
+// Validar temperatura de llegada
 const validateTemperaturaLlegada = (temperatura) => {
-  if (typeof temperatura !== 'number') {
+  if (temperatura === undefined || temperatura === "") {
+    return {
+      status: "Client error",
+      message: "La temperatura de llegada es obligatoria.",
+      details: {}
+    };
+  }
+  const tempNum = parseFloat(temperatura);
+  if (isNaN(tempNum)) {
     return {
       status: "Client error",
       message: "La temperatura de llegada debe ser un número.",
       details: {}
     };
   }
-  
-  if (temperatura < -10) {
+  if (tempNum < -10) {
     return {
       status: "Client error",
       message: "La temperatura de llegada no puede ser menor a -10°C.",
       details: {}
     };
   }
-  
-  if (temperatura > 10) {
+  if (tempNum > 10) {
     return {
       status: "Client error",
       message: "La temperatura de llegada no puede ser mayor a 10°C.",
       details: {}
     };
   }
-  
   return null;
 };
 
-// Función para validar el precio total de la vara
+// Validar precio total de la vara
 const validatePrecioTotalVara = (precio) => {
-  if (typeof precio !== 'number') {
+  if (precio === undefined || precio === "") {
+    return {
+      status: "Client error",
+      message: "El precio total de la vara es obligatorio.",
+      details: {}
+    };
+  }
+  const precioNum = parseInt(precio);
+  if (isNaN(precioNum)) {
     return {
       status: "Client error",
       message: "El precio total de la vara debe ser un número.",
       details: {}
     };
   }
-  
-  if (precio < 1) {
+  if (precioNum < 1) {
     return {
       status: "Client error",
       message: "El precio total de la vara debe ser mayor a 0.",
       details: {}
     };
   }
-  
-  if (precio > 99999999) {
+  if (precioNum > 99999999) {
     return {
       status: "Client error",
       message: "El precio total de la vara no puede tener más de 8 cifras.",
       details: {}
     };
   }
-  
-  if (!Number.isInteger(precio)) {
+  if (!Number.isInteger(precioNum)) {
     return {
       status: "Client error",
       message: "El precio total de la vara debe ser un número entero.",
       details: {}
     };
   }
-  
   return null;
 };
 
-// Función para validar el tipo de animal
-const validateTipoAnimal = (tipoAnimal, tiposDisponibles = []) => {
-  if (!tipoAnimal || !tipoAnimal.nombreLista) {
+// Validar tipoAnimalId
+const validateTipoAnimalId = (tipoAnimalId, tiposDisponibles = []) => {
+  if (!tipoAnimalId || tipoAnimalId === "") {
     return {
       status: "Client error",
       message: "El tipo de animal es obligatorio.",
       details: {}
     };
   }
-
-  const nombreLista = tipoAnimal.nombreLista;
-  const esValido = tiposDisponibles.some(tipo => tipo.nombreLista === nombreLista);
-  
-  if (!esValido) {
+  const idNum = parseInt(tipoAnimalId);
+  if (isNaN(idNum) || !Number.isInteger(idNum) || idNum < 1) {
+    return {
+      status: "Client error",
+      message: "El tipo de animal debe ser un id numérico válido.",
+      details: {}
+    };
+  }
+  const existe = tiposDisponibles.some(tipo => tipo.id === idNum);
+  if (!existe) {
     return {
       status: "Client error",
       message: "El tipo de animal seleccionado no es válido.",
       details: {}
     };
   }
-
   return null;
 };
 
@@ -131,112 +139,36 @@ export const useErrorHandlerAnimalVara = () => {
 
   const handleCreateError = (data, tiposDisponibles = []) => {
     const errors = [];
-
-    // Validar fecha de llegada
     const fechaError = validateFechaLlegada(data.fechaLlegada);
-    if (fechaError) {
-      errors.push({
-        field: 'fechaLlegada',
-        message: fechaError.message
-      });
-    }
-
-    // Validar temperatura de llegada
-    if (data.temperaturaLlegada !== "" && data.temperaturaLlegada !== undefined) {
-      const temperaturaError = validateTemperaturaLlegada(parseFloat(data.temperaturaLlegada));
-      if (temperaturaError) {
-        errors.push({
-          field: 'temperaturaLlegada',
-          message: temperaturaError.message
-        });
-      }
-    }
-
-    // Validar precio total de la vara
-    if (data.precioTotalVara !== "" && data.precioTotalVara !== undefined) {
-      const precioError = validatePrecioTotalVara(parseFloat(data.precioTotalVara));
-      if (precioError) {
-        errors.push({
-          field: 'precioTotalVara',
-          message: precioError.message
-        });
-      }
-    }
-
-    // Validar tipo de animal
-    const tipoAnimalError = validateTipoAnimal(data.tipoAnimal, tiposDisponibles);
-    if (tipoAnimalError) {
-      errors.push({
-        field: 'tipoAnimal',
-        message: tipoAnimalError.message
-      });
-    }
-
+    if (fechaError) errors.push({ field: 'fechaLlegada', message: fechaError.message });
+    const temperaturaError = validateTemperaturaLlegada(data.temperaturaLlegada);
+    if (temperaturaError) errors.push({ field: 'temperaturaLlegada', message: temperaturaError.message });
+    const precioError = validatePrecioTotalVara(data.precioTotalVara);
+    if (precioError) errors.push({ field: 'precioTotalVara', message: precioError.message });
+    const tipoAnimalError = validateTipoAnimalId(data.tipoAnimalId, tiposDisponibles);
+    if (tipoAnimalError) errors.push({ field: 'tipoAnimal', message: tipoAnimalError.message });
     if (errors.length > 0) {
-      setCreateError({
-        status: "Client error",
-        errors: errors,
-        details: {}
-      });
+      setCreateError({ status: "Client error", errors, details: {} });
       return true;
     }
-
     setCreateError(null);
     return false;
   };
 
   const handleEditError = (data, tiposDisponibles = []) => {
     const errors = [];
-
-    // Validar fecha de llegada
     const fechaError = validateFechaLlegada(data.fechaLlegada);
-    if (fechaError) {
-      errors.push({
-        field: 'fechaLlegada',
-        message: fechaError.message
-      });
-    }
-
-    // Validar temperatura de llegada
-    if (data.temperaturaLlegada !== "" && data.temperaturaLlegada !== undefined) {
-      const temperaturaError = validateTemperaturaLlegada(parseFloat(data.temperaturaLlegada));
-      if (temperaturaError) {
-        errors.push({
-          field: 'temperaturaLlegada',
-          message: temperaturaError.message
-        });
-      }
-    }
-
-    // Validar precio total de la vara
-    if (data.precioTotalVara !== "" && data.precioTotalVara !== undefined) {
-      const precioError = validatePrecioTotalVara(parseFloat(data.precioTotalVara));
-      if (precioError) {
-        errors.push({
-          field: 'precioTotalVara',
-          message: precioError.message
-        });
-      }
-    }
-
-    // Validar tipo de animal
-    const tipoAnimalError = validateTipoAnimal(data.tipoAnimal, tiposDisponibles);
-    if (tipoAnimalError) {
-      errors.push({
-        field: 'tipoAnimal',
-        message: tipoAnimalError.message
-      });
-    }
-
+    if (fechaError) errors.push({ field: 'fechaLlegada', message: fechaError.message });
+    const temperaturaError = validateTemperaturaLlegada(data.temperaturaLlegada);
+    if (temperaturaError) errors.push({ field: 'temperaturaLlegada', message: temperaturaError.message });
+    const precioError = validatePrecioTotalVara(data.precioTotalVara);
+    if (precioError) errors.push({ field: 'precioTotalVara', message: precioError.message });
+    const tipoAnimalError = validateTipoAnimalId(data.tipoAnimalId, tiposDisponibles);
+    if (tipoAnimalError) errors.push({ field: 'tipoAnimal', message: tipoAnimalError.message });
     if (errors.length > 0) {
-      setEditError({
-        status: "Client error",
-        errors: errors,
-        details: {}
-      });
+      setEditError({ status: "Client error", errors, details: {} });
       return true;
     }
-
     setEditError(null);
     return false;
   };

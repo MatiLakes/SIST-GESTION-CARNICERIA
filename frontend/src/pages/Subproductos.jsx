@@ -174,7 +174,14 @@ const Subproductos = () => {
                 id="numeroAnimalesFaenados"
                 name="numeroAnimalesFaenados"
                 required
+                min="1"
+                step="1"
+                pattern="^[0-9]+$"
+                inputMode="numeric"
                 className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'numeroAnimalesFaenados') ? 'input-error' : ''}`}
+                onKeyDown={e => {
+                  if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                }}
               />
               {createError && createError.errors?.map((error, index) => (
                 error.field === 'numeroAnimalesFaenados' && (
@@ -227,7 +234,14 @@ const Subproductos = () => {
                       id={`${item}Decomisados`}
                       name={`${item}Decomisados`}
                       required
+                      min="0"
+                      step="1"                      
+                      pattern="^[0-9]+$"
+                      inputMode="numeric"
                       className={`formulario-input ${createError && createError.errors?.some(error => error.field === `${item}Decomisados`) ? 'input-error' : ''}`}
+                      onKeyDown={e => {
+                        if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                      }}
                     />
                     {createError && createError.errors?.map((error, index) => (
                       error.field === `${item}Decomisados` && (
@@ -246,7 +260,14 @@ const Subproductos = () => {
                       id={`${item}Entregados`}
                       name={`${item}Entregados`}
                       required
+                      min="0"
+                      step="1"                      
+                      pattern="^[0-9]+$"
+                      inputMode="numeric"
                       className={`formulario-input ${createError && createError.errors?.some(error => error.field === `${item}Entregados`) ? 'input-error' : ''}`}
+                      onKeyDown={e => {
+                        if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                      }}
                     />
                     {createError && createError.errors?.map((error, index) => (
                       error.field === `${item}Entregados` && (
@@ -265,7 +286,14 @@ const Subproductos = () => {
                       id={`${item}Precio`}
                       name={`precio${item.charAt(0).toUpperCase() + item.slice(1)}`}
                       required
+                      min="0"
+                      step="1"                      
+                      pattern="^[0-9]+$"
+                      inputMode="numeric"
                       className={`formulario-input ${createError && createError.errors?.some(error => error.field === `precio${item.charAt(0).toUpperCase() + item.slice(1)}`) ? 'input-error' : ''}`}
+                      onKeyDown={e => {
+                        if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                      }}
                     />
                     {createError && createError.errors?.map((error, index) => (
                       error.field === `precio${item.charAt(0).toUpperCase() + item.slice(1)}` && (
@@ -325,7 +353,14 @@ const Subproductos = () => {
                   name="numeroAnimalesFaenados"
                   defaultValue={currentSubproducto.numeroAnimalesFaenados}
                   required
+                  min="0"
+                  step="1"
+                  pattern="^[0-9]+$"
+                  inputMode="numeric"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'numeroAnimalesFaenados') ? 'input-error' : ''}`}
+                  onKeyDown={e => {
+                    if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                  }}
                 />
                 {editError && editError.errors?.map((error, index) => (
                   error.field === 'numeroAnimalesFaenados' && (
@@ -370,7 +405,14 @@ const Subproductos = () => {
                         name={`${item}Decomisados`}
                         defaultValue={currentSubproducto[`${item}Decomisados`]}
                         required
+                        min="0"
+                        step="1"                       
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
                         className={`formulario-input ${editError && editError.errors?.some(error => error.field === `${item}Decomisados`) ? 'input-error' : ''}`}
+                        onKeyDown={e => {
+                          if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                        }}
                       />
                       {editError && editError.errors?.map((error, index) => (
                         error.field === `${item}Decomisados` && (
@@ -390,7 +432,14 @@ const Subproductos = () => {
                         name={`${item}Entregados`}
                         defaultValue={currentSubproducto[`${item}Entregados`]}
                         required
+                        min="0"
+                        step="1"                       
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
                         className={`formulario-input ${editError && editError.errors?.some(error => error.field === `${item}Entregados`) ? 'input-error' : ''}`}
+                        onKeyDown={e => {
+                          if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                        }}
                       />
                       {editError && editError.errors?.map((error, index) => (
                         error.field === `${item}Entregados` && (
@@ -410,7 +459,14 @@ const Subproductos = () => {
                         name={`precio${item.charAt(0).toUpperCase() + item.slice(1)}`}
                         defaultValue={currentSubproducto[`precio${item.charAt(0).toUpperCase() + item.slice(1)}`]}
                         required
+                        min="0"
+                        step="1"                        
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
                         className={`formulario-input ${editError && editError.errors?.some(error => error.field === `precio${item.charAt(0).toUpperCase() + item.slice(1)}`) ? 'input-error' : ''}`}
+                        onKeyDown={e => {
+                          if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                        }}
                       />
                       {editError && editError.errors?.map((error, index) => (
                         error.field === `precio${item.charAt(0).toUpperCase() + item.slice(1)}` && (

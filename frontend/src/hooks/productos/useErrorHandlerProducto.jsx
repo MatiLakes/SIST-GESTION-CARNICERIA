@@ -9,7 +9,6 @@ const validateNombre = (nombre) => {
       details: {}
     };
   }
-
   if (nombre.length > 100) {
     return {
       status: "Client error",
@@ -17,7 +16,6 @@ const validateNombre = (nombre) => {
       details: {}
     };
   }
-
   return null;
 };
 
@@ -30,7 +28,6 @@ const validateVariante = (variante) => {
       details: {}
     };
   }
-
   return null;
 };
 
@@ -43,63 +40,28 @@ const validatePrecioVenta = (precio) => {
       details: {}
     };
   }
-
-  if (typeof precio !== 'number') {
+  const precioNum = parseFloat(precio);
+  if (isNaN(precioNum)) {
     return {
       status: "Client error",
       message: "El precio de venta debe ser un número.",
       details: {}
     };
   }
-
-  if (precio < 0) {
+  if (precioNum < 1) {
     return {
       status: "Client error",
-      message: "El precio de venta debe ser mayor o igual a 0.",
+      message: "El precio de venta debe ser mayor a 0.",
       details: {}
     };
   }
-
-  if (precio > 9999999) {
+  if (precioNum > 99999999) {
     return {
       status: "Client error",
-      message: "El precio de venta no puede tener más de 7 cifras.",
+      message: "El precio de venta no puede tener más de 8 cifras.",
       details: {}
     };
   }
-
-  return null;
-};
-
-// Función para validar la fecha de vencimiento
-const validateFechaVencimiento = (fecha) => {
-  if (!fecha) {
-    return null; // La fecha de vencimiento es opcional
-  }
-
-  // Crear fecha desde el input (formato YYYY-MM-DD) de manera local
-  const [año, mes, dia] = fecha.split('-').map(Number);
-  const fechaIngresada = new Date(año, mes - 1, dia); // mes - 1 porque Date usa 0-11 para meses
-  
-  if (isNaN(fechaIngresada.getTime())) {
-    return {
-      status: "Client error",
-      message: "La fecha de vencimiento debe ser una fecha válida.",
-      details: {}
-    };
-  }
-  // Obtener la fecha actual solo con año, mes y día (sin hora)
-  const fechaActual = new Date();
-  const fechaHoy = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), fechaActual.getDate());
-
-  if (fechaIngresada < fechaHoy) {
-    return {
-      status: "Client error",
-      message: "La fecha de vencimiento debe ser igual o posterior a la fecha actual.",
-      details: {}
-    };
-  }
-
   return null;
 };
 
@@ -112,9 +74,7 @@ const validateTipoProducto = (tipoProducto, tiposDisponibles = []) => {
       details: {}
     };
   }
-
   const esValido = tiposDisponibles.some(tipo => tipo.id === tipoProducto.id);
-  
   if (!esValido) {
     return {
       status: "Client error",
@@ -122,7 +82,6 @@ const validateTipoProducto = (tipoProducto, tiposDisponibles = []) => {
       details: {}
     };
   }
-
   return null;
 };
 
@@ -135,9 +94,7 @@ const validateMarcaProducto = (marcaProducto, marcasDisponibles = []) => {
       details: {}
     };
   }
-
   const esValida = marcasDisponibles.some(marca => marca.id === marcaProducto.id);
-  
   if (!esValida) {
     return {
       status: "Client error",
@@ -145,7 +102,6 @@ const validateMarcaProducto = (marcaProducto, marcasDisponibles = []) => {
       details: {}
     };
   }
-
   return null;
 };
 
@@ -164,7 +120,6 @@ const validateNombreTipo = (nombre, tiposExistentes = [], currentId = null) => {
     item.nombre.trim().toLowerCase() === nombreTrimmed.toLowerCase() && 
     item.id !== currentId
   );
-
   if (existeNombre) {
     return {
       field: 'nombre',
@@ -173,7 +128,6 @@ const validateNombreTipo = (nombre, tiposExistentes = [], currentId = null) => {
       details: {}
     };
   }
-
   if (nombre.length > 100) {
     return {
       status: "Client error",
@@ -181,7 +135,6 @@ const validateNombreTipo = (nombre, tiposExistentes = [], currentId = null) => {
       details: {}
     };
   }
-
   return null;
 };
 
@@ -200,7 +153,6 @@ const validateNombreMarca = (nombre, marcasExistentes = [], currentId = null) =>
     item.nombre.trim().toLowerCase() === nombreTrimmed.toLowerCase() && 
     item.id !== currentId
   );
-
   if (existeNombre) {
     return {
       field: 'nombre',
@@ -209,7 +161,6 @@ const validateNombreMarca = (nombre, marcasExistentes = [], currentId = null) =>
       details: {}
     };
   }
-
   if (nombre.length > 100) {
     return {
       status: "Client error",
@@ -217,7 +168,6 @@ const validateNombreMarca = (nombre, marcasExistentes = [], currentId = null) =>
       details: {}
     };
   }
-
   return null;
 };
 
@@ -228,152 +178,77 @@ export const useErrorHandlerProducto = () => {
   const [editTipoError, setEditTipoError] = useState(null);
   const [createMarcaError, setCreateMarcaError] = useState(null);
   const [editMarcaError, setEditMarcaError] = useState(null);
+
   const handleCreateError = (data, productosExistentes = [], tiposDisponibles = [], marcasDisponibles = []) => {
     const errors = [];
-
     // Validar nombre
     const nombreError = validateNombre(data.nombre);
     if (nombreError) {
-      errors.push({
-        field: 'nombre',
-        message: nombreError.message
-      });
+      errors.push({ field: 'nombre', message: nombreError.message });
     }
-
     // Validar variante
     const varianteError = validateVariante(data.variante);
     if (varianteError) {
-      errors.push({
-        field: 'variante',
-        message: varianteError.message
-      });
+      errors.push({ field: 'variante', message: varianteError.message });
     }
-
     // Validar precio de venta
-    if (data.precioVenta !== "" && data.precioVenta !== undefined) {
-      const precioError = validatePrecioVenta(parseFloat(data.precioVenta));
-      if (precioError) {
-        errors.push({
-          field: 'precioVenta',
-          message: precioError.message
-        });
-      }
+    const precioError = validatePrecioVenta(data.precioVenta);
+    if (precioError) {
+      errors.push({ field: 'precioVenta', message: precioError.message });
     }
-
-    // Validar fecha de vencimiento
-    if (data.fechaVencimiento) {
-      const fechaError = validateFechaVencimiento(data.fechaVencimiento);
-      if (fechaError) {
-        errors.push({
-          field: 'fechaVencimiento',
-          message: fechaError.message
-        });
-      }
-    }
-
     // Validar tipo de producto
     const tipoError = validateTipoProducto(data.tipo, tiposDisponibles);
     if (tipoError) {
-      errors.push({
-        field: 'tipo',
-        message: tipoError.message
-      });
+      errors.push({ field: 'tipo', message: tipoError.message });
     }
-
     // Validar marca del producto
     const marcaError = validateMarcaProducto(data.marca, marcasDisponibles);
     if (marcaError) {
-      errors.push({
-        field: 'marca',
-        message: marcaError.message
-      });
+      errors.push({ field: 'marca', message: marcaError.message });
     }
-
     if (errors.length > 0) {
-      setCreateError({
-        status: "Client error",
-        errors: errors,
-        details: {}
-      });
+      setCreateError({ status: "Client error", errors, details: {} });
       return true;
     }
-
     setCreateError(null);
     return false;
   };
+
   const handleEditError = (data, productosExistentes = [], tiposDisponibles = [], marcasDisponibles = [], currentId = null) => {
     const errors = [];
-
     // Validar nombre
     const nombreError = validateNombre(data.nombre);
     if (nombreError) {
-      errors.push({
-        field: 'nombre',
-        message: nombreError.message
-      });
+      errors.push({ field: 'nombre', message: nombreError.message });
     }
-
     // Validar variante
     const varianteError = validateVariante(data.variante);
     if (varianteError) {
-      errors.push({
-        field: 'variante',
-        message: varianteError.message
-      });
+      errors.push({ field: 'variante', message: varianteError.message });
     }
-
     // Validar precio de venta
-    if (data.precioVenta !== "" && data.precioVenta !== undefined) {
-      const precioError = validatePrecioVenta(parseFloat(data.precioVenta));
-      if (precioError) {
-        errors.push({
-          field: 'precioVenta',
-          message: precioError.message
-        });
-      }
+    const precioError = validatePrecioVenta(data.precioVenta);
+    if (precioError) {
+      errors.push({ field: 'precioVenta', message: precioError.message });
     }
-
-    // Validar fecha de vencimiento
-    if (data.fechaVencimiento) {
-      const fechaError = validateFechaVencimiento(data.fechaVencimiento);
-      if (fechaError) {
-        errors.push({
-          field: 'fechaVencimiento',
-          message: fechaError.message
-        });
-      }
-    }
-
     // Validar tipo de producto
     const tipoError = validateTipoProducto(data.tipo, tiposDisponibles);
     if (tipoError) {
-      errors.push({
-        field: 'tipo',
-        message: tipoError.message
-      });
+      errors.push({ field: 'tipo', message: tipoError.message });
     }
-
     // Validar marca del producto
     const marcaError = validateMarcaProducto(data.marca, marcasDisponibles);
     if (marcaError) {
-      errors.push({
-        field: 'marca',
-        message: marcaError.message
-      });
+      errors.push({ field: 'marca', message: marcaError.message });
     }
-
     if (errors.length > 0) {
-      setEditError({
-        status: "Client error",
-        errors: errors,
-        details: {}
-      });
+      setEditError({ status: "Client error", errors, details: {} });
       return true;
     }
-
     setEditError(null);
     return false;
   };
+
   const handleCreateTipoError = (data, tiposExistentes = []) => {
     const errors = [];
 

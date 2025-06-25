@@ -409,7 +409,7 @@ const Proveedores = () => {
                   <div className="input-grupo" style={{ width: '100%' }}>
                     <div className="input-container">
                       <input
-                        type="text"
+                        type="number"
                         id="numeroCuenta"
                         name="numeroCuenta"
                         value={newProveedorData.numeroCuenta}
@@ -417,6 +417,13 @@ const Proveedores = () => {
                         className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'numeroCuenta') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                         required
+                        min="0"
+                        step="1"
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
+                        onKeyDown={e => {
+                          if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                        }}
                       />
                       {createError && createError.errors?.map((error, index) => (
                         error.field === 'numeroCuenta' && (
@@ -705,7 +712,7 @@ const Proveedores = () => {
                   <div className="input-grupo" style={{ width: '100%' }}>
                     <div className="input-container">
                       <input
-                        type="text"
+                        type="number"
                         id="edit-numeroCuenta"
                         name="numeroCuenta"
                         value={formData.numeroCuenta}
@@ -713,6 +720,13 @@ const Proveedores = () => {
                         className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'numeroCuenta') ? 'input-error' : ''}`}
                         style={{ minWidth: '220px', textAlign: 'left' }}
                         required
+                        min="0"
+                        step="1"
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
+                        onKeyDown={e => {
+                          if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                        }}
                       />
                       {editError && editError.errors?.map((error, index) => (
                         error.field === 'numeroCuenta' && (

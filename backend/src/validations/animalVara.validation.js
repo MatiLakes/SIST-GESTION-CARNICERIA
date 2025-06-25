@@ -33,19 +33,12 @@ export const animalVaraValidation = (animalCortes) =>
         "number.integer": "El precio total de la vara debe ser un número entero.",
         "any.required": "El precio total de la vara es obligatorio.",
       }),
-    tipoAnimal: Joi.object({
-      nombreLista: Joi.string()
-        .valid(...animalCortes)
-        .required()
-        .messages({
-          "any.only": "El tipo de animal seleccionado no es válido.",
-          "any.required": "El tipo de animal es obligatorio.",
-        }),
-    })
+    tipoAnimalId: Joi.number()
+      .integer()
       .required()
       .messages({
-        "object.base": "El tipo de animal debe ser un objeto.",
-        "object.required": "El tipo de animal es obligatorio.",
+        "number.base": "El tipo de animal debe ser un id numérico.",
+        "any.required": "El tipo de animal es obligatorio.",
       }),
   })
     .unknown(true)

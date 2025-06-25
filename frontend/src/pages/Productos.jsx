@@ -129,7 +129,6 @@ const Productos = () => {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta,
-      fechaVencimiento: formData.get("fechaVencimiento"),
       tipo: { id: tipoId },
       marca: { id: marcaId },
     };
@@ -169,7 +168,6 @@ const Productos = () => {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta: parseFloat(formData.get("precioVenta")),
-      fechaVencimiento: formData.get("fechaVencimiento"),
       tipo: { id: tipoId },
       marca: { id: marcaId },
     };
@@ -305,7 +303,6 @@ const Productos = () => {
     { header: "Nombre", key: "nombre" },
     { header: "Variante", key: "variante" },
     { header: "Precio Venta", key: "precioVenta" },
-    { header: "Fecha Vencimiento", key: "fechaVencimiento" },
     { header: "Tipo", key: "tipo" },
     { header: "Marca", key: "marca" }
   ];
@@ -394,27 +391,17 @@ const Productos = () => {
                 id="precioVenta"
                 name="precioVenta"
                 required
+                min="0"
+                step="1"                
+                pattern="^[0-9]+$"
+                inputMode="numeric"
                 className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'precioVenta') ? 'input-error' : ''}`}
+                onKeyDown={e => {
+                  if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                }}
               />
               {createError && createError.errors?.map((error, index) => (
                 error.field === 'precioVenta' && (
-                  <div key={index} className="error-message">
-                    {error.message}
-                  </div>
-                )
-              ))}
-            </div>
-          </div>          <div className="formulario-grupo">
-            <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
-            <div className="input-container">
-              <input
-                type="date"
-                id="fechaVencimiento"
-                name="fechaVencimiento"
-                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fechaVencimiento') ? 'input-error' : ''}`}
-              />
-              {createError && createError.errors?.map((error, index) => (
-                error.field === 'fechaVencimiento' && (
                   <div key={index} className="error-message">
                     {error.message}
                   </div>
@@ -563,29 +550,17 @@ const Productos = () => {
                   name="precioVenta"
                   defaultValue={currentProducto.precioVenta}
                   required
+                  min="0"
+                  step="1"                  
+                  pattern="^[0-9]+$"
+                  inputMode="numeric"
                   className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'precioVenta') ? 'input-error' : ''}`}
+                  onKeyDown={e => {
+                    if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                  }}
                 />
                 {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioVenta' && (
-                    <div key={index} className="error-message">
-                      {error.message}
-                    </div>
-                  )
-                ))}
-              </div>
-            </div>
-            <div className="formulario-grupo">
-              <label className="formulario-etiqueta">Fecha de Vencimiento:</label>
-              <div className="input-container">
-                <input
-                  type="date"
-                  id="fechaVencimiento"
-                  name="fechaVencimiento"
-                  defaultValue={currentProducto.fechaVencimiento || ""}
-                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fechaVencimiento') ? 'input-error' : ''}`}
-                />
-                {editError && editError.errors?.map((error, index) => (
-                  error.field === 'fechaVencimiento' && (
                     <div key={index} className="error-message">
                       {error.message}
                     </div>

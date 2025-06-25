@@ -20,15 +20,10 @@ const ProductoSchema = new EntitySchema({
       type: "varchar",
       length: 100,
       nullable: true,
-    },    precioVenta: {
-      type: "decimal",
-      precision: 10,
-      scale: 2,
-      nullable: false,
     },
-    fechaVencimiento: {
-      type: "date",
-      nullable: true,
+    precioVenta: {
+      type: "int",
+      nullable: false,
     },
   },
   relations: {
