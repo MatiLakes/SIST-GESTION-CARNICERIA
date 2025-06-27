@@ -18,6 +18,7 @@ import PagosPendientes from './pages/PagosPendientes';
 import Clientes from './pages/Clientes';
 import ControlHigiene from './pages/ControlHigiene';
 import Personal from './pages/Personal';
+import NotificacionesGlobal from "@components/NotificacionesGlobal";
 
 import '@styles/styles.css';
 
