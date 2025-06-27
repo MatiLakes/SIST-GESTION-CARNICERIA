@@ -2,20 +2,22 @@
 
 import { pedidoService } from "../services/pedido.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
+import { pedidoValidation } from "../validations/pedido.validation.js";
 
 export const pedidoController = {
   crearPedido: async (req, res) => {
     try {
-      console.log("Datos recibidos:", req.body); // Agregar un log para depuración
+      // Validar los datos del pedido
+      const { error } = pedidoValidation.create.validate(req.body);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
+      }
+
       const nuevoPedido = req.body;
       const pedidoCreado = await pedidoService.crearPedido(nuevoPedido);
-      res.status(201).json({
-        message: "Pedido creado con éxito",
-        data: pedidoCreado,
-      });
+      handleSuccess(res, 201, "Pedido creado con éxito", pedidoCreado);
     } catch (error) {
-      console.error("Error al crear pedido:", error);
-      res.status(500).json({ message: "Error al crear el pedido" });
+      handleErrorServer(res, 500, "Error al crear el pedido");
     }
   },
 
@@ -70,6 +72,12 @@ export const pedidoController = {
     try {
       const { id } = req.params;
       const datosActualizados = req.body;
+      
+      // Validar los datos del pedido
+      const { error } = pedidoValidation.update.validate(datosActualizados);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
+      }
   
       const [pedidoActualizado, err] = await pedidoService.actualizarPedido(id, datosActualizados);
   
@@ -77,7 +85,7 @@ export const pedidoController = {
   
       handleSuccess(res, 200, "Pedido actualizado correctamente.", pedidoActualizado);
     } catch (error) {
-      handleErrorServer(res, 500, error.message);
+        handleErrorServer(res, 500, error.message);
     }
   }
 };

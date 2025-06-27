@@ -80,34 +80,91 @@ const Table = ({
     direction: 'asc'
   });
 
-  // Manejo del filtro de búsqueda
-  const handleSearch = (event) => {
-    const term = event.target.value.toLowerCase();
-    setSearchTerm(term);
-      setFilteredData(
-      data
-        .filter((row) =>
-          columns.some((col) =>
-            searchInObject(row[col.key], term) // Función que buscará en los objetos
-          )
-        )
-        .sort((a, b) => {
-          const valueA = typeof a[columns[0].key] === 'object' ? a[columns[0].key]?.nombre?.toLowerCase() || '' : String(a[columns[0].key] || '').toLowerCase();
-          const valueB = typeof b[columns[0].key] === 'object' ? b[columns[0].key]?.nombre?.toLowerCase() || '' : String(b[columns[0].key] || '').toLowerCase();
-          return valueA.localeCompare(valueB);
-        })
-    );
-    
-    setCurrentPage(1);
+  // Función para verificar si una cadena contiene solo caracteres especiales
+  const containsOnlySpecialChars = (str) => {
+    return /^[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ]+$/.test(str);
+  };
+  // Función para normalizar RUT (quitar puntos y guión)
+  const normalizeRut = (rut) => {
+    if (!rut) return '';
+    return String(rut).replace(/[.\-]/g, '').toLowerCase();
   };
 
-  // Función para realizar la búsqueda recursiva en objetos
-  const searchInObject = (value, term) => {
-    if (typeof value === "object" && value !== null) {
-      return Object.values(value).some((v) => searchInObject(v, term)); // Recurre en objetos
-    } else {
-      return String(value).toLowerCase().includes(term); // Comparación normal en valores primitivos
+  // Función para buscar en un valor específico
+  const searchInValue = (value, term, columnKey = '') => {
+    if (value == null) return false;
+    
+    // Búsqueda especial para RUTs
+    if (columnKey === 'rut' || (typeof value === 'string' && /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-?[0-9kK]?$/.test(value))) {
+      const normalizedValue = normalizeRut(value);
+      const normalizedTerm = normalizeRut(term);
+      
+      // Buscar tanto en formato normalizado como en formato original
+      return normalizedValue.includes(normalizedTerm) || String(value).toLowerCase().includes(term);
     }
+    
+    // Para números
+    if (typeof value === 'number') {
+      const numStr = value.toString();
+      return numStr.includes(term);
+    }
+
+    // Para objetos (como cliente)
+    if (typeof value === 'object' && value !== null) {
+      if (value.id) { // Para objetos cliente
+        if (value.razonSocial) {
+          return value.razonSocial.toLowerCase().includes(term);
+        }
+        if (value.nombres || value.apellidos) {
+          const fullName = `${value.nombres || ''} ${value.apellidos || ''}`.toLowerCase();
+          return fullName.includes(term);
+        }
+      }
+      // Buscar en todos los valores del objeto
+      return Object.values(value).some(v => 
+        v !== null && String(v).toLowerCase().includes(term)
+      );
+    }
+
+    // Para strings
+    return String(value).toLowerCase().includes(term);
+  };
+
+  // Manejo del filtro de búsqueda
+  const handleSearch = (event) => {
+    const term = event.target.value.toLowerCase().trim();
+    setSearchTerm(event.target.value);
+
+    if (!term) {
+      setFilteredData(data);
+      setCurrentPage(1);
+      return;
+    }
+
+    const filtered = data.filter(row => {
+      if (!row) return false;
+      
+      // Buscar en todas las columnas definidas
+      return columns.some(col => {
+        if (!col.key) return false;
+        
+        let value;
+        // Manejar propiedades anidadas (como 'cliente')
+        if (col.key.includes('.')) {
+          value = col.key.split('.').reduce((obj, key) => obj?.[key], row);
+        } else {
+          value = row[col.key];
+        }        // Si es un monto, convertirlo a string sin el signo $
+        if (col.key === 'monto') {
+          return value?.toString().includes(term);
+        }
+
+        return searchInValue(value, term, col.key);
+      });
+    });
+
+    setFilteredData(filtered);
+    setCurrentPage(1);
   };
 
   // Filtrar datos por fecha
@@ -171,8 +228,7 @@ const Table = ({
     const updatedData = [...filteredData];
     updatedData[rowIndex][columnKey] = value;
     setFilteredData(updatedData);
-  };
-  const formatObject = (obj) => {
+  };  const formatObject = (obj) => {
     if (Array.isArray(obj)) {
       return obj.map((item, index) => (
         <div key={index}>
@@ -197,12 +253,38 @@ const Table = ({
         .join(", ");
     } else if (typeof obj === "boolean") {
       return obj ? "Sí" : "No";
+    } else if (typeof obj === "string" && obj.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Detectar fechas en formato YYYY-MM-DD y convertirlas a DD/MM/YYYY
+      const fecha = new Date(obj + 'T00:00:00');
+      if (!isNaN(fecha.getTime())) {
+        return fecha.toLocaleDateString('es-CL', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
     }
     return obj || "No disponible";
-  };
-  const formatData = (value, key) => {
-    // Usa la función personalizada si está definida, de lo contrario usa la genérica
-    return customFormat ? customFormat(value, key) : formatObject(value);
+  };  const formatData = (value, key) => {
+    // Verificar si es una fecha en formato YYYY-MM-DD y formatearla primero
+    if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const fecha = new Date(value + 'T00:00:00');
+      if (!isNaN(fecha.getTime())) {
+        return fecha.toLocaleDateString('es-CL', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+    }
+    
+    // Si hay función personalizada, aplicarla para valores que no son fechas
+    if (customFormat) {
+      return customFormat(value, key);
+    }
+    
+    // De lo contrario, usar formateo genérico
+    return formatObject(value);
   };
 
   // Paginación de la tabla

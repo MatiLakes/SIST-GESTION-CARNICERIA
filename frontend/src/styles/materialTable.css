@@ -611,7 +611,7 @@ c
   display: inline-block;
 
   margin-top: -5px;  /* Mueve hacia arriba */
-  margin-left: 10px; /* Mueve hacia la derecha */
+  margin-left: 10px; /* Valor original para pantallas grandes */
 }
 .clear-date-filter-button:hover {
   background-color: #d32f2f
@@ -641,6 +641,7 @@ c
   align-items: center; /* Alinea los elementos verticalmente */
   gap: 8px; /* Espacio entre los botones */
   justify-content: flex-start; /* Alinea todo a la izquierda */
+  position: relative; /* Necesario para posicionar el calendario de forma relativa */
 }
 
 /* Efecto al pasar el ratón sobre el icono de calendario */
@@ -665,17 +666,12 @@ c
 .calendar-overlay {
   position: absolute;
   z-index: 999; /* Asegura que el calendario esté sobre la tabla */
-  left: 34%; /* Ajusta la posición inicial */
-  transform: translateX(-50%); /* Ajusta el centro para que se alinee perfectamente */
-  top: 60px; /* Ajusta la posición vertical según lo necesites */
-  transition: left var(--transition-speed) ease; /* Añadir transición suave */
-  
+  left: 200px; /* Posicionado más a la derecha del botón "Mostrar todo" */
+  top: 0px; /* Alineado horizontalmente con el botón "Mostrar todo" */
+  transform: none; /* Eliminar transformación para mejor control */
 }
 
-/* Ajuste cuando la navbar está contraída */
-body[data-navbar-collapsed="true"] .calendar-overlay {
-  left: 30%;
-}
+/* Ya no necesitamos ajustes específicos para navbar contraída */
 
 /* Botón de filtro de fecha */
 .calendar-icon-button {
@@ -725,4 +721,6 @@ button:has(.calendar-icon):focus {
   outline: none;
   box-shadow: none;
 }
+
+
 

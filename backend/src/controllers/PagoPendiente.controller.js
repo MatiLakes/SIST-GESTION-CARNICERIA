@@ -2,25 +2,27 @@
 
 import { pagoPendienteService } from "../services/pagoPendiente.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
+import { pagoPendienteValidation } from "../validations/pagopendiente.validation.js";
 import path from "path";
 
-export const pagoPendienteController = {
-  async crearPagoPendiente(req, res) {
+export const pagoPendienteController = {  async crearPagoPendiente(req, res) {
     try {
       const { id_cliente, ...pagoData } = req.body;
 
-      if (!id_cliente) {
-        return handleErrorClient(res, 400, "El campo 'id_cliente' es obligatorio.");
+      // Preparar datos para validación
+      const datosParaValidar = {
+        ...pagoData,
+        factura: req.file ? req.file.path : undefined,
+        cliente: { id: id_cliente }
+      };
+
+      // Validar los datos usando el esquema
+      const { error } = pagoPendienteValidation.create.validate(datosParaValidar);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
       }
 
-      if (req.file) {
-        pagoData.factura = req.file.path;
-      }
-
-      // Asignar el cliente en el objeto de datos
-      pagoData.cliente = { id: id_cliente };
-
-      const [pago, err] = await pagoPendienteService.crearPagoPendiente(pagoData);
+      const [pago, err] = await pagoPendienteService.crearPagoPendiente(datosParaValidar);
       if (err) return handleErrorClient(res, 400, err);
 
       handleSuccess(res, 201, "Pago pendiente creado exitosamente.", pago);
@@ -55,17 +57,25 @@ export const pagoPendienteController = {
       handleErrorServer(res, 500, error.message);
     }
   },
-
   async modificarPagoPendiente(req, res) {
     try {
       const { id } = req.params;
-      const data = req.body;
+      const { id_cliente, ...pagoData } = req.body;
 
-      if (req.file) {
-        data.factura = req.file.path;
+      // Preparar datos para validación
+      const datosParaValidar = {
+        ...pagoData,
+        factura: req.file ? req.file.path : undefined,
+        ...(id_cliente && { cliente: { id: id_cliente } })
+      };
+
+      // Validar los datos usando el esquema de actualización
+      const { error } = pagoPendienteValidation.update.validate(datosParaValidar);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
       }
 
-      const [pago, err] = await pagoPendienteService.modificarPagoPendiente(id, data);
+      const [pago, err] = await pagoPendienteService.modificarPagoPendiente(id, datosParaValidar);
       if (err) return handleErrorClient(res, 400, err);
 
       handleSuccess(res, 200, "Pago pendiente modificado correctamente.", pago);

@@ -33,7 +33,7 @@ const Login = () => {
                     showConfirmButton: false,  // Ocultar el botón de confirmar
                     timer: 1500,  // Cerrar la alerta después de 1.5 segundos
                 }).then(() => {
-                    navigate('/home');
+                    navigate('/home', { state: { showNotificaciones: true } });
                 });
             } else if (response.status === 'Client error') {
                 errorData(response.details);

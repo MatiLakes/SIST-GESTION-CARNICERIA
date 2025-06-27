@@ -13,9 +13,7 @@ const PagoPendienteSchema = new EntitySchema({
       generated: true,
     },
     monto: {
-      type: "decimal",
-      precision: 10,
-      scale: 2,
+      type: "int",
       nullable: false,
     },
     fechaPedido: {

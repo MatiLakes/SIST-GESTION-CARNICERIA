@@ -6,12 +6,12 @@ import {
   getProveedorByIdService,
   updateProveedorService
 } from "../services/proveedor.service.js";
-import { proveedorBodyValidation } from "../validations/proveedor.validation.js"; // Mantén solo esta importación
+import { proveedorValidation } from "../validations/proveedor.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
 // Crear proveedor
 export async function createProveedor(req, res) {
-  const { error } = proveedorBodyValidation.validate(req.body);
+  const { error } = proveedorValidation.validate(req.body);
   if (error) return handleErrorClient(res, 400, error.message);
 
   try {
@@ -26,7 +26,7 @@ export async function createProveedor(req, res) {
 // Actualizar proveedor
 export async function updateProveedor(req, res) {
   const { id } = req.params;
-  const { error } = proveedorBodyValidation.validate(req.body);
+  const { error } = proveedorValidation.validate(req.body);
   if (error) return handleErrorClient(res, 400, error.message);
 
   try {

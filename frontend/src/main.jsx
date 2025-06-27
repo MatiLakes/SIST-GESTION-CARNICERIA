@@ -21,6 +21,7 @@ import DocumentoTemperatura from './pages/DocumentoTemperatura';
 import DocumentoTrazabilidad from './pages/DocumentoTrazabilidad';
 import Personal from './pages/Personal';
 
+
 import '@styles/styles.css';
 
 const router = createBrowserRouter([

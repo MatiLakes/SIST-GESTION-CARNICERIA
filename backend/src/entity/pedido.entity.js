@@ -29,6 +29,7 @@ const PedidoSchema = new EntitySchema({
     fecha_entrega: {
       type: "date",
       nullable: false,
+      default: () => "CURRENT_DATE",
     },
     productos: {
       type: "text",

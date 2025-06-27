@@ -1,6 +1,5 @@
-
-
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useNavigationType, useLocation } from 'react-router-dom';
 import '@styles/home.css';
 import { 
   FaClipboardList, 
@@ -12,16 +11,34 @@ import {
   FaTruck
 } from 'react-icons/fa';
 import { GiCow } from 'react-icons/gi';
+import NotificacionesButton from "@components/NotificacionesButton";
+import NotificacionesGlobal from "@components/NotificacionesGlobal";
 
 const Home = () => {
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
+  const location = useLocation();
   const user = JSON.parse(sessionStorage.getItem('usuario')) || {};
-  
+  // Mostrar notificaciones si es recarga (POP) o si viene del login con state
+  const [mostrarNotificaciones, setMostrarNotificaciones] = useState(
+    navigationType === 'POP' || location.state?.showNotificaciones
+  );
+
+  useEffect(() => {
+    // Limpiar el state para que no se repita al navegar internamente
+    if (location.state?.showNotificaciones) {
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   const handleCardClick = (path) => {
     navigate(path);
   };
 
-  return (    <div className="home-container">
+  return (
+    <div className="home-container">
+      {mostrarNotificaciones && <NotificacionesGlobal />}
+      <NotificacionesButton />
       <section className="welcome-section">
         <h1>Bienvenido al Sistema de Gestión de Carnicería</h1>
         <p>Accede rápidamente a todas las funcionalidades desde esta página principal.</p>

@@ -45,11 +45,12 @@
 }
 
 .dashboard-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: #f8f8f8;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: transform 0.2s ease;
+  margin-bottom: 10px;
 }
 
 .dashboard-card:hover {
@@ -57,7 +58,7 @@
 }
 
 .dashboard-card-header {
-  background-color: #000000; /* Negro puro para coincidir con las tablas */
+  background-color: #2b2727; /* Negro puro para coincidir con las tablas */
   padding: 15px;
   border-bottom: 1px solid #eee;
   display: flex;
@@ -97,7 +98,7 @@
 
 /* Ajustes adicionales para que coincida con la imagen de referencia */
 .dashboard-card {
-  background: white;
+  background: #f8f8f8;
   border-radius: 10px; /* Bordes más redondeados */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -115,7 +116,7 @@
 }
 
 .quick-access-card {
-  background: white;
+  background: #f8f8f8;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -130,7 +131,7 @@
 }
 
 .card-header {
-  background-color: #000000; /* Negro puro para coincidir con las tablas */
+  background-color: #2b2727; /* Negro puro para coincidir con las tablas */
   color: white;
   padding: 15px;
   text-align: center;

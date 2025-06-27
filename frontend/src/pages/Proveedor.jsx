@@ -3,6 +3,7 @@ import { useGetProveedor } from "@hooks/proveedor/useGetProveedor";
 import { useCreateProveedor } from "@hooks/proveedor/useCreateProveedor";
 import { useDeleteProveedor } from "@hooks/proveedor/useDeleteProveedor";
 import { useUpdateProveedor } from "@hooks/proveedor/useUpdateProveedor";
+import { useErrorHandlerProveedor } from "@hooks/proveedor/useErrorHandlerProveedor";
 import { MdOutlineEdit } from "react-icons/md";
 import Table from "../components/Table";
 import Modal from "react-modal";
@@ -17,15 +18,16 @@ const Proveedores = () => {
   const { handleCreate } = useCreateProveedor(fetchProveedores);
   const { handleDelete } = useDeleteProveedor(fetchProveedores);
   const { handleUpdate } = useUpdateProveedor(fetchProveedores);
+  const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerProveedor();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [proveedorToEdit, setProveedorToEdit] = useState(null);
   const [proveedorToDelete, setProveedorToDelete] = useState(null);
   const [proveedorToView, setProveedorToView] = useState(null);
-  
-  const initialProveedorData = {
+    const initialProveedorData = {
+    rut: "",
     nombre: "",
     direccion: "",
     banco: "",
@@ -57,10 +59,10 @@ const Proveedores = () => {
     setIsDeleteModalOpen(false);
     setProveedorToDelete(null);
   };
-
   const handleUpdateClick = (proveedor) => {
     setProveedorToEdit(proveedor);
     setFormData({
+      rut: proveedor.rut,
       nombre: proveedor.nombre,
       direccion: proveedor.direccion,
       banco: proveedor.banco,
@@ -125,29 +127,31 @@ const Proveedores = () => {
 
     return true;
   };
-
   const handleSubmit = async (e, isEditing = false) => {
     e.preventDefault();
     const formDataToSubmit = isEditing ? formData : newProveedorData;
 
-    if (!validateFields(formDataToSubmit)) {
-      return;
-    }
+    // Usar el hook de validación de errores
+    const hasErrors = isEditing 
+      ? handleEditError(formDataToSubmit, proveedores, proveedorToEdit?.id)
+      : handleCreateError(formDataToSubmit, proveedores);
 
-    try {
-      if (isEditing) {
-        await handleUpdate(proveedorToEdit.id, formDataToSubmit);
-        setIsEditModalOpen(false);
-        setProveedorToEdit(null);
-      } else {
-        await handleCreate(formDataToSubmit);
-        setIsCreateModalOpen(false);
+    if (!hasErrors) {
+      try {
+        if (isEditing) {
+          await handleUpdate(proveedorToEdit.id, formDataToSubmit);
+          setIsEditModalOpen(false);
+          setProveedorToEdit(null);
+        } else {
+          await handleCreate(formDataToSubmit);
+          setIsCreateModalOpen(false);
+        }
+        setFormData(initialProveedorData);
+        setNewProveedorData(initialProveedorData);
+      } catch (error) {
+        console.error("Error al procesar el formulario:", error);
+        Swal.fire("Error", "Hubo un error al procesar el formulario.", "error");
       }
-      setFormData(initialProveedorData);
-      setNewProveedorData(initialProveedorData);
-    } catch (error) {
-      console.error("Error al procesar el formulario:", error);
-      Swal.fire("Error", "Hubo un error al procesar el formulario.", "error");
     }
   };
 
@@ -267,80 +271,132 @@ const Proveedores = () => {
             <button type="submit" className="modal-boton-crear">Guardar</button>
           </div>
 
-          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
-            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Nombre</span>
               </div>
               <div className="subproducto-inputs-grupo">
                 <div className="input-grupo" style={{ width: '100%' }}>
-                  <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    value={newProveedorData.nombre}
-                    onChange={(e) => handleChange(e, false)}
-                    className="formulario-input"
-                    style={{ minWidth: '220px', textAlign: 'left' }}
-                    required
-                  />
+                  <div className="input-container">
+                    <input
+                      type="text"
+                      id="nombre"
+                      name="nombre"
+                      value={newProveedorData.nombre}
+                      onChange={(e) => handleChange(e, false)}
+                      className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                    {createError && createError.errors?.map((error, index) => (
+                      error.field === 'nombre' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">RUT</span>
+              </div>
+              <div className="subproducto-inputs-grupo">
+                <div className="input-grupo" style={{ width: '100%' }}>
+                  <div className="input-container">
+                    <input
+                      type="text"
+                      id="rut"
+                      name="rut"
+                      value={newProveedorData.rut}
+                      onChange={(e) => handleChange(e, false)}
+                      className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'rut') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                      placeholder="Ej: 12.345.678-9"
+                    />
+                    {createError && createError.errors?.map((error, index) => (
+                      error.field === 'rut' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Dirección</span>
               </div>
               <div className="subproducto-inputs-grupo">
                 <div className="input-grupo" style={{ width: '100%' }}>
-                  <input
-                    type="text"
-                    id="direccion"
-                    name="direccion"
-                    value={newProveedorData.direccion}
-                    onChange={(e) => handleChange(e, false)}
-                    className="formulario-input"
-                    style={{ minWidth: '220px', textAlign: 'left' }}
-                    required
-                  />
+                  <div className="input-container">
+                    <input
+                      type="text"
+                      id="direccion"
+                      name="direccion"
+                      value={newProveedorData.direccion}
+                      onChange={(e) => handleChange(e, false)}
+                      className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'direccion') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                    {createError && createError.errors?.map((error, index) => (
+                      error.field === 'direccion' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+            </div>            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
               <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Banco</span>
                 </div>
                 <div className="subproducto-inputs-grupo">
                   <div className="input-grupo" style={{ width: '100%' }}>
-                    <select
-                      id="banco"
-                      name="banco"
-                      value={newProveedorData.banco}
-                      onChange={(e) => handleChange(e, false)}
-                      className="formulario-input"
-                      style={{ minWidth: '220px', textAlign: 'left' }}
-                      required
-                    >
-                      <option value="">Seleccione Banco</option>
-                      <option value="Banco de Chile">Banco de Chile</option>
-                      <option value="Banco Santander Chile">Banco Santander</option>
-                      <option value="Banco BCI">Banco BCI</option>
-                      <option value="Banco Itaú Chile">Banco Itaú</option>
-                      <option value="Scotiabank Chile">Scotiabank</option>
-                      <option value="Banco Estado">Banco Estado</option>
-                      <option value="Banco BICE">Banco BICE</option>
-                      <option value="Banco Security">Banco Security</option>
-                      <option value="Banco Falabella">Banco Falabella</option>
-                      <option value="Banco Ripley">Banco Ripley</option>
-                      <option value="Banco Consorcio">Banco Consorcio</option>
-                      <option value="Banco Internacional">Banco Internacional</option>
-                      <option value="Banco BTG Pactual Chile">Banco BTG Pactual</option>
-                      <option value="HSBC Bank">HSBC Bank</option>
-                      <option value="Deutsche Bank">Deutsche Bank</option>
-                    </select>
+                    <div className="input-container">
+                      <select
+                        id="banco"
+                        name="banco"
+                        value={newProveedorData.banco}
+                        onChange={(e) => handleChange(e, false)}
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'banco') ? 'input-error' : ''}`}
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                        required
+                      >
+                        <option value="">Seleccione Banco</option>
+                        <option value="Banco de Chile">Banco de Chile</option>
+                        <option value="Banco Santander">Banco Santander</option>
+                        <option value="Banco BCI">Banco BCI</option>
+                        <option value="Banco Itaú">Banco Itaú</option>
+                        <option value="Scotiabank">Scotiabank</option>
+                        <option value="Banco Estado">Banco Estado</option>
+                        <option value="Banco BICE">Banco BICE</option>
+                        <option value="Banco Security">Banco Security</option>
+                        <option value="Banco Falabella">Banco Falabella</option>
+                        <option value="Banco Ripley">Banco Ripley</option>
+                        <option value="Banco Consorcio">Banco Consorcio</option>
+                        <option value="Banco Internacional">Banco Internacional</option>
+                        <option value="Banco BTG Pactual">Banco BTG Pactual</option>
+                        <option value="HSBC Bank">HSBC Bank</option>
+                        <option value="Deutsche Bank">Deutsche Bank</option>
+                      </select>
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'banco' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -351,41 +407,64 @@ const Proveedores = () => {
                 </div>
                 <div className="subproducto-inputs-grupo">
                   <div className="input-grupo" style={{ width: '100%' }}>
-                    <input
-                      type="text"
-                      id="numeroCuenta"
-                      name="numeroCuenta"
-                      value={newProveedorData.numeroCuenta}
-                      onChange={(e) => handleChange(e, false)}
-                      className="formulario-input"
-                      style={{ minWidth: '220px', textAlign: 'left' }}
-                      required
-                    />
+                    <div className="input-container">
+                      <input
+                        type="number"
+                        id="numeroCuenta"
+                        name="numeroCuenta"
+                        value={newProveedorData.numeroCuenta}
+                        onChange={(e) => handleChange(e, false)}
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'numeroCuenta') ? 'input-error' : ''}`}
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                        required
+                        min="0"
+                        step="1"
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
+                        onKeyDown={e => {
+                          if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                        }}
+                      />
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'numeroCuenta' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+            </div>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Tipo de Cuenta</span>
               </div>
               <div className="subproducto-inputs-grupo">
                 <div className="input-grupo" style={{ width: '100%' }}>
-                  <select
-                    id="tipoCuenta"
-                    name="tipoCuenta"
-                    value={newProveedorData.tipoCuenta}
-                    onChange={(e) => handleChange(e, false)}
-                    className="formulario-input"
-                    style={{ minWidth: '220px', textAlign: 'left' }}
-                    required
-                  >
-                    <option value="">Seleccione tipo de cuenta</option>
-                    <option value="Cuenta corriente">Cuenta corriente</option>
-                    <option value="Cuenta vista">Cuenta vista</option>
-                    <option value="Cuenta de ahorro">Cuenta de ahorro</option>
-                  </select>
+                  <div className="input-container">
+                    <select
+                      id="tipoCuenta"
+                      name="tipoCuenta"
+                      value={newProveedorData.tipoCuenta}
+                      onChange={(e) => handleChange(e, false)}
+                      className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tipoCuenta') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    >
+                      <option value="">Seleccione tipo de cuenta</option>
+                      <option value="Cuenta corriente">Cuenta corriente</option>
+                      <option value="Cuenta vista">Cuenta vista</option>
+                      <option value="Cuenta de ahorro">Cuenta de ahorro</option>
+                    </select>
+                    {createError && createError.errors?.map((error, index) => (
+                      error.field === 'tipoCuenta' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -397,46 +476,57 @@ const Proveedores = () => {
                 </div>
                 <div className="subproducto-inputs-grupo">
                   <div className="input-grupo" style={{ width: '100%' }}>
-                    <input
-                      type="text"
-                      id="nombreEncargado"
-                      name="nombreEncargado"
-                      value={newProveedorData.nombreEncargado}
-                      onChange={(e) => handleChange(e, false)}
-                      className="formulario-input"
-                      style={{ minWidth: '220px', textAlign: 'left' }}
-                      required
-                    />
+                    <div className="input-container">
+                      <input
+                        type="text"
+                        id="nombreEncargado"
+                        name="nombreEncargado"
+                        value={newProveedorData.nombreEncargado}
+                        onChange={(e) => handleChange(e, false)}
+                        className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'nombreEncargado') ? 'input-error' : ''}`}
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                        required
+                      />
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'nombreEncargado' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              </div>              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Móvil Encargado</span>
                 </div>
                 <div className="subproducto-inputs-grupo">
-                  <div className="input-grupo" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>                    {newProveedorData.movilEncargado.map((movil, index) => (
-                      <div key={index} style={{ position: 'relative', width: '100%' }}>
-                        <input                          type="text"
-                          id={`movilEncargado-${index}`}
-                          name="movilEncargado"
-                          value={movil}
-                          onChange={(e) => handleChange(e, false)}                          
-                          pattern="^\+?(?:\d{9}|\d{11})$"
-                          placeholder="+56 9 XXXX XXXX"
-                          title="Ejemplo: 912345678 o +56912345678, opcional el +)"
-                          className="formulario-input"
-                          style={{ width: '100%', paddingRight: '5px', textAlign: 'left' }}
-                          required={index === 0}
-                        />
-                        <div style={{ position: 'absolute', right: '-53px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '5px' }}>
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveMovil(index, false)}
-                              className="modal-boton-anadir"
-                              style={{ backgroundColor: '#dc3545', padding: '2px 14px' }}
+                  <div className="input-grupo" style={{ width: '100%' }}>
+                    <div className="input-container">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {newProveedorData.movilEncargado.map((movil, index) => (
+                          <div key={index} style={{ position: 'relative', width: '100%' }}>
+                            <input
+                              type="text"
+                              id={`movilEncargado-${index}`}
+                              name="movilEncargado"
+                              value={movil}
+                              onChange={(e) => handleChange(e, false)}                          
+                              pattern="^\+?(?:\d{9}|\d{11})$"
+                              placeholder="+56 9 XXXX XXXX"
+                              title="Ejemplo: +56912345678)"
+                              className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'movilEncargado') ? 'input-error' : ''}`}
+                              style={{ width: '100%', paddingRight: '5px', textAlign: 'left' }}
+                              required={index === 0}
+                            />
+                            <div style={{ position: 'absolute', right: '-53px', top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: '5px' }}>
+                              {index > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveMovil(index, false)}
+                                  className="modal-boton-anadir"
+                                  style={{ backgroundColor: '#dc3545', padding: '2px 14px' }}
                             >
                               ×
                             </button>
@@ -448,12 +538,20 @@ const Proveedores = () => {
                               className="modal-boton-anadir"
                               style={{ padding: '2px 14px' }}
                             >
-                              +
-                            </button>
+                              +                            </button>
                           )}
                         </div>
                       </div>
                     ))}
+                      {createError && createError.errors?.map((error, index) => (
+                        error.field === 'movilEncargado' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -479,146 +577,226 @@ const Proveedores = () => {
             <button type="submit" className="modal-boton-crear">Guardar</button>
           </div>
 
-          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>
-            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+          <div style={{ width: '100%', margin: '0 auto', maxWidth: '800px' }}>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Nombre</span>
               </div>
-              <div className="subproducto-inputs-grupo">
-                <div className="input-grupo" style={{ width: '100%' }}>
-                  <input
-                    type="text"
-                    id="edit-nombre"
-                    name="nombre"
-                    value={formData.nombre}
-                    onChange={(e) => handleChange(e, true)}
-                    className="formulario-input"
-                    style={{ minWidth: '220px', textAlign: 'left' }}
-                    required
-                  />
+              <div className="subproducto-inputs-grupo">                <div className="input-grupo" style={{ width: '100%' }}>
+                  <div className="input-container">
+                    <input
+                      type="text"
+                      id="edit-nombre"
+                      name="nombre"
+                      value={formData.nombre}
+                      onChange={(e) => handleChange(e, true)}
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'nombre') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'nombre' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              <div className="subproducto-nombre-grupo">
+                <span className="subproducto-nombre">RUT</span>
+              </div>
+              <div className="subproducto-inputs-grupo">                <div className="input-grupo" style={{ width: '100%' }}>
+                  <div className="input-container">
+                    <input
+                      type="text"
+                      id="edit-rut"
+                      name="rut"
+                      value={formData.rut}
+                      onChange={(e) => handleChange(e, true)}
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'rut') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                      placeholder="Ej: 12.345.678-9"
+                    />
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'rut' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Dirección</span>
               </div>
               <div className="subproducto-inputs-grupo">
                 <div className="input-grupo" style={{ width: '100%' }}>
-                  <input
-                    type="text"
-                    id="edit-direccion"
-                    name="direccion"
-                    value={formData.direccion}
-                    onChange={(e) => handleChange(e, true)}
-                    className="formulario-input"
-                    style={{ minWidth: '220px', textAlign: 'left' }}
-                    required
-                  />
+                  <div className="input-container">
+                    <input
+                      type="text"
+                      id="edit-direccion"
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={(e) => handleChange(e, true)}
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'direccion') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    />
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'direccion' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
-              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Banco</span>
                 </div>
                 <div className="subproducto-inputs-grupo">
                   <div className="input-grupo" style={{ width: '100%' }}>
-                    <select
-                      id="edit-banco"
-                      name="banco"
-                      value={formData.banco}
-                      onChange={(e) => handleChange(e, true)}
-                      className="formulario-input"
-                      style={{ minWidth: '220px', textAlign: 'left' }}
-                      required
-                    >
-                      <option value="">Seleccione Banco</option>
-                      <option value="Banco de Chile">Banco de Chile</option>
-                      <option value="Banco Santander">Banco Santander</option>
-                      <option value="Banco BCI">Banco BCI</option>
-                      <option value="Banco Itaú">Banco Itaú</option>
-                      <option value="Scotiabank">Scotiabank</option>
-                      <option value="Banco Estado">Banco Estado</option>
-                      <option value="Banco BICE">Banco BICE</option>
-                      <option value="Banco Security">Banco Security</option>
-                      <option value="Banco Falabella">Banco Falabella</option>
-                      <option value="Banco Ripley">Banco Ripley</option>
-                      <option value="Banco Consorcio">Banco Consorcio</option>
-                      <option value="Banco Internacional">Banco Internacional</option>
-                      <option value="Banco BTG Pactual">Banco BTG Pactual</option>
-                      <option value="HSBC Bank">HSBC Bank</option>
-                      <option value="Deutsche Bank">Deutsche Bank</option>
-                    </select>
+                    <div className="input-container">
+                      <select
+                        id="edit-banco"
+                        name="banco"
+                        value={formData.banco}
+                        onChange={(e) => handleChange(e, true)}
+                        className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'banco') ? 'input-error' : ''}`}
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                        required
+                      >
+                        <option value="">Seleccione Banco</option>
+                        <option value="Banco de Chile">Banco de Chile</option>
+                        <option value="Banco Santander">Banco Santander</option>
+                        <option value="Banco BCI">Banco BCI</option>
+                        <option value="Banco Itaú">Banco Itaú</option>
+                        <option value="Scotiabank">Scotiabank</option>
+                        <option value="Banco Estado">Banco Estado</option>
+                        <option value="Banco BICE">Banco BICE</option>
+                        <option value="Banco Security">Banco Security</option>
+                        <option value="Banco Falabella">Banco Falabella</option>
+                        <option value="Banco Ripley">Banco Ripley</option>
+                        <option value="Banco Consorcio">Banco Consorcio</option>
+                        <option value="Banco Internacional">Banco Internacional</option>
+                        <option value="Banco BTG Pactual">Banco BTG Pactual</option>
+                        <option value="HSBC Bank">HSBC Bank</option>
+                        <option value="Deutsche Bank">Deutsche Bank</option>
+                      </select>
+                      {editError && editError.errors?.map((error, index) => (
+                        error.field === 'banco' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+              </div>              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Número de Cuenta</span>
                 </div>
                 <div className="subproducto-inputs-grupo">
                   <div className="input-grupo" style={{ width: '100%' }}>
-                    <input
-                      type="text"
-                      id="edit-numeroCuenta"
-                      name="numeroCuenta"
-                      value={formData.numeroCuenta}
-                      onChange={(e) => handleChange(e, true)}
-                      className="formulario-input"
-                      style={{ minWidth: '220px', textAlign: 'left' }}
-                      required
-                    />
+                    <div className="input-container">
+                      <input
+                        type="number"
+                        id="edit-numeroCuenta"
+                        name="numeroCuenta"
+                        value={formData.numeroCuenta}
+                        onChange={(e) => handleChange(e, true)}
+                        className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'numeroCuenta') ? 'input-error' : ''}`}
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                        required
+                        min="0"
+                        step="1"
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
+                        onKeyDown={e => {
+                          if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                        }}
+                      />
+                      {editError && editError.errors?.map((error, index) => (
+                        error.field === 'numeroCuenta' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+            </div>            <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
               <div className="subproducto-nombre-grupo">
                 <span className="subproducto-nombre">Tipo de Cuenta</span>
               </div>
               <div className="subproducto-inputs-grupo">
                 <div className="input-grupo" style={{ width: '100%' }}>
-                  <select
-                    id="edit-tipoCuenta"
-                    name="tipoCuenta"
-                    value={formData.tipoCuenta}
-                    onChange={(e) => handleChange(e, true)}
-                    className="formulario-input"
-                    style={{ minWidth: '220px', textAlign: 'left' }}
-                    required
-                  >
-                    <option value="">Seleccione tipo de cuenta</option>
-                    <option value="Cuenta corriente">Cuenta corriente</option>
-                    <option value="Cuenta vista">Cuenta vista</option>
-                    <option value="Cuenta de ahorro">Cuenta de ahorro</option>
-                  </select>
+                  <div className="input-container">
+                    <select
+                      id="edit-tipoCuenta"
+                      name="tipoCuenta"
+                      value={formData.tipoCuenta}
+                      onChange={(e) => handleChange(e, true)}
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tipoCuenta') ? 'input-error' : ''}`}
+                      style={{ minWidth: '220px', textAlign: 'left' }}
+                      required
+                    >
+                      <option value="">Seleccione tipo de cuenta</option>
+                      <option value="Cuenta corriente">Cuenta corriente</option>
+                      <option value="Cuenta vista">Cuenta vista</option>
+                      <option value="Cuenta de ahorro">Cuenta de ahorro</option>
+                    </select>
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'tipoCuenta' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
-              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>              <div className="subproducto-fila" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Nombre Encargado</span>
                 </div>
                 <div className="subproducto-inputs-grupo">
                   <div className="input-grupo" style={{ width: '100%' }}>
-                    <input
-                      type="text"
-                      id="edit-nombreEncargado"
-                      name="nombreEncargado"
-                      value={formData.nombreEncargado}
-                      onChange={(e) => handleChange(e, true)}
-                      className="formulario-input"
-                      style={{ minWidth: '220px', textAlign: 'left' }}
-                      required
-                    />
+                    <div className="input-container">
+                      <input
+                        type="text"
+                        id="edit-nombreEncargado"
+                        name="nombreEncargado"
+                        value={formData.nombreEncargado}
+                        onChange={(e) => handleChange(e, true)}
+                        className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'nombreEncargado') ? 'input-error' : ''}`}
+                        style={{ minWidth: '220px', textAlign: 'left' }}
+                        required
+                      />
+                      {editError && editError.errors?.map((error, index) => (
+                        error.field === 'nombreEncargado' && (
+                          <div key={index} className="error-message">
+                            {error.message}
+                          </div>
+                        )
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -627,19 +805,19 @@ const Proveedores = () => {
                 <div className="subproducto-nombre-grupo">
                   <span className="subproducto-nombre">Móvil Encargado</span>
                 </div>
-                <div className="subproducto-inputs-grupo">
-                  <div className="input-grupo" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>                    
+                <div className="subproducto-inputs-grupo">                  <div className="input-grupo" style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>                    
                     {formData.movilEncargado.map((movil, index) => (
                       <div key={index} style={{ position: 'relative', width: '100%' }}>
-                        <input                          type="text"
+                        <input
+                          type="text"
                           id={`movilEncargado-${index}`}
                           name="movilEncargado"
                           value={movil}
                           onChange={(e) => handleChange(e, true)}                          
                           pattern="^\+?(?:\d{9}|\d{11})$"
                           placeholder="56912345678"
-                          title="Ejemplo: 912345678 o +56912345678, opcional el +)"
-                          className="formulario-input"
+                          title="Ejemplo: +56912345678)"
+                          className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'movilEncargado') ? 'input-error' : ''}`}
                           style={{ width: '100%', paddingRight: '5px', textAlign: 'left' }}
                           required={index === 0}
                         />
@@ -666,6 +844,13 @@ const Proveedores = () => {
                           )}
                         </div>
                       </div>
+                    ))}
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'movilEncargado' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
                     ))}
                   </div>
                 </div>
@@ -735,10 +920,15 @@ const Proveedores = () => {
             </button>
           </div>
             {proveedorToView && (
-            <div className="modal-detalles-contenido">
-              <div className="datos-grid">                <div className="dato-item">
+            <div className="modal-detalles-contenido">              
+            <div className="datos-grid">
+                <div className="dato-item">
                   <span className="dato-label">Nombre:</span>
                   <span className="dato-value">{proveedorToView.nombre}</span>
+                </div>
+                 <div className="dato-item">
+                  <span className="dato-label">RUT:</span>
+                  <span className="dato-value">{proveedorToView.rut}</span>
                 </div>
                 <div className="dato-item">
                   <span className="dato-label">Banco:</span>

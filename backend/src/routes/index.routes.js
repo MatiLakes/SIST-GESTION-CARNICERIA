@@ -16,6 +16,7 @@ import personalRoutes from "./personal.routes.js";
 import controlHigieneRoutes from "./controlHigiene.routes.js";
 import documentoTemperaturaRoutes from "./documentoTemperatura.routes.js";
 import documentoTrazabilidadRoutes from "./documentoTrazabilidad.routes.js";
+import notificacionRoutes from "./notificacion.routes.js";
 
 const router = Router();
 
@@ -35,6 +36,8 @@ router
   .use("/personal", personalRoutes)
   .use("/control-higiene", controlHigieneRoutes)
   .use("/documentos-temperatura", documentoTemperaturaRoutes)
-  .use("/documentos-trazabilidad", documentoTrazabilidadRoutes);
+  .use("/documentos-trazabilidad", documentoTrazabilidadRoutes)
+  .use("/notificaciones", notificacionRoutes);
+
 
 export default router;

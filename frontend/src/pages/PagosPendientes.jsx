@@ -3,6 +3,7 @@ import useGetPagosPendientes from "@hooks/pagosPendientes/useGetPagosPendientes.
 import useCreatePagoPendiente from "@hooks/pagosPendientes/useCreatePagoPendiente.jsx";
 import useDeletePagoPendiente from "@hooks/pagosPendientes/useDeletePagoPendiente.jsx";
 import useEditPagoPendiente from "@hooks/pagosPendientes/useEditPagoPendiente.jsx";
+import { useErrorHandlerPagoPendiente } from "@hooks/pagosPendientes/useErrorHandlerPagoPendiente.jsx";
 import useGetClientes from "@hooks/clientes/useGetClientes.jsx";
 import useCreateCliente from "@hooks/clientes/useCreateCliente.jsx";
 import Table from "../components/Table";
@@ -37,6 +38,7 @@ const PagosPendientes = () => {
   const { create } = useCreatePagoPendiente(fetchPagosPendientes);
   const { remove } = useDeletePagoPendiente(fetchPagosPendientes);
   const { edit } = useEditPagoPendiente(fetchPagosPendientes);
+  const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerPagoPendiente();
   const { clientes, loading: loadingClientes, fetchClientes } = useGetClientes();
   const { create: createCliente } = useCreateCliente(fetchClientes);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -139,7 +141,6 @@ const PagosPendientes = () => {
       });
     }
   };
-
   const handleCreatePagoPendiente = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -148,11 +149,24 @@ const PagosPendientes = () => {
       fechaPedido: formData.get("fechaPedido"),
       fechaLimite: formData.get("fechaLimite"),
       estado: formData.get("estado"),
-      id_cliente: formData.get("id_cliente"),
+      clienteId: formData.get("id_cliente"),
     };
 
+    // Validar antes de enviar
+    const hasErrors = handleCreateError(newPagoPendiente);
+    if (hasErrors) {
+      return;
+    }
+
     try {
-      await create(newPagoPendiente);
+      // Convertir clienteId a id_cliente para el backend
+      const dataToSend = {
+        ...newPagoPendiente,
+        id_cliente: newPagoPendiente.clienteId
+      };
+      delete dataToSend.clienteId;
+      
+      await create(dataToSend);
       closeModal();
       // Mostrar alerta de éxito
       Swal.fire({
@@ -172,7 +186,6 @@ const PagosPendientes = () => {
       });
     }
   };
-
   const handleEditPagoPendiente = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -181,11 +194,24 @@ const PagosPendientes = () => {
       fechaPedido: formData.get("fechaPedido"),
       fechaLimite: formData.get("fechaLimite"),
       estado: formData.get("estado"),
-      id_cliente: formData.get("id_cliente"),
+      clienteId: formData.get("id_cliente"),
     };
 
+    // Validar antes de enviar
+    const hasErrors = handleEditError(updatedPagoPendiente);
+    if (hasErrors) {
+      return;
+    }
+
     try {
-      await edit(currentPagoPendiente.id, updatedPagoPendiente);
+      // Convertir clienteId a id_cliente para el backend
+      const dataToSend = {
+        ...updatedPagoPendiente,
+        id_cliente: updatedPagoPendiente.clienteId
+      };
+      delete dataToSend.clienteId;
+      
+      await edit(currentPagoPendiente.id, dataToSend);
       setIsEditModalOpen(false);
       setCurrentPagoPendiente(null);
       
@@ -206,7 +232,7 @@ const PagosPendientes = () => {
         confirmButtonColor: '#000000',
       });
     }
-  };  const handleCreateCliente = async (event) => {
+  };const handleCreateCliente = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const tipoCliente = formData.get("tipoCliente");
@@ -313,14 +339,30 @@ const PagosPendientes = () => {
     // Formateo de fechas
     if (key === 'fechaPedido' || key === 'fechaLimite') {
       if (!value) return 'No disponible';
+      
+      // Si ya es una fecha en formato YYYY-MM-DD, convertir a DD/MM/YYYY
+      if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const fecha = new Date(value + 'T00:00:00');
+        if (!isNaN(fecha.getTime())) {
+          return fecha.toLocaleDateString('es-CL', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+        }
+      }
+      
+      // Si es un objeto Date
       const date = new Date(value);
-      // Ajustar la fecha a la zona horaria local
-      const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-      return localDate.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
+      if (!isNaN(date.getTime())) {
+        return date.toLocaleDateString('es-CL', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+      
+      return 'Fecha inválida';
     }
 
     // Formateo del monto
@@ -445,87 +487,145 @@ const PagosPendientes = () => {
                 <h2 className="modal-crear-titulo">Crear Nuevo Pago Pendiente</h2>
                 <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
                 <button type="submit" className="modal-boton-crear">Guardar</button>
-              </div>
-              <div className="formulario-grupo">
+              </div>              <div className="formulario-grupo">
                 <label className="formulario-etiqueta">Monto:</label>
-                <input
-                  type="number"
-                  id="monto" 
-                  name="monto"
-                  required
-                  className="formulario-input"
-                />              </div>
-              <div className="formulario-grupo">
-                <label className="formulario-etiqueta">Fecha Pedido:</label>
-                <input
-                  type="date"
-                  id="fechaPedido"
-                  name="fechaPedido"
-                  required
-                  className="formulario-input"
-                />
-              </div>
-              <div className="formulario-grupo">
-                <label className="formulario-etiqueta">Fecha Límite:</label>
-                <input
-                  type="date"
-                  id="fechaLimite"
-                  name="fechaLimite"
-                  required
-                  className="formulario-input"
-                />
-              </div>
-              <div className="formulario-grupo">
-                <label className="formulario-etiqueta">Estado:</label>
-                <select 
-                  id="estado"
-                  name="estado"
-                  required
-                  className="formulario-input"
-                >
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Pagado">Pagado</option>
-                  <option value="Vencido">Vencido</option>
-                </select>
-              </div>              <div className="formulario-grupo">                <label className="formulario-etiqueta">Cliente:</label>
-                <div className="cliente-selector-container">
-                  <select
-                    id="id_cliente"
-                    name="id_cliente"
+                <div className="input-container">
+                  <input
+                    type="number"
+                    id="monto" 
+                    name="monto"
                     required
-                    className="formulario-input cliente-selector"
-                  >
-                    <option value="">Seleccione un cliente</option>
-                    {clientes && clientes.length > 0 ? (
-                      clientes.map((cliente) => (
-                        <option key={cliente.id} value={cliente.id}>
-                          {cliente.tipoCliente === "Empresa" 
-                            ? `${cliente.razonSocial || ''} - ${cliente.rut}` 
-                            : `${cliente.nombres || ''} ${cliente.apellidos || ''} - ${cliente.rut}`}
-                        </option>
-                      ))
-                    ) : (
-                      <option disabled>No hay clientes disponibles</option>
-                    )}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={openClienteModal}
-                    className="modal-boton-anadir"
-                  >
-                    Nuevo Cliente
-                  </button>
+                    min="0"
+                    step="1"                    
+                    pattern="^[0-9]+$"
+                    inputMode="numeric"
+                    onKeyDown={e => {
+                      if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                    }}
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'monto') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'monto' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
                 </div>
-              </div>
-              <div className="formulario-grupo">
+              </div>              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Fecha Pedido:</label>
+                <div className="input-container">
+                  <input
+                    type="date"
+                    id="fechaPedido"
+                    name="fechaPedido"
+                    required
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fechaPedido') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'fechaPedido' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Fecha Límite:</label>
+                <div className="input-container">
+                  <input
+                    type="date"
+                    id="fechaLimite"
+                    name="fechaLimite"
+                    required
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fechaLimite') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'fechaLimite' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Estado:</label>
+                <div className="input-container">
+                  <select 
+                    id="estado"
+                    name="estado"
+                    required
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'estado') ? 'input-error' : ''}`}
+                  >
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Pagado">Pagado</option>
+                    <option value="Vencido">Vencido</option>
+                  </select>
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'estado' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="formulario-grupo">
+                <label className="formulario-etiqueta">Cliente:</label>
+                <div className="input-container">
+                  <div className="cliente-selector-container">
+                    <select
+                      id="id_cliente"
+                      name="id_cliente"
+                      required
+                      className={`formulario-input cliente-selector ${createError && createError.errors?.some(error => error.field === 'clienteId') ? 'input-error' : ''}`}
+                    >
+                      <option value="">Seleccione un cliente</option>
+                      {clientes && clientes.length > 0 ? (
+                        clientes.map((cliente) => (
+                          <option key={cliente.id} value={cliente.id}>
+                            {cliente.tipoCliente === "Empresa" 
+                              ? `${cliente.razonSocial || ''} - ${cliente.rut}` 
+                              : `${cliente.nombres || ''} ${cliente.apellidos || ''} - ${cliente.rut}`}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>No hay clientes disponibles</option>
+                      )}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={openClienteModal}
+                      className="modal-boton-anadir"
+                    >
+                      Nuevo Cliente
+                    </button>
+                  </div>
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'clienteId' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>              <div className="formulario-grupo">
                 <label className="formulario-etiqueta">Factura (PDF/Imagen):</label>
-                <input
-                  type="file"
-                  id="factura"
-                  name="factura"
-                  accept=".pdf,.png,.jpg"
-                  className="formulario-input"
-                />
+                <div className="input-container">
+                  <input
+                    type="file"
+                    id="factura"
+                    name="factura"
+                    accept=".pdf,.png,.jpg"
+                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'factura') ? 'input-error' : ''}`}
+                  />
+                  {createError && createError.errors?.map((error, index) => (
+                    error.field === 'factura' && (
+                      <div key={index} className="error-message">
+                        {error.message}
+                      </div>
+                    )
+                  ))}
+                </div>
               </div>
             </form>
           </Modal>
@@ -545,93 +645,151 @@ const PagosPendientes = () => {
                   <h2 className="modal-crear-titulo">Editar Pago Pendiente</h2>
                   <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
                   <button type="submit" className="modal-boton-crear">Guardar</button>
-                </div>
-                <div className="formulario-grupo">
+                </div>                <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Monto:</label>
-                  <input
-                    type="number"
-                    id="monto"
-                    name="monto"
-                    defaultValue={currentPagoPendiente.monto}
-                    required
-                    className="formulario-input"
-                  />
-                </div>
-                <div className="formulario-grupo">
-                  <label className="formulario-etiqueta">Fecha Pedido:</label>
-                  <input
-                    type="date"                    id="fechaPedido"
-                    name="fechaPedido"
-                    defaultValue={currentPagoPendiente.fechaPedido}
-                    required
-                    className="formulario-input"
-                  />
-                </div>
-                <div className="formulario-grupo">
-                  <label className="formulario-etiqueta">Fecha Límite:</label>
-                  <input
-                    type="date"
-                    id="fechaLimite"
-                    name="fechaLimite"
-                    defaultValue={currentPagoPendiente.fechaLimite}
-                    required
-                    className="formulario-input"
-                  />
-                </div>
-                <div className="formulario-grupo">
-                  <label className="formulario-etiqueta">Estado:</label>
-                  <select 
-                    id="estado"
-                    name="estado"
-                    defaultValue={currentPagoPendiente.estado}
-                    required
-                    className="formulario-input"
-                  >
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Pagado">Pagado</option>
-                    <option value="Vencido">Vencido</option>
-                  </select>
-                </div>                
-                <div className="formulario-grupo">                  
-                  <label className="formulario-etiqueta">Cliente:</label>
-                  <div className="cliente-selector-container">                    
-                    <select
-                      id="id_cliente"
-                      name="id_cliente"
-                      defaultValue={currentPagoPendiente.cliente?.id}
+                  <div className="input-container">
+                    <input
+                      type="number"
+                      id="monto"
+                      name="monto"
+                      defaultValue={currentPagoPendiente.monto}
                       required
-                      className="formulario-input cliente-selector"
-                    >
-                      <option value="">Selecciona un Cliente</option>                      {clientes && clientes.map((cliente) => (
-                        <option key={cliente.id} value={cliente.id}>
-                          {cliente.tipoCliente === "Empresa" 
-                            ? `${cliente.razonSocial || ''} - ${cliente.rut}` 
-                            : `${cliente.nombres || ''} ${cliente.apellidos || ''} - ${cliente.rut}`}
-                        </option>
-                      ))}</select>
-                    <button
-                      type="button"
-                      onClick={openClienteModal}
-                      className="modal-boton-anadir"
-                    >
-                      Nuevo Cliente
-                    </button>
+                      min="0"
+                      step="1"                      
+                      pattern="^[0-9]+$"
+                      inputMode="numeric"
+                      onKeyDown={e => {
+                        if (e.key === '-' || e.key === '.' || e.key === ',') e.preventDefault();
+                      }}
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'monto') ? 'input-error' : ''}`}
+                    />
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'monto' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
                   </div>
-                </div>
-                <div className="formulario-grupo">
-                  <label className="formulario-etiqueta">Factura (PDF/Imagen):</label>
-                  <input
-                    type="file"
-                    id="factura"
-                    name="factura"
-                    accept=".pdf,.png,.jpg"
-                    className="formulario-input"
-                  />
-                  {currentPagoPendiente.factura && (
-                    <div style={{ marginTop: '5px', fontSize: '0.9em', color: '#666' }}>
-                      Archivo actual: {currentPagoPendiente.factura.split('/').pop()}
+                </div>                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Fecha Pedido:</label>
+                  <div className="input-container">
+                    <input
+                      type="date"
+                      id="fechaPedido"
+                      name="fechaPedido"
+                      defaultValue={currentPagoPendiente.fechaPedido}
+                      required
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fechaPedido') ? 'input-error' : ''}`}
+                    />
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'fechaPedido' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Fecha Límite:</label>
+                  <div className="input-container">
+                    <input
+                      type="date"
+                      id="fechaLimite"
+                      name="fechaLimite"
+                      defaultValue={currentPagoPendiente.fechaLimite}
+                      required
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fechaLimite') ? 'input-error' : ''}`}
+                    />
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'fechaLimite' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Estado:</label>
+                  <div className="input-container">
+                    <select 
+                      id="estado"
+                      name="estado"
+                      defaultValue={currentPagoPendiente.estado}
+                      required
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'estado') ? 'input-error' : ''}`}
+                    >
+                      <option value="Pendiente">Pendiente</option>
+                      <option value="Pagado">Pagado</option>
+                      <option value="Vencido">Vencido</option>
+                    </select>
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'estado' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Cliente:</label>
+                  <div className="input-container">
+                    <div className="cliente-selector-container">
+                      <select
+                        id="id_cliente"
+                        name="id_cliente"
+                        defaultValue={currentPagoPendiente.cliente?.id}
+                        required
+                        className={`formulario-input cliente-selector ${editError && editError.errors?.some(error => error.field === 'clienteId') ? 'input-error' : ''}`}
+                      >
+                        <option value="">Selecciona un Cliente</option>
+                        {clientes && clientes.map((cliente) => (
+                          <option key={cliente.id} value={cliente.id}>
+                            {cliente.tipoCliente === "Empresa" 
+                              ? `${cliente.razonSocial || ''} - ${cliente.rut}` 
+                              : `${cliente.nombres || ''} ${cliente.apellidos || ''} - ${cliente.rut}`}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={openClienteModal}
+                        className="modal-boton-anadir"
+                      >
+                        Nuevo Cliente
+                      </button>
                     </div>
-                  )}
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'clienteId' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Factura (PDF/Imagen):</label>
+                  <div className="input-container">
+                    <input
+                      type="file"
+                      id="factura"
+                      name="factura"
+                      accept=".pdf,.png,.jpg"
+                      className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'factura') ? 'input-error' : ''}`}
+                    />
+                    {currentPagoPendiente.factura && (
+                      <div style={{ marginTop: '5px', fontSize: '0.9em', color: '#666' }}>
+                        Archivo actual: {currentPagoPendiente.factura.split('/').pop()}
+                      </div>
+                    )}
+                    {editError && editError.errors?.map((error, index) => (
+                      error.field === 'factura' && (
+                        <div key={index} className="error-message">
+                          {error.message}
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </form>
             )}
@@ -651,8 +809,7 @@ const PagosPendientes = () => {
           <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
             <p><strong>Cliente:</strong> {clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.tipoCliente === "Empresa" 
               ? clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.razonSocial 
-              : `${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.nombres} ${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.apellidos}`}</p>
-            <p><strong>Monto:</strong> ${currentPagoPendiente.monto?.toLocaleString('es-CL')}</p>
+              : `${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.nombres} ${clientes?.find(c => c.id === currentPagoPendiente.cliente?.id)?.apellidos}`}</p>  
             <p><strong>Estado:</strong> {currentPagoPendiente.estado}</p>
           </div>
         )}

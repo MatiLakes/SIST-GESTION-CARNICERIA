@@ -2,11 +2,19 @@
 
 import { productoService } from "../services/producto.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
+import { productoValidation } from "../validations/producto.validation.js";
 
 export const productoController = {
   async crearProducto(req, res) {
     try {
       const productoData = req.body;
+      
+      // Validar los datos del producto
+      const { error } = productoValidation().validate(productoData);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
+      }
+
       const [producto, err] = await productoService.crearProducto(productoData);
       if (err) return handleErrorClient(res, 400, err);
 
@@ -67,6 +75,12 @@ export const productoController = {
     try {
       const { id } = req.params;
       const datosActualizados = req.body;
+
+      // Validar los datos actualizados del producto
+      const { error } = productoValidation().validate(datosActualizados);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
+      }
 
       const [producto, err] = await productoService.modificarProducto(id, datosActualizados);
       if (err) return handleErrorClient(res, 400, err);

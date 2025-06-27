@@ -30,10 +30,12 @@ const AnimalVaraSchema = new EntitySchema({
       type: "many-to-one",
       target: "AnimalCorte",
       joinColumn: {
-        name: "tipoAnimalNombreLista", 
-        referencedColumnName: "nombreLista",
+        name: "tipoAnimalId",
+        referencedColumnName: "id",
       },
-    },
+      nullable: false,
+      eager: true,
+    }
   },
   checks: [
     {

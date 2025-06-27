@@ -1,10 +1,18 @@
 import { controlHigieneService } from "../services/controlHigiene.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
+import { controlHigieneValidation } from "../validations/controlHigiene.validation.js";
 
-export const controlHigieneController = {
-  async crearRegistro(req, res) {
+export const controlHigieneController = {  async crearRegistro(req, res) {
     try {
-      const [registro, err] = await controlHigieneService.crearRegistro(req.body);
+      const datosRegistro = req.body;
+      
+      // Validar los datos del registro
+      const { error } = controlHigieneValidation().validate(datosRegistro);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
+      }
+
+      const [registro, err] = await controlHigieneService.crearRegistro(datosRegistro);
       if (err) return handleErrorClient(res, 400, err);
       handleSuccess(res, 201, "Registro creado", registro);
     } catch (error) {
@@ -21,11 +29,18 @@ export const controlHigieneController = {
       handleErrorServer(res, 500, error.message);
     }
   },
-
   async modificarRegistro(req, res) {
   try {
     const { id } = req.params;
-    const [registro, err] = await controlHigieneService.modificarRegistro(id, req.body);
+    const datosActualizados = req.body;
+
+    // Validar los datos actualizados
+    const { error } = controlHigieneValidation().validate(datosActualizados);
+    if (error) {
+      return handleErrorClient(res, 400, error.details[0].message);
+    }
+
+    const [registro, err] = await controlHigieneService.modificarRegistro(id, datosActualizados);
     if (err) return handleErrorClient(res, 400, err);
     handleSuccess(res, 200, "Registro modificado correctamente", registro);
   } catch (error) {

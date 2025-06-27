@@ -4,6 +4,7 @@ import useCreateControl from "@hooks/controlHigiene/useCreateControl";
 import useEditControl from "@hooks/controlHigiene/useEditControl";
 import useDeleteControl from "@hooks/controlHigiene/useDeleteControl";
 import useGetPersonal from "@hooks/personal/useGetPersonal";
+import { useErrorHandlerControlHigiene } from "@hooks/controlHigiene/useErrorHandlerControlHigiene";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
@@ -18,6 +19,7 @@ const ControlHigiene = () => {
   const { create } = useCreateControl(fetchControles);
   const { edit } = useEditControl(fetchControles);
   const { remove } = useDeleteControl(fetchControles);
+  const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerControlHigiene();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -36,14 +38,18 @@ const ControlHigiene = () => {
   const accOptions = [
     "ACC N°1", "ACC N°2", "ACC N°3", "ACC N°4",
     "ACC N°5", "ACC N°6", "ACC N°7", "No Aplica"
-  ];
-
-  const handleSubmit = async (e, isEdit = false) => {
+  ];  const handleSubmit = async (e, isEdit = false) => {
     e.preventDefault();
     const form = e.target;
+    const personalId = parseInt(form.personalId.value);
+    
+    // Buscar el objeto personal completo por ID
+    const selectedPersonal = personal.find(p => p.id === personalId);
+    
     const data = {
       fecha: form.fecha.value,
-      personalId: parseInt(form.personalId.value),
+      personal: selectedPersonal, // Enviar el objeto completo para la validación
+      personalId: personalId, // Mantener el ID para el backend si es necesario
       usoCofia: form.usoCofia.checked,
       usoMascarilla: form.usoMascarilla.checked,
       higieneManos: form.higieneManos.checked,
@@ -56,28 +62,49 @@ const ControlHigiene = () => {
       observacion: form.observacion.value || ""
     };
 
-    try {
-      if (isEdit) {
-        await edit(currentControl.id, data);
-        setIsEditModalOpen(false);
-        setCurrentControl(null);
-      } else {
-        await create(data);
-        setIsModalOpen(false);
+    // Usar el hook de validación de errores
+    const hasErrors = isEdit 
+      ? handleEditError(data, personal)
+      : handleCreateError(data, personal);    if (!hasErrors) {
+      try {
+        // Crear el objeto de datos para el backend (sin el objeto personal completo)
+        const backendData = {
+          fecha: data.fecha,
+          personalId: data.personalId,
+          usoCofia: data.usoCofia,
+          usoMascarilla: data.usoMascarilla,
+          higieneManos: data.higieneManos,
+          unasCortas: data.unasCortas,
+          afeitado: data.afeitado,
+          uniformeLimpio: data.uniformeLimpio,
+          sinAccesorios: data.sinAccesorios,
+          vbCumplimiento: data.vbCumplimiento,
+          nroAccionCorrectiva: data.nroAccionCorrectiva,
+          observacion: data.observacion
+        };
+
+        if (isEdit) {
+          await edit(currentControl.id, backendData);
+          setIsEditModalOpen(false);
+          setCurrentControl(null);
+        } else {
+          await create(backendData);
+          setIsModalOpen(false);
+        }
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: isEdit ? "Registro actualizado correctamente" : "Registro creado correctamente",
+          confirmButtonColor: "#000000"
+        });
+      } catch {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo guardar el registro",
+          confirmButtonColor: "#000000"
+        });
       }
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: isEdit ? "Registro actualizado correctamente" : "Registro creado correctamente",
-        confirmButtonColor: "#000000"
-      });
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo guardar el registro",
-        confirmButtonColor: "#000000"
-      });
     }
   };
 
@@ -132,32 +159,52 @@ const ControlHigiene = () => {
     { header: "ACC", key: "nroAccionCorrectiva" },
   ];  const renderFormContent = (isEdit = false) => {
     const defaultValues = isEdit ? currentControl : {};
+    const errorState = isEdit ? editError : createError;
+    
     return (
       <>
         <div className="formulario-grupo">
           <label className="formulario-etiqueta">Fecha:</label>
-          <input
-            type="date"
-            name="fecha"
-            defaultValue={defaultValues.fecha || ""}
-            required
-            className="formulario-input"
-          />
+          <div className="input-container">
+            <input
+              type="date"
+              name="fecha"
+              defaultValue={defaultValues.fecha || ""}
+              required
+              className={`formulario-input ${errorState && errorState.errors?.some(error => error.field === 'fecha') ? 'input-error' : ''}`}
+            />
+            {errorState && errorState.errors?.map((error, index) => (
+              error.field === 'fecha' && (
+                <div key={index} className="error-message">
+                  {error.message}
+                </div>
+              )
+            ))}
+          </div>
         </div>
 
         <div className="formulario-grupo">
           <label className="formulario-etiqueta">Trabajador:</label>
-          <select
-            name="personalId"
-            defaultValue={defaultValues.personal?.id || ""}
-            required
-            className="formulario-input"
-          >
-            <option value="">Seleccione...</option>
-            {[...personal].sort((a, b) => a.nombre.localeCompare(b.nombre)).map(p => (
-              <option key={p.id} value={p.id}>{p.nombre} ({p.seccion})</option>
+          <div className="input-container">
+            <select
+              name="personalId"
+              defaultValue={defaultValues.personal?.id || ""}
+              required
+              className={`formulario-input ${errorState && errorState.errors?.some(error => error.field === 'personal') ? 'input-error' : ''}`}
+            >
+              <option value="">Seleccione...</option>
+              {[...personal].sort((a, b) => a.nombre.localeCompare(b.nombre)).map(p => (
+                <option key={p.id} value={p.id}>{p.nombre} ({p.seccion})</option>
+              ))}
+            </select>
+            {errorState && errorState.errors?.map((error, index) => (
+              error.field === 'personal' && (
+                <div key={index} className="error-message">
+                  {error.message}
+                </div>
+              )
             ))}
-          </select>
+          </div>
         </div>
 
         <div className="formulario-grupo">
@@ -184,42 +231,67 @@ const ControlHigiene = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="formulario-grupo">
+        </div>        <div className="formulario-grupo">
           <label className="formulario-etiqueta">V°B° Cumplimiento:</label>
-          <select
-            name="vbCumplimiento"
-            defaultValue={defaultValues.vbCumplimiento || "C"}
-            required
-            className="formulario-input"
-          >
-            <option value="C">C</option>
-            <option value="NC">NC</option>
-          </select>
+          <div className="input-container">
+            <select
+              name="vbCumplimiento"
+              defaultValue={defaultValues.vbCumplimiento || "C"}
+              required
+              className={`formulario-input ${errorState && errorState.errors?.some(error => error.field === 'vbCumplimiento') ? 'input-error' : ''}`}
+            >
+              <option value="C">C</option>
+              <option value="NC">NC</option>
+            </select>
+            {errorState && errorState.errors?.map((error, index) => (
+              error.field === 'vbCumplimiento' && (
+                <div key={index} className="error-message">
+                  {error.message}
+                </div>
+              )
+            ))}
+          </div>
         </div>
 
         <div className="formulario-grupo">
           <label className="formulario-etiqueta">ACC:</label>
-          <select
-            name="nroAccionCorrectiva"
-            defaultValue={defaultValues.nroAccionCorrectiva || "No Aplica"}
-            className="formulario-input"
-          >
-            {accOptions.map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
+          <div className="input-container">
+            <select
+              name="nroAccionCorrectiva"
+              defaultValue={defaultValues.nroAccionCorrectiva || "No Aplica"}
+              className={`formulario-input ${errorState && errorState.errors?.some(error => error.field === 'nroAccionCorrectiva') ? 'input-error' : ''}`}
+            >
+              {accOptions.map(opt => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+            {errorState && errorState.errors?.map((error, index) => (
+              error.field === 'nroAccionCorrectiva' && (
+                <div key={index} className="error-message">
+                  {error.message}
+                </div>
+              )
             ))}
-          </select>
+          </div>
         </div>
 
         <div className="formulario-grupo">
           <label className="formulario-etiqueta">Observación:</label>
-          <textarea
-            name="observacion"
-            defaultValue={defaultValues.observacion || ""}
-            className="formulario-input"
-            rows="3"
-          ></textarea>
+          <div className="input-container">
+            <textarea
+              name="observacion"
+              defaultValue={defaultValues.observacion || ""}
+              className={`formulario-input ${errorState && errorState.errors?.some(error => error.field === 'observacion') ? 'input-error' : ''}`}
+              rows="3"
+            ></textarea>
+            {errorState && errorState.errors?.map((error, index) => (
+              error.field === 'observacion' && (
+                <div key={index} className="error-message">
+                  {error.message}
+                </div>
+              )
+            ))}
+          </div>
         </div>
       </>
     );
@@ -288,56 +360,33 @@ const ControlHigiene = () => {
         onRequestClose={handleDeleteModalClose}
         contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
-        className="modal-crear"
-        overlayClassName="modal-overlay"
-        style={{ content: { maxWidth: '500px' } }}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <div className="modal-crear-formulario">
-          <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Confirmar Eliminación</h2>
-            <button onClick={handleDeleteModalClose} className="modal-crear-cerrar">×</button>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este registro?</p>
+        {controlToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Trabajador:</strong> {controlToDelete.personal.nombre}</p>
+            <p><strong>Fecha:</strong> {controlToDelete.fecha}</p>
+            <p><strong>V°B°:</strong> {controlToDelete.vbCumplimiento}</p>
           </div>
-          <div className="modal-detalles-content" style={{ padding: '20px 48px' }}>
-            <p style={{ marginBottom: '20px', textAlign: 'center' }}>¿Estás seguro de que deseas eliminar este registro?</p>
-            {controlToDelete && (
-              <div className="dato-grupo">
-                <div className="datos-grid">
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">Fecha:</span>
-                    <span className="datos-valor">{controlToDelete.fecha}</span>
-                  </div>
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">Trabajador:</span>
-                    <span className="datos-valor">{controlToDelete.personal.nombre}</span>
-                  </div>
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">V°B°:</span>
-                    <span className="datos-valor">{controlToDelete.vbCumplimiento}</span>
-                  </div>
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">ACC:</span>
-                    <span className="datos-valor">{controlToDelete.nroAccionCorrectiva}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-              <button
-                onClick={confirmDelete}
-                className="btn-eliminar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Eliminar
-              </button>
-              <button
-                onClick={handleDeleteModalClose}
-                className="btn-cancelar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
+        )}
+        <div className="formulario-table-form-actions">
+          <button 
+            onClick={confirmDelete}
+            className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
+          >
+            Eliminar
+          </button>
+          <button
+            onClick={handleDeleteModalClose}
+            className="formulario-table-btn-cancel"
+          >
+            Cancelar
+          </button>
         </div>
       </Modal>
 

@@ -4,6 +4,7 @@ import useGetPedidos from "@hooks/pedidos/useGetPedidos.jsx";
 import useCreatePedido from "@hooks/pedidos/useCreatePedido.jsx";
 import useDeletePedido from "@hooks/pedidos/useDeletePedido.jsx";
 import useEditPedido from "@hooks/pedidos/useEditPedido.jsx";
+import { useErrorHandlerPedido } from "@hooks/pedidos/useErrorHandlerPedido.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
@@ -18,14 +19,14 @@ const Pedidos = () => {
   const { create } = useCreatePedido(fetchPedidos);
   const { remove } = useDeletePedido(fetchPedidos);
   const { edit } = useEditPedido(fetchPedidos);
+  const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerPedido();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentPedido, setCurrentPedido] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [pedidoToView, setPedidoToView] = useState(null);
-
-  const openModal = () => setIsModalOpen(true);
+  const [pedidoToView, setPedidoToView] = useState(null);  const openModal = () => setIsModalOpen(true);
+  
   const closeModal = () => setIsModalOpen(false);
 
   const handleViewClick = (pedido) => {
@@ -73,7 +74,6 @@ const Pedidos = () => {
       });
     }
   };
-
   const handleCreatePedido = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -84,6 +84,12 @@ const Pedidos = () => {
       productos: formData.get("productos"),
       fecha_entrega: formData.get("fechaEntrega"),
     };
+
+    // Validar antes de enviar
+    const hasErrors = handleCreateError(newPedido);
+    if (hasErrors) {
+      return;
+    }
 
     try {
       await create(newPedido);
@@ -105,8 +111,7 @@ const Pedidos = () => {
         confirmButtonColor: '#000000',
       });
     }
-  };
-  const handleEditPedido = async (event) => {
+  };  const handleEditPedido = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const updatedPedido = {
@@ -117,7 +122,11 @@ const Pedidos = () => {
       fecha_entrega: formData.get("fechaEntrega"),
     };
 
-    try {
+    // Validar antes de enviar
+    const hasErrors = handleEditError(updatedPedido);
+    if (hasErrors) {
+      return;
+    }    try {
       await edit(currentPedido.id, updatedPedido);
       setIsEditModalOpen(false);
       // Mostrar alerta de éxito
@@ -178,55 +187,96 @@ const Pedidos = () => {
             <h2 className="modal-crear-titulo">Crear Nuevo Pedido</h2>
             <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
             <button type="submit" className="modal-boton-crear">Guardar</button>
-          </div>
-          <div className="formulario-grupo">
+          </div>          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Nombre del Cliente:</label>
-            <input
-              type="text"
-              id="cliente"
-              name="cliente"
-              required
-              className="formulario-input"
-            />
+            <div className="input-container">
+              <input
+                type="text"
+                id="cliente"
+                name="cliente"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'cliente_nombre') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'cliente_nombre' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
           </div>          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Nombre del Carnicero:</label>
-            <input
-              type="text"
-              id="carnicero"
-              name="carnicero"
-              required
-              className="formulario-input"
-            />
-          </div>
-          <div className="formulario-grupo">
+            <div className="input-container">
+              <input
+                type="text"
+                id="carnicero"
+                name="carnicero"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'carnicero_nombre') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'carnicero_nombre' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
+          </div>          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Teléfono:</label>
-            <input
-              type="tel"
-              id="telefono"
-              name="telefono"
-              required
-              className="formulario-input"
-            />
-          </div>
-          <div className="formulario-grupo">
+            <div className="input-container">
+              <input
+                type="tel"
+                id="telefono"
+                name="telefono"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'telefono_cliente') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'telefono_cliente' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
+          </div>          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Productos:</label>
-            <textarea
-              id="productos"
-              name="productos"
-              required
-              className="formulario-input"
-              rows="4"
-            ></textarea>
-          </div>
-          <div className="formulario-grupo">
+            <div className="input-container">
+              <textarea
+                id="productos"
+                name="productos"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'productos') ? 'input-error' : ''}`}
+                rows="4"
+              ></textarea>
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'productos' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
+          </div>          <div className="formulario-grupo">
             <label className="formulario-etiqueta">Fecha de Entrega:</label>
-            <input
-              type="date"
-              id="fechaEntrega"
-              name="fechaEntrega"
-              required
-              className="formulario-input"
-            />
+            <div className="input-container">
+              <input
+                type="date"
+                id="fechaEntrega"
+                name="fechaEntrega"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fecha_entrega') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'fecha_entrega' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
           </div>
         </form>
       </Modal>      {/* Modal de Edición */}
@@ -245,60 +295,101 @@ const Pedidos = () => {
               <h2 className="modal-crear-titulo">Editar Pedido</h2>
               <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
               <button type="submit" className="modal-boton-crear">Guardar</button>
-            </div>
-            <div className="formulario-grupo">
+            </div>            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Nombre del Cliente:</label>
-              <input
-                type="text"
-                id="cliente"
-                name="cliente"
-                defaultValue={currentPedido.cliente_nombre}
-                required
-                className="formulario-input"
-              />
+              <div className="input-container">
+                <input
+                  type="text"
+                  id="cliente"
+                  name="cliente"
+                  defaultValue={currentPedido.cliente_nombre}
+                  required
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'cliente_nombre') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'cliente_nombre' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
             </div>            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Nombre del Carnicero:</label>
-              <input
-                type="text"
-                id="carnicero"
-                name="carnicero"
-                defaultValue={currentPedido.carnicero_nombre}
-                required
-                className="formulario-input"
-              />
-            </div>
-            <div className="formulario-grupo">
+              <div className="input-container">
+                <input
+                  type="text"
+                  id="carnicero"
+                  name="carnicero"
+                  defaultValue={currentPedido.carnicero_nombre}
+                  required
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'carnicero_nombre') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'carnicero_nombre' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Teléfono:</label>
-              <input
-                type="tel"
-                id="telefono"
-                name="telefono"
-                defaultValue={currentPedido.telefono_cliente}
-                required
-                className="formulario-input"
-              />
-            </div>
-            <div className="formulario-grupo">
+              <div className="input-container">
+                <input
+                  type="tel"
+                  id="telefono"
+                  name="telefono"
+                  defaultValue={currentPedido.telefono_cliente}
+                  required
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'telefono_cliente') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'telefono_cliente' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Productos:</label>
-              <textarea
-                id="productos"
-                name="productos"
-                defaultValue={currentPedido.productos}
-                required
-                className="formulario-input"
-                rows="4"
-              ></textarea>
-            </div>
-            <div className="formulario-grupo">
+              <div className="input-container">
+                <textarea
+                  id="productos"
+                  name="productos"
+                  defaultValue={currentPedido.productos}
+                  required
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'productos') ? 'input-error' : ''}`}
+                  rows="4"
+                ></textarea>
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'productos' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>            <div className="formulario-grupo">
               <label className="formulario-etiqueta">Fecha de Entrega:</label>
-              <input
-                type="date"
-                id="fechaEntrega"
-                name="fechaEntrega"
-                defaultValue={currentPedido.fecha_entrega}
-                required
-                className="formulario-input"
-              />
+              <div className="input-container">
+                <input
+                  type="date"
+                  id="fechaEntrega"
+                  name="fechaEntrega"
+                  defaultValue={currentPedido.fecha_entrega}
+                  required
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fecha_entrega') ? 'input-error' : ''}`}
+                />
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'fecha_entrega' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
             </div>
           </form>
         )}

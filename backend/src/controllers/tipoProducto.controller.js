@@ -2,11 +2,18 @@
 
 import { tipoProductoService } from "../services/tipoProducto.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
+import { tipoProductoValidation } from "../validations/tipoProducto.validation.js";
 
-export const tipoProductoController = {
-  async crearTipoProducto(req, res) {
+export const tipoProductoController = {  async crearTipoProducto(req, res) {
     try {
       const { nombre } = req.body;
+      
+      // Validar los datos
+      const { error } = tipoProductoValidation().validate({ nombre });
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
+      }
+
       const [tipoProducto, err] = await tipoProductoService.crearTipoProducto({ nombre });
       if (err) return handleErrorClient(res, 400, err);
 
@@ -38,11 +45,16 @@ export const tipoProductoController = {
       handleErrorServer(res, 500, error.message);
     }
   },
-
   async actualizarTipoProducto(req, res) {
     try {
       const { id } = req.params;
       const datosActualizados = req.body;
+
+      // Validar los datos actualizados
+      const { error } = tipoProductoValidation().validate(datosActualizados);
+      if (error) {
+        return handleErrorClient(res, 400, error.details[0].message);
+      }
 
       const [tipoProducto, err] = await tipoProductoService.actualizarTipoProducto(id, datosActualizados);
       if (err) return handleErrorClient(res, 400, err);
