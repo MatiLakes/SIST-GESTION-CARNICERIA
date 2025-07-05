@@ -17,7 +17,7 @@ export const AppDataSource = new DataSource({
   url: process.env.DB_URL, // Usa directamente la URL de conexión
   entities: ["src/entity/**/*.js"], // Define las entidades de TypeORM
   synchronize: process.env.NODE_ENV !== "production", // Sincroniza solo en desarrollo
-  logging: process.env.NODE_ENV === "development", // Logs solo en desarrollo
+  logging: false, // Desactivar todos los logs de SQL
 });
 
 export async function connectDB() {

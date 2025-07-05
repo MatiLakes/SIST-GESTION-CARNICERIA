@@ -8,7 +8,8 @@ import {
   FaUserFriends, 
   FaBox, 
   FaShoppingBasket,
-  FaTruck
+  FaTruck,
+  FaChartLine
 } from 'react-icons/fa';
 import { GiCow } from 'react-icons/gi';
 import NotificacionesButton from "@components/NotificacionesButton";
@@ -191,6 +192,21 @@ const Home = () => {
             <button 
               className="access-button" 
               onClick={() => handleCardClick('/subproductos')}
+            >
+              Acceder
+            </button>
+          </div>
+        </div>
+
+        {/* Tarjeta de Ganancia Estimada */}
+        <div className="quick-access-card">
+          <div className="card-header">Ganancia Estimada</div>
+          <div className="card-content">
+            <FaChartLine className="card-icon" />
+            <p className="card-description">Analiza la rentabilidad estimada del negocio basada en el inventario actual.</p>
+            <button 
+              className="access-button" 
+              onClick={() => handleCardClick('/ganancia-estimada')}
             >
               Acceder
             </button>

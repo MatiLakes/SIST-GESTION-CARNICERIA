@@ -8,6 +8,7 @@ const NotificacionesModal = ({ isOpen, onRequestClose, notificaciones }) => {
   // Separar notificaciones por tipo
   const pedidos = notificaciones.filter(n => n.tipo === 'pedido_entrega');
   const pagos = notificaciones.filter(n => n.tipo === 'pago_pendiente');
+  const productos = notificaciones.filter(n => n.tipo === 'producto_vencimiento');
 
   return (
     <Modal
@@ -50,6 +51,22 @@ const NotificacionesModal = ({ isOpen, onRequestClose, notificaciones }) => {
                   <h3>Pagos pendientes</h3>
                   <ul style={{ padding: 0, listStyle: 'none' }}>
                     {pagos.map((n, i) => (
+                      <li
+                        key={i}
+                        className="notificacion-item-modal"
+                        style={{ animationDelay: `${i * 0.15}s` }}
+                      >
+                        {n.mensaje}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {productos.length > 0 && (
+                <>
+                  <h3>Productos próximos a vencer</h3>
+                  <ul style={{ padding: 0, listStyle: 'none' }}>
+                    {productos.map((n, i) => (
                       <li
                         key={i}
                         className="notificacion-item-modal"

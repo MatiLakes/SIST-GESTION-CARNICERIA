@@ -25,6 +25,12 @@ const ProductoSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    tipoMedida: {
+      type: "enum",
+      enum: ["kilos", "unidades"],
+      default: "unidades",
+      nullable: false,
+    },
   },
   relations: {
     tipo: {

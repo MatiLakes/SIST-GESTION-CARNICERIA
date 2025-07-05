@@ -129,6 +129,7 @@ const Productos = () => {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta,
+      tipoMedida: formData.get("tipoMedida"),
       tipo: { id: tipoId },
       marca: { id: marcaId },
     };
@@ -168,6 +169,7 @@ const Productos = () => {
       nombre: formData.get("nombre"),
       variante: formData.get("variante"),
       precioVenta: parseFloat(formData.get("precioVenta")),
+      tipoMedida: formData.get("tipoMedida"),
       tipo: { id: tipoId },
       marca: { id: marcaId },
     };
@@ -303,6 +305,7 @@ const Productos = () => {
     { header: "Nombre", key: "nombre" },
     { header: "Variante", key: "variante" },
     { header: "Precio Venta", key: "precioVenta" },
+    { header: "Tipo Medida", key: "tipoMedida" },
     { header: "Tipo", key: "tipo" },
     { header: "Marca", key: "marca" }
   ];
@@ -323,6 +326,9 @@ const Productos = () => {
         customFormat={(value, key) => {
           if (key === "precioVenta" && (typeof value === "number" || !isNaN(parseFloat(value)))) {
             return `$${parseFloat(value).toLocaleString('es-CL')}`;
+          }
+          if (key === "tipoMedida") {
+            return value === "kilos" ? "Kilos" : "Unidades";
           }
           if (key === "tipo" || key === "marca") {
             return value?.nombre || '';
@@ -402,6 +408,27 @@ const Productos = () => {
               />
               {createError && createError.errors?.map((error, index) => (
                 error.field === 'precioVenta' && (
+                  <div key={index} className="error-message">
+                    {error.message}
+                  </div>
+                )
+              ))}
+            </div>
+          </div>
+          <div className="formulario-grupo">
+            <label className="formulario-etiqueta">Tipo de Medida:</label>
+            <div className="input-container">
+              <select
+                id="tipoMedida"
+                name="tipoMedida"
+                required
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'tipoMedida') ? 'input-error' : ''}`}
+              >
+                <option value="unidades">Unidades</option>
+                <option value="kilos">Kilos</option>
+              </select>
+              {createError && createError.errors?.map((error, index) => (
+                error.field === 'tipoMedida' && (
                   <div key={index} className="error-message">
                     {error.message}
                   </div>
@@ -561,6 +588,28 @@ const Productos = () => {
                 />
                 {editError && editError.errors?.map((error, index) => (
                   error.field === 'precioVenta' && (
+                    <div key={index} className="error-message">
+                      {error.message}
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>
+            <div className="formulario-grupo">
+              <label className="formulario-etiqueta">Tipo de Medida:</label>
+              <div className="input-container">
+                <select
+                  id="tipoMedida"
+                  name="tipoMedida"
+                  required
+                  defaultValue={currentProducto.tipoMedida || "unidades"}
+                  className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'tipoMedida') ? 'input-error' : ''}`}
+                >
+                  <option value="unidades">Unidades</option>
+                  <option value="kilos">Kilos</option>
+                </select>
+                {editError && editError.errors?.map((error, index) => (
+                  error.field === 'tipoMedida' && (
                     <div key={index} className="error-message">
                       {error.message}
                     </div>

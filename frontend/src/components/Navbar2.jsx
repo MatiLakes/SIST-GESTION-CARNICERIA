@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState, useEffect } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket, FaFileAlt, FaHardHat, FaTemperatureLow, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket, FaFileAlt, FaHardHat, FaTemperatureLow, FaChevronDown, FaChevronUp, FaTrashAlt, FaWarehouse, FaChartLine } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { GiMilkCarton } from "react-icons/gi";
 import { GiCow } from "react-icons/gi";
@@ -17,6 +17,8 @@ const Navbar2 = () => {
   const userRole = user?.rol;
   const [menuOpen, setMenuOpen] = useState(false);
   const [documentosOpen, setDocumentosOpen] = useState(false);
+  const [contactosOpen, setContactosOpen] = useState(false);
+  const [stockOpen, setStockOpen] = useState(false);
 
   useEffect(() => {
     document.body.setAttribute("data-navbar-collapsed", !menuOpen);
@@ -33,6 +35,29 @@ const Navbar2 = () => {
     // Abrir el menú documentos si estamos en una de sus rutas
     if (isDocumentosRoute && menuOpen) {
       setDocumentosOpen(true);
+    }
+
+    // Verificar si la ruta actual está relacionada con contactos
+    const isContactosRoute = [
+      "/clientes",
+      "/gestion-proveedores",
+      "/personal"
+    ].some(route => location.pathname.startsWith(route));
+    
+    // Abrir el menú contactos si estamos en una de sus rutas
+    if (isContactosRoute && menuOpen) {
+      setContactosOpen(true);
+    }
+
+    // Verificar si la ruta actual está relacionada con stock
+    const isStockRoute = [
+      "/recepcion-stock",
+      "/stock-actual"
+    ].some(route => location.pathname.startsWith(route));
+    
+    // Abrir el menú stock si estamos en una de sus rutas
+    if (isStockRoute && menuOpen) {
+      setStockOpen(true);
     }
   }, [location.pathname, menuOpen]);
 
@@ -66,11 +91,21 @@ const Navbar2 = () => {
     setMenuOpen((prev) => !prev);
     if (!menuOpen) {
       setDocumentosOpen(false);
+      setContactosOpen(false);
+      setStockOpen(false);
     }
   };
 
   const toggleDocumentosMenu = () => {
     setDocumentosOpen((prev) => !prev);
+  };
+
+  const toggleContactosMenu = () => {
+    setContactosOpen((prev) => !prev);
+  };
+
+  const toggleStockMenu = () => {
+    setStockOpen((prev) => !prev);
   };
 
   return (
@@ -114,12 +149,7 @@ const Navbar2 = () => {
                     <span>Pagos Pendientes</span>
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/clientes" className={location.pathname === "/clientes" ? "active" : ""}>
-                    <FaUserFriends className="nav-icon" />
-                    <span>Clientes</span>
-                  </NavLink>
-                </li>
+                {/* Menú de Contactos se agregará aquí */}
                 <li>
                   <NavLink to="/productos" className={location.pathname === "/productos" ? "active" : ""}>
                     <FaBox className="nav-icon" />
@@ -169,10 +199,99 @@ const Navbar2 = () => {
                   </>
                 )}
 
+                {/* Nuevo menú de Contactos con submenú */}
                 <li>
-                  <NavLink to="/personal" className={location.pathname === "/personal" ? "active" : ""}>
-                    <FaHardHat className="nav-icon" />
-                    <span>Personal</span>
+                  <div className="contactos-link">
+                    <NavLink 
+                      to="#" 
+                      className={`${["/clientes", "/gestion-proveedores", "/personal"].some(route => location.pathname.startsWith(route)) ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleContactosMenu();
+                      }}
+                    >
+                      <FaUserFriends className="nav-icon" />
+                      <span>Contactos</span>
+                    </NavLink>
+                    <div className="submenu-arrow" onClick={toggleContactosMenu}>
+                      {contactosOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    </div>
+                  </div>
+                </li>
+
+                {/* Submenú de Contactos */}
+                {contactosOpen && (
+                  <>
+                    <li className="submenu-item contactos-submenu">
+                      <NavLink to="/clientes" className={location.pathname === "/clientes" ? "active" : ""}>
+                        <FaUserFriends className="nav-icon" />
+                        <span>Clientes</span>
+                      </NavLink>
+                    </li>
+                    <li className="submenu-item contactos-submenu">
+                      <NavLink to="/gestion-proveedores/proveedor" className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}>
+                        <FaTruck className="nav-icon" />
+                        <span>Proveedores</span>
+                      </NavLink>
+                    </li>
+                    <li className="submenu-item contactos-submenu">
+                      <NavLink to="/personal" className={location.pathname === "/personal" ? "active" : ""}>
+                        <FaHardHat className="nav-icon" />
+                        <span>Personal</span>
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+
+                {/* Nuevo menú de Stock con submenú */}
+                <li>
+                  <div className="stock-link">
+                    <NavLink 
+                      to="#" 
+                      className={`${["/recepcion-stock", "/stock-actual"].some(route => location.pathname.startsWith(route)) ? "active" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleStockMenu();
+                      }}
+                    >
+                      <FaWarehouse className="nav-icon" />
+                      <span>Stock</span>
+                    </NavLink>
+                    <div className="submenu-arrow" onClick={toggleStockMenu}>
+                      {stockOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    </div>
+                  </div>
+                </li>
+
+                {/* Submenú de Stock */}
+                {stockOpen && (
+                  <>
+                    <li className="submenu-item">
+                      <NavLink to="/recepcion-stock" className={location.pathname === "/recepcion-stock" ? "active" : ""}>
+                        <FaBox className="nav-icon" />
+                        <span>Recepción Stock</span>
+                      </NavLink>
+                    </li>
+                    <li className="submenu-item">
+                      <NavLink to="/stock-actual" className={location.pathname === "/stock-actual" ? "active" : ""}>
+                        <FaWarehouse className="nav-icon" />
+                        <span>Stock Actual</span>
+                      </NavLink>
+                    </li>
+                  </>
+                )}
+
+                <li>
+                  <NavLink to="/mermas" className={location.pathname === "/mermas" ? "active" : ""}>
+                    <FaTrashAlt className="nav-icon" />
+                    <span>Mermas</span>
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink to="/ganancia-estimada" className={location.pathname === "/ganancia-estimada" ? "active" : ""}>
+                    <FaChartLine className="nav-icon" />
+                    <span>Ganancia Estimada</span>
                   </NavLink>
                 </li>
 
@@ -182,12 +301,7 @@ const Navbar2 = () => {
                     <span>Subproductos</span>
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/gestion-proveedores/proveedor" className={location.pathname === "/gestion-proveedores/proveedor" ? "active" : ""}>
-                    <FaTruck className="nav-icon" />
-                    <span>Gestión de Proveedores</span>
-                  </NavLink>
-                </li>
+                {/* Gestión de Proveedores se moverá al menú de Contactos */}
               </>
             )}
             <li className="logout-item">
@@ -198,6 +312,8 @@ const Navbar2 = () => {
                   handleLogoutClick();
                   setMenuOpen(false);
                   setDocumentosOpen(false);
+                  setContactosOpen(false);
+                  setStockOpen(false);
                 }}
                 className={`logout-link ${location.pathname === "/auth" ? "active" : ""}`}
               >

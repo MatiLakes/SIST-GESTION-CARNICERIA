@@ -26,6 +26,13 @@ export const productoValidation = () =>
         "number.max": "El precio de venta no puede tener más de 8 cifras.",
         "any.required": "El precio de venta es obligatorio.",
       }),
+    tipoMedida: Joi.string()
+      .valid("kilos", "unidades")
+      .default("unidades")
+      .messages({
+        "string.base": "El tipo de medida debe ser una cadena de texto.",
+        "any.only": "El tipo de medida debe ser 'kilos' o 'unidades'.",
+      }),
     tipo: Joi.object()
       .required()
       .messages({

@@ -4,6 +4,7 @@ import { AppDataSource } from "../config/configDb.js";
 import Notificacion from "../entity/notificacion.entity.js";
 import PagoPendiente from "../entity/PagoPendiente.entity.js";
 import Pedido from "../entity/pedido.entity.js";
+import RecepcionStock from "../entity/RecepcionStock.entity.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 import { Between } from "typeorm";
 
@@ -71,6 +72,19 @@ export const notificacionController = {
           fecha_entrega: Between(hoy, tresDiasDespues)
         }
       });
+      
+      // Buscar productos próximos a vencer (próximos 7 días) - DESHABILITADO
+      // const recepcionStockRepository = AppDataSource.getRepository(RecepcionStock);
+      // const sieteDiasDespues = new Date();
+      // sieteDiasDespues.setDate(hoy.getDate() + 7);
+      
+      // const productosProximosVencer = await recepcionStockRepository.find({
+      //   where: {
+      //     fechaVencimiento: Between(hoy, sieteDiasDespues)
+      //   },
+      //   relations: ["producto"]
+      // });
+      const productosProximosVencer = []; // Lista vacía para deshabilitar notificaciones de productos
 
       // Notificaciones de pedidos próximos a entregar
       let notificacionesPedidos = pedidosProximos.map(pedido => ({
@@ -91,8 +105,34 @@ export const notificacionController = {
         ...notificacionesPedidos.filter(n => !esHoy(pedidosProximos.find(p => p.id === n.entityId)?.fecha_entrega))
       ];
 
+      // Notificaciones de productos próximos a vencer
+      const notificacionesProductos = productosProximosVencer.map(recepcion => ({
+        tipo: "producto_vencimiento",
+        mensaje: esHoy(recepcion.fechaVencimiento)
+          ? `El producto ${recepcion.producto?.nombre || 'Producto'} vence hoy`
+          : `El producto ${recepcion.producto?.nombre || 'Producto'} vencerá el ${formatearFechaLocal(recepcion.fechaVencimiento)}`,
+        entityType: "RecepcionStock",
+        entityId: recepcion.id,
+        fechaVencimiento: formatearFechaLocal(recepcion.fechaVencimiento),
+        cantidad: recepcion.cantidad,
+        productoId: recepcion.producto?.id,
+        productoNombre: recepcion.producto?.nombre,
+        leida: false,
+        creadaEn: new Date(),
+      }));
+      
+      // Ordenar: primero los productos que vencen hoy
+      const productosPrioritarios = notificacionesProductos.filter(n => 
+        esHoy(productosProximosVencer.find(p => p.id === n.entityId)?.fechaVencimiento)
+      );
+      const productosNoHoy = notificacionesProductos.filter(n => 
+        !esHoy(productosProximosVencer.find(p => p.id === n.entityId)?.fechaVencimiento)
+      );
+      
+      const notificacionesProductosOrdenadas = [...productosPrioritarios, ...productosNoHoy];
+
       // Generar notificaciones en memoria (no guardar en BD, solo devolver)
-      // Unir notificaciones de pagos y pedidos
+      // Unir notificaciones de pagos, pedidos y productos
       const notificaciones = [
         ...pagosProximos.map(pago => ({
           tipo: "pago_pendiente",
@@ -105,7 +145,8 @@ export const notificacionController = {
           leida: false,
           creadaEn: new Date(),
         })),
-        ...notificacionesPedidos
+        ...notificacionesPedidos,
+        ...notificacionesProductosOrdenadas
       ];
 
       handleSuccess(res, 200, "Notificaciones generadas correctamente.", notificaciones);

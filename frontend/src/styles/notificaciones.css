@@ -1,24 +1,46 @@
 .notificaciones-global {
   position: fixed;
-  top: 100px;
+  top: calc(9vh + 20px); /* 9vh del navbar + 20px de margen */
   right: 20px;
-  z-index: 9999;
+  z-index: 10001;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  max-width: 320px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .notificaciones-global {
+    top: calc(9vh + 10px); /* Menos margen en móvil */
+    right: 10px;
+    max-width: calc(100vw - 20px);
+  }
+  
+  .notificacion-item {
+    min-width: 250px;
+    max-width: calc(100vw - 30px);
+    font-size: 0.85rem;
+    padding: 10px 14px;
+  }
 }
 
 .notificacion-item {
-  background: linear-gradient(90deg, #232526 60%, #333335 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: #ffffff;
   border-left: 4px solid #f5222d;
-  padding: 12px 18px;
-  border-radius: 6px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.11);
-  font-size: 1rem;
-  min-width: 190px;
-  max-width: 270px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  font-size: 0.9rem;
+  min-width: 280px;
+  max-width: 300px;
   animation: fadeUp 0.5s;
+  border: 1px solid rgba(255,255,255,0.15);
+  line-height: 1.4;
+  word-wrap: break-word;
+  backdrop-filter: blur(10px);
+  font-weight: 500;
 }
 
 .notificacion-item-exit {
@@ -45,25 +67,6 @@
     opacity: 0;
     transform: translateY(-40px) scale(0.98);
   }
-}
-
-.notificaciones-btn {
-  background: #000;
-  border: none;
-  border-radius: 50%;
-  box-shadow: none;
-  padding: 12px;
-  cursor: pointer;
-  position: fixed;
-  top: 140px;
-  right: 40px;
-  z-index: 10000;
-  transition: none;
-  width: 56px;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .notificaciones-btn:hover {
@@ -125,4 +128,65 @@
   margin: 0 10px 18px 10px;
   box-shadow: 0 1px 8px rgba(0,0,0,0.06);
   min-height: 60px;
+}
+
+/* Estilos específicos para notificaciones de vencimiento */
+.notificacion-item.vencimiento-alta {
+  border-left-color: #e74c3c;
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+.notificacion-item.vencimiento-media {
+  border-left-color: #f39c12;
+  background: linear-gradient(135deg, #d68910 0%, #f39c12 100%);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+}
+
+.notificacion-item.vencimiento-normal {
+  border-left-color: #27ae60;
+  background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+/* Estilos para notificaciones del modal con prioridades */
+.notificacion-item-modal.vencimiento-alta {
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+  border-left: 4px solid #e74c3c;
+}
+
+.notificacion-item-modal.vencimiento-media {
+  background: linear-gradient(135deg, #d68910 0%, #f39c12 100%);
+  border-left: 4px solid #f39c12;
+}
+
+.notificacion-item-modal.vencimiento-normal {
+  background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+  border-left: 4px solid #27ae60;
+}
+
+/* Botón de notificaciones con estilo negro original */
+.notificaciones-btn {
+  background: #000;
+  border: none;
+  border-radius: 50%;
+  box-shadow: none;
+  padding: 12px;
+  cursor: pointer;
+  position: fixed;
+  top: calc(9vh + 5px);
+  right: 40px;
+  z-index: 10001;
+  transition: none;
+  width: 56px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notificaciones-btn:hover {
+  box-shadow: 0 0 12px 2px #fff, 0 0 0 2px #222;
+  background: #111;
+  transition: box-shadow 0.2s, background 0.2s;
 }

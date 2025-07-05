@@ -1,0 +1,1240 @@
+/* Estilos para el módulo de Ganancia Estimada - Adaptado al diseño del proyecto */
+
+/* Contenedor principal */
+.ganancia-estimada-container {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "Montserrat", sans-serif;
+  padding-top: 60px;
+  transition: padding 0.3s ease, width 0.3s ease;
+}
+
+.ganancia-detalle-container {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "Montserrat", sans-serif;
+  padding-top: 60px;
+}
+
+/* Header principal */
+.ganancia-header {
+  background: #f8f8f8;
+  padding: 35px;
+  border-radius: 10px;
+  margin-bottom: 35px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+}
+
+.ganancia-header h1 {
+  margin: 0 0 15px 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.ganancia-header h1 svg {
+  color: #e8272b;
+}
+
+.btn-actualizar {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #e8272b;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-actualizar:hover {
+  background-color: #c01e22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estados de carga y error */
+.ganancia-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #666;
+  font-family: "Montserrat", sans-serif;
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  color: #e8272b;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.ganancia-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #666;
+  font-family: "Montserrat", sans-serif;
+  background: #f8f8f8;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.error-icon {
+  font-size: 3rem;
+  color: #e8272b;
+  margin-bottom: 20px;
+}
+
+.btn-retry {
+  background-color: #e8272b;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.btn-retry:hover {
+  background-color: #c01e22;
+  transform: translateY(-2px);
+}
+
+/* Resumen principal */
+.resumen-principal {
+  margin-bottom: 40px;
+}
+
+.resumen-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.resumen-card {
+  background: #f8f8f8;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.resumen-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+.resumen-card.ganancias .card-icon {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+}
+
+.resumen-card.perdidas .card-icon {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.resumen-card.neto .card-icon {
+  background-color: rgba(232, 39, 43, 0.1);
+  color: #e8272b;
+}
+
+.card-content {
+  padding: 25px;
+  text-align: center;
+}
+
+.card-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.amount {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.amount.positive {
+  color: #2ecc71;
+}
+
+.amount.negative {
+  color: #e74c3c;
+}
+
+.amount.neutral {
+  color: #e8272b;
+}
+
+.card-content small {
+  color: #666;
+  font-size: 0.9rem;
+}
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.detalle-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Botones */
+.btn-refresh, .btn-detail, .btn-back, .btn-retry, .btn-accion {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-refresh:hover, .btn-detail:hover, .btn-back:hover, .btn-retry:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-back {
+  background: #6c757d;
+  color: white;
+  border: none;
+}
+
+.btn-back:hover {
+  background: #5a6268;
+}
+
+.btn-retry {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
+
+.btn-retry:hover {
+  background: #c82333;
+}
+
+.btn-accion {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.btn-accion:hover {
+  background: #0056b3;
+}
+
+/* Estados de carga y error */
+.ganancia-loading, .ganancia-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  color: #666;
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  color: #007bff;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.error-icon {
+  font-size: 3rem;
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Resumen principal */
+.resumen-principal {
+  margin-bottom: 40px;
+}
+
+.resumen-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.resumen-categoria .resumen-cards {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.resumen-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.resumen-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  padding: 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resumen-card.ganancias .card-icon {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+}
+
+.resumen-card.perdidas .card-icon {
+  background: linear-gradient(135deg, #dc3545, #fd7e14);
+  color: white;
+}
+
+.resumen-card.ganancia-neta .card-icon {
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  color: white;
+}
+
+.resumen-card.margen .card-icon {
+  background: linear-gradient(135deg, #6f42c1, #e83e8c);
+  color: white;
+}
+
+.resumen-card.contador .card-icon {
+  background: linear-gradient(135deg, #17a2b8, #6f42c1);
+  color: white;
+}
+
+.resumen-card.promedio .card-icon {
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  color: white;
+}
+
+.resumen-card.perdidas-total .card-icon {
+  background: linear-gradient(135deg, #dc3545, #6f42c1);
+  color: white;
+}
+
+.resumen-card.total-animales .card-icon {
+  background: linear-gradient(135deg, #6c757d, #495057);
+  color: white;
+}
+
+.resumen-card.mayor-perdida .card-icon {
+  background: linear-gradient(135deg, #dc3545, #721c24);
+  color: white;
+}
+
+.card-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.card-content .amount {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* Colores para cantidades */
+.positive {
+  color: #28a745 !important;
+}
+
+.negative {
+  color: #dc3545 !important;
+}
+
+.neutral {
+  color: #6c757d !important;
+}
+
+.text-green-600 {
+  color: #28a745 !important;
+}
+
+.text-red-600 {
+  color: #dc3545 !important;
+}
+
+.text-gray-600 {
+  color: #6c757d !important;
+}
+
+/* Categorías de ganancia */
+.categorias-ganancia {
+  margin-bottom: 40px;
+}
+
+.categorias-ganancia h2 {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.categoria-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.categoria-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 5px solid;
+}
+
+.categoria-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.categoria-card.animal-vara {
+  border-left-color: #8B4513;
+}
+
+.categoria-card.productos {
+  border-left-color: #007bff;
+}
+
+.categoria-card.subproductos {
+  border-left-color: #28a745;
+}
+
+.categoria-card.mermas {
+  border-left-color: #dc3545;
+}
+
+.categoria-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.categoria-card.animal-vara .categoria-icon {
+  color: #8B4513;
+}
+
+.categoria-card.productos .categoria-icon {
+  color: #007bff;
+}
+
+.categoria-card.subproductos .categoria-icon {
+  color: #28a745;
+}
+
+.categoria-card.mermas .categoria-icon {
+  color: #dc3545;
+}
+
+.categoria-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.4rem;
+  color: #333;
+}
+
+.categoria-content p {
+  margin: 0 0 20px 0;
+  color: #666;
+}
+
+.btn-ver-detalle {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-ver-detalle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+/* Alertas y recomendaciones */
+.alertas-recomendaciones {
+  margin-bottom: 40px;
+}
+
+.alertas-recomendaciones h2 {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.alertas-container, .recomendaciones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.alerta, .recomendacion {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid;
+}
+
+.alerta-danger, .recomendacion-warning {
+  background: #f8d7da;
+  border-left-color: #dc3545;
+  color: #721c24;
+}
+
+.alerta-warning {
+  background: #fff3cd;
+  border-left-color: #ffc107;
+  color: #856404;
+}
+
+.alerta-success, .recomendacion-success {
+  background: #d4edda;
+  border-left-color: #28a745;
+  color: #155724;
+}
+
+.recomendacion-info {
+  background: #d1ecf1;
+  border-left-color: #17a2b8;
+  color: #0c5460;
+}
+
+.alerta h4, .recomendacion h4 {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+}
+
+.alerta p, .recomendacion p {
+  margin: 0;
+}
+
+/* Tablas */
+.tabla-detalle {
+  margin-bottom: 40px;
+}
+
+.tabla-detalle h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.tabla-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.tabla-ganancia {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabla-ganancia th {
+  background: linear-gradient(135deg, #495057, #6c757d);
+  color: white;
+  padding: 15px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tabla-ganancia td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
+}
+
+.tabla-ganancia tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.tabla-ganancia tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.currency-cell {
+  text-align: right;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.cantidad-cell {
+  text-align: right;
+  font-weight: 500;
+}
+
+.fecha-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.producto-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.producto-info .variante {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 5px;
+}
+
+.producto-info-merma {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.producto-info-merma .lista {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.estado-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.estado-badge.ganancia {
+  background: #d4edda;
+  color: #155724;
+}
+
+.estado-badge.perdida {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.tipo-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.tipo-producto {
+  background: #cce7ff;
+  color: #0056b3;
+}
+
+.tipo-subproducto {
+  background: #d4f6d4;
+  color: #155724;
+}
+
+.tipo-carne {
+  background: #f4e4bc;
+  color: #8B4513;
+}
+
+.tipo-default {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.tipos-badge {
+  background: #e9ecef;
+  color: #495057;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.causa-cell {
+  max-width: 200px;
+}
+
+.causa-texto {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Estadísticas */
+.estadisticas-adicionales, .estadisticas-tipos {
+  margin-bottom: 40px;
+}
+
+.estadisticas-adicionales h2, .estadisticas-tipos h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.estadisticas-grid, .tipos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.estadistica-card, .tipo-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.estadistica-card:hover, .tipo-card:hover {
+  transform: translateY(-3px);
+}
+
+.estadistica-card h4, .tipo-card h4 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.estadistica-valor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tipo-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tipo-header svg {
+  font-size: 1.5rem;
+}
+
+.tipo-stats p {
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Top productos y causas */
+.top-productos, .top-causas {
+  margin-bottom: 40px;
+}
+
+.top-productos h2, .top-causas h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.top-productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+}
+
+.top-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.top-card h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.top-lista, .causas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.top-item, .causa-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.top-item:hover, .causa-item:hover {
+  background: #e9ecef;
+}
+
+.posicion {
+  background: #007bff;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.top-item .producto-info, .causa-info {
+  flex: 1;
+}
+
+.top-item .ganancia, .perdida {
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content.large {
+  max-width: 900px;
+}
+
+.modal-header {
+  padding: 25px 30px 20px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px 30px 30px;
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.detalle-section {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.detalle-section h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detalle-section p {
+  margin: 8px 0;
+}
+
+.detalle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.info-item span {
+  color: #333;
+}
+
+.tabla-detalle-modal {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.tabla-detalle-modal th {
+  background: #495057;
+  color: white;
+  padding: 10px;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.tabla-detalle-modal td {
+  padding: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.producto-detalle {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.producto-detalle h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.producto-info-detallada p {
+  margin: 8px 0;
+}
+
+/* Estilos específicos para la página completa */
+.detalle-seccion {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e1e5e9;
+}
+
+.detalle-seccion.mermas {
+  border-left: 4px solid #e74c3c;
+}
+
+.seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.seccion-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2c3e50;
+}
+
+.seccion-resumen {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.ganancia-total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #27ae60;
+  background: #d5f4e6;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+.perdida-total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e74c3c;
+  background: #fdeaea;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+.tabla-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+}
+
+.detalle-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.detalle-tabla th {
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detalle-tabla td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: middle;
+}
+
+.detalle-tabla tr:hover {
+  background-color: #f8f9fa;
+}
+
+.animal-info,
+.producto-info,
+.subproducto-info,
+.merma-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.animal-info strong,
+.producto-info strong,
+.subproducto-info strong,
+.merma-item strong {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.animal-info small,
+.producto-info small,
+.merma-item small {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.tipo-merma {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.tipo-merma.producto {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.tipo-merma.subproducto {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.tipo-merma.carne {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+.no-data {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 30px;
+}
+
+/* Alertas específicas para la página completa */
+.alertas-seccion {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e1e5e9;
+}
+
+.alertas-seccion h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2c3e50;
+}
+
+.alertas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Responsive para la página completa */
+@media (max-width: 768px) {
+  .seccion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .detalle-tabla {
+    font-size: 0.8rem;
+  }
+  
+  .detalle-tabla th,
+  .detalle-tabla td {
+    padding: 8px 4px;
+  }
+}

@@ -68,6 +68,13 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra suave */
 }
 
+/* Asegura el mismo efecto para elementos del submenú de contactos */
+.navbar2 ul li.contactos-submenu:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
 /* Efecto hover en los enlaces */
 .navbar2 a:hover {
     text-decoration: underline;
@@ -199,7 +206,8 @@
     transform: translateY(-50%);
 }
 
-.menu-item.submenu-active {
+.menu-item.submenu-active,
+.menu-item.contactos-active {
     background-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -225,6 +233,12 @@
 
 .submenu-item a {
     padding-left: 35px;
+}
+
+/* Estilos específicos para el submenú de contactos */
+.contactos-submenu .submenu-item {
+    padding-left: 15px;
+    background-color: rgba(255, 255, 255, 0.03);
 }
 
 /* Estilos responsivos */
@@ -387,8 +401,8 @@
     }
 }
 
-/* Estilos para el contenedor de documentos */
-.documentos-link {
+/* Estilos para el contenedor de documentos, contactos y stock */
+.documentos-link, .contactos-link, .stock-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -398,7 +412,7 @@
     padding-right: 15px;
 }
 
-.documentos-link a {
+.documentos-link a, .contactos-link a, .stock-link a {
     flex: 1;
     display: flex;
     align-items: center;
@@ -406,7 +420,7 @@
     width: calc(100% - 30px);
 }
 
-.documentos-link .submenu-arrow {
+.documentos-link .submenu-arrow, .contactos-link .submenu-arrow, .stock-link .submenu-arrow {
     position: relative;
     right: 0;
     top: 0;
@@ -421,7 +435,9 @@
 }
 
 /* Ajustes para mantener el hover correcto */
-.navbar2 li:hover .documentos-link {
+.navbar2 li:hover .documentos-link, 
+.navbar2 li:hover .contactos-link,
+.navbar2 li:hover .stock-link {
     background-color: transparent;
 }
 

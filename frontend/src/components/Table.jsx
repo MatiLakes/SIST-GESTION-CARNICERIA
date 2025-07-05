@@ -31,6 +31,8 @@ const Table = ({
   showExcelButton = true, // Nueva prop para controlar la visibilidad del botón de exportar a Excel
   entidad = "", // Nueva prop para identificar la entidad
   customFormat = null, // Nueva prop para formatear datos de forma personalizada
+  createButtonText = "Crear", // Nueva prop para personalizar el texto del botón crear
+  createButtonIcon = <IoAddSharp />, // Nueva prop para personalizar el icono del botón crear
 }) => {  const [searchTerm, setSearchTerm] = useState("");  const [filteredData, setFilteredData] = useState(() => {
     // Verificar que hay columnas y data antes de ordenar
     if (columns.length === 0 || data.length === 0) {
@@ -238,7 +240,7 @@ const Table = ({
     } else if (typeof obj === "object" && obj !== null) {
       // Si el objeto tiene una propiedad nombre, mostrar solo el nombre
       if (obj.nombre !== undefined) {
-        return obj.nombre;
+        return String(obj.nombre);
       }
       // Si es una cadena que contiene id: y nombre:, extraer solo el nombre
       if (typeof obj.toString === 'function') {
@@ -248,9 +250,14 @@ const Table = ({
           if (match) return match[1].trim();
         }
       }
-      return Object.entries(obj)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(", ");
+      // Convertir objeto a string seguro
+      try {
+        return Object.entries(obj)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(", ");
+      } catch (error) {
+        return "Datos no disponibles";
+      }
     } else if (typeof obj === "boolean") {
       return obj ? "Sí" : "No";
     } else if (typeof obj === "string" && obj.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -264,8 +271,9 @@ const Table = ({
         });
       }
     }
-    return obj || "No disponible";
-  };  const formatData = (value, key) => {
+    // Asegurar que siempre devolvemos un string
+    return obj != null ? String(obj) : "No disponible";
+  };  const formatData = (value, key, row = null) => {
     // Verificar si es una fecha en formato YYYY-MM-DD y formatearla primero
     if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
       const fecha = new Date(value + 'T00:00:00');
@@ -280,11 +288,21 @@ const Table = ({
     
     // Si hay función personalizada, aplicarla para valores que no son fechas
     if (customFormat) {
-      return customFormat(value, key);
+      const result = customFormat(value, key, row);
+      // Asegurar que el resultado sea válido para React
+      if (result != null && typeof result === 'object' && !React.isValidElement(result)) {
+        return String(result);
+      }
+      return result;
     }
     
     // De lo contrario, usar formateo genérico
-    return formatObject(value);
+    const result = formatObject(value);
+    // Asegurar que el resultado sea válido para React
+    if (result != null && typeof result === 'object' && !React.isValidElement(result)) {
+      return String(result);
+    }
+    return result;
   };
 
   // Paginación de la tabla
@@ -359,7 +377,7 @@ const Table = ({
           </div>
           <div className="buttons-container">            {showCreateButton && (
               <button onClick={onCreate} className="create-button-table">
-                <IoAddSharp /> Crear
+                {createButtonIcon} {createButtonText}
               </button>
             )}
             {showEditAllButton && (
@@ -402,14 +420,17 @@ const Table = ({
                   {col.header} {sortConfig.key === col.key && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                 </th>
               ))}
-              <th style={{ textAlign: "right" }}>Acciones</th>
+              {(showEditButton || showDeleteButton || showViewButton) && (
+                <th style={{ textAlign: "right" }}>Acciones</th>
+              )}
             </tr>
           </thead>
           <tbody>
             {currentRows.length > 0 ? (
               currentRows.map((row, rowIndex) => {
                 if (row) {
-                  return (                    <tr 
+                  return (
+                    <tr 
                       key={rowIndex} 
                       onClick={() => onView && onView(row)}
                       style={{ cursor: onView ? 'pointer' : 'default' }}
@@ -417,7 +438,8 @@ const Table = ({
                       {columns.map((col) => {
                         const cellValue = row[col.key];
                         return (
-                          <td key={col.key}>                            {editAll && (col.key === "precio" || col.key === "cantidad") ? (
+                          <td key={col.key}>
+                            {editAll && (col.key === "precio" || col.key === "cantidad") ? (
                               <input
                                 type="text"
                                 value={cellValue || ""}
@@ -425,7 +447,8 @@ const Table = ({
                                   e.stopPropagation(); // Evitar que el clic se propague a la fila
                                   handleCellChange(e.target.value, rowIndex, col.key);
                                 }}
-                              />                            ) : (
+                              />
+                            ) : (
                               // Si hay una función de celda personalizada, úsala
                               col.cell ? 
                                 col.cell(row) :
@@ -443,39 +466,42 @@ const Table = ({
                                       break;
                                     }
                                   }
-                                  return formatData(value || "No disponible", col.key);
-                                })() : formatData(cellValue || "No disponible", col.key)
+                                  return formatData(value || "No disponible", col.key, row);
+                                })() : formatData(cellValue || "No disponible", col.key, row)
                             )}
                           </td>
                         );
-                      })}                      <td onClick={(e) => e.stopPropagation()}>
-                        <div className="acciones-table-container">
-                          {showEditButton && (
-                            <button
-                              onClick={() => onEdit(row)}
-                              className="acciones-table edit-button"
-                            >
-                              <MdOutlineEdit />
-                            </button>
-                          )}
-                          {showDeleteButton && (
-                            <button
-                              onClick={() => onDelete(row)}
-                              className="acciones-table delete-button"
-                            >
-                              <AiTwotoneDelete />
-                            </button>
-                          )}
-                          {showViewButton && (
-                            <button
-                              onClick={() => onView(row)}
-                              className="acciones-table view-button"
-                            >
-                              <FaRegEye />
-                            </button>
-                          )}
-                        </div>
-                      </td>
+                      })}
+                      {(showEditButton || showDeleteButton || showViewButton) && (
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <div className="acciones-table-container">
+                            {showEditButton && (
+                              <button
+                                onClick={() => onEdit(row)}
+                                className="acciones-table edit-button"
+                              >
+                                <MdOutlineEdit />
+                              </button>
+                            )}
+                            {showDeleteButton && (
+                              <button
+                                onClick={() => onDelete(row)}
+                                className="acciones-table delete-button"
+                              >
+                                <AiTwotoneDelete />
+                              </button>
+                            )}
+                            {showViewButton && (
+                              <button
+                                onClick={() => onView(row)}
+                                className="acciones-table view-button"
+                              >
+                                <FaRegEye />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   );
                 }
@@ -483,11 +509,12 @@ const Table = ({
               })
             ) : (
               <tr>
-                <td colSpan={columns.length + 1} className="no-results">
+                <td colSpan={columns.length + (showEditButton || showDeleteButton || showViewButton ? 1 : 0)} className="no-results">
                   No se encontraron resultados.
                 </td>
               </tr>
-            )}          </tbody>
+            )}
+          </tbody>
         </table>
         <div className="paginacion-table">          {showExcelButton && entidad && (
             <button 

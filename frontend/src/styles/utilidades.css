@@ -1,0 +1,92 @@
+.campo-ayuda {
+    color: #666;
+    font-size: 12px;
+    display: block;
+    margin-top: 2px;
+    font-style: italic;
+}
+
+/* Estilos para notificaciones de productos por vencer */
+.productos-vencimiento-alerta {
+    background-color: #fff3e0;
+    border: 1px solid #ffcc80;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.productos-vencimiento-alerta h3 {
+    color: #e65100;
+    margin-top: 0;
+    font-size: 18px;
+    border-bottom: 1px solid #ffcc80;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.productos-vencimiento-alerta h3 i {
+    color: #e65100;
+}
+
+.productos-vencimiento-lista {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.producto-vencimiento-item {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.producto-vencimiento-item:hover {
+    background-color: #ffe0b2;
+}
+
+.vence-hoy {
+    background-color: #ffebee;
+    border-left: 4px solid #e53935;
+    color: #b71c1c;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.vence-pronto {
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+    color: #ff6f00;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Estilo específico para productos vencidos */
+.vence-expirado {
+    background-color: #b71c1c;
+    color: white;
+    font-weight: bold;
+    border-left: 4px solid #6a0000;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Estilos adicionales para panel de productos vencidos categorizado */
+.vencimiento-categoria {
+    border-bottom: 1px solid #ddd;
+    padding: 8px 0;
+    margin: 5px 0;
+    list-style-type: none;
+    font-size: 15px;
+}

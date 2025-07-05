@@ -1,0 +1,60 @@
+/* Estilos específicos para la tabla de Stock Actual */
+
+/* Personalizar el botón "Actualizar" */
+.categoria-container .create-button-table {
+  background: #e74c3c;
+  color: white;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.categoria-container .create-button-table:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+}
+
+/* Estilo para el título de la tabla */
+.categoria-container .table-titulo {
+  color: #333;
+  font-weight: 700;
+  border-bottom: 3px solid #e74c3c;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+}
+
+/* Resaltar las celdas importantes */
+.categoria-container table td:nth-child(3) { /* Columna CANTIDAD */
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.categoria-container table td:nth-child(7) { /* Columna PRECIO VENTA */
+  font-weight: 700;
+  color: #e74c3c;
+  text-align: right;
+}
+
+/* Estilos para el tipo de medida */
+.categoria-container table td:nth-child(4) { /* Columna TIPO MEDIDA */
+  font-style: italic;
+  color: #666;
+  text-align: center;
+}
+
+/* Centrar la columna de número de recepciones */
+.categoria-container table td:nth-child(8) { /* Columna RECEPCIONES */
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Estilo para los headers */
+.categoria-container table th {
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Ajustar alineación de headers específicos */
+.categoria-container table th:nth-child(7) { /* Header PRECIO VENTA */
+  text-align: right;
+}

@@ -20,6 +20,10 @@ import ControlHigiene from './pages/ControlHigiene';
 import DocumentoTemperatura from './pages/DocumentoTemperatura';
 import DocumentoTrazabilidad from './pages/DocumentoTrazabilidad';
 import Personal from './pages/Personal';
+import RecepcionStock from './pages/RecepcionStock';
+import StockActual from './pages/StockActual';
+import Mermas from './pages/Mermas';
+import GananciaEstimada from './pages/GananciaEstimada';
 
 
 import '@styles/styles.css';
@@ -124,6 +128,42 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Personal />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/recepcion-stock',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <RecepcionStock />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/stock-actual',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <StockActual />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/mermas',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Mermas />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: '/ganancia-estimada',
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <GananciaEstimada />
           </ProtectedRoute>
         ),
       },

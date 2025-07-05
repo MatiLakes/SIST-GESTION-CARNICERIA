@@ -17,6 +17,11 @@ import controlHigieneRoutes from "./controlHigiene.routes.js";
 import documentoTemperaturaRoutes from "./documentoTemperatura.routes.js";
 import documentoTrazabilidadRoutes from "./documentoTrazabilidad.routes.js";
 import notificacionRoutes from "./notificacion.routes.js";
+import recepcionStockRoutes from "./recepcionStock.routes.js";
+import stockActualRoutes from "./stockActual.routes.js";
+import mermaRoutes from "./merma.routes.js";
+import gananciaEstimadaRoutes from "./gananciaEstimada.routes.js";
+
 
 const router = Router();
 
@@ -37,7 +42,11 @@ router
   .use("/control-higiene", controlHigieneRoutes)
   .use("/documentos-temperatura", documentoTemperaturaRoutes)
   .use("/documentos-trazabilidad", documentoTrazabilidadRoutes)
-  .use("/notificaciones", notificacionRoutes);
+  .use("/notificaciones", notificacionRoutes)
+  .use("/recepcion-stock", recepcionStockRoutes)
+  .use("/stock-actual", stockActualRoutes)
+  .use("/mermas", mermaRoutes)
+  .use("/ganancia-estimada", gananciaEstimadaRoutes);
 
 
 export default router;

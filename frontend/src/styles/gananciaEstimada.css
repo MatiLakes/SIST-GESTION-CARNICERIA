@@ -1,0 +1,692 @@
+/* Estilos para el módulo de Ganancia Estimada - Adaptado al diseño del proyecto */
+
+/* Contenedor principal - Adaptado del home.css */
+.ganancia-estimada-container {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: "Montserrat", sans-serif;
+  padding-top: 60px;
+  transition: padding 0.3s ease, width 0.3s ease;
+  /* Layout matching home page */
+  padding-left: 120px;
+  padding-right: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  width: calc(100% - 70px);
+}
+
+/* Ajuste cuando la navbar está desplegada */
+body:not([data-navbar-collapsed="true"]) .ganancia-estimada-container {
+  padding-left: 280px;
+  width: calc(100% - 260px);
+}
+
+/* Ajuste para cuando la navbar está oculta */
+body[data-navbar-collapsed="true"] .ganancia-estimada-container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 90px;
+}
+
+/* Título de página - Estilo como en Pedidos */
+.page-title {
+  font-size: 1.8rem;
+  margin: 40px 0 25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e8272b;
+  color: #333;
+  font-weight: bold;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Estados de carga y error */
+.ganancia-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #666;
+  font-family: "Montserrat", sans-serif;
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  color: #e8272b;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.ganancia-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: #666;
+  font-family: "Montserrat", sans-serif;
+  background: #f8f8f8;
+  border-radius: 10px;
+  margin: 20px;
+}
+
+.error-icon {
+  font-size: 3rem;
+  color: #e8272b;
+  margin-bottom: 20px;
+}
+
+.btn-retry {
+  background-color: #e8272b;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.btn-retry:hover {
+  background-color: #c01e22;
+  transform: translateY(-2px);
+}
+
+/* Resumen principal - Adaptado del dashboard */
+.resumen-principal {
+  margin-bottom: 40px;
+}
+
+.resumen-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+}
+
+.resumen-card {
+  background: #f8f8f8;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  margin-bottom: 10px;
+}
+
+.resumen-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Header de cada card - usando el mismo estilo que dashboard-card-header */
+.resumen-card-header {
+  background-color: #2b2727;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  margin-right: 12px;
+  color: white;
+}
+
+.resumen-card.ganancias .resumen-card-header {
+  background-color: #2b2727;
+}
+
+.resumen-card.perdidas .resumen-card-header {
+  background-color: #2b2727;
+}
+
+.resumen-card.neto .resumen-card-header {
+  background-color: #2b2727;
+}
+
+.card-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.card-content h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.card-content p {
+  color: #666;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.amount {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.amount.positive {
+  color: #2ecc71;
+}
+
+.amount.negative {
+  color: #e8272b;
+}
+
+.amount.neutral {
+  color: #666;
+}
+
+.card-content small {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.amount.negative {
+  color: #e74c3c;
+}
+
+.amount.neutral {
+  color: #e8272b;
+}
+
+.card-content small {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Secciones de detalle - Adaptado del estilo de section-title */
+.detalle-seccion {
+  margin-bottom: 40px;
+}
+
+.seccion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e8272b;
+}
+
+.seccion-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+}
+
+.seccion-header h2 svg {
+  color: #e8272b;
+}
+
+.seccion-resumen {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Estilos específicos para números y cantidades */
+.detalle-tabla .amount {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ganancia-total {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e8272b;
+}
+
+.perdida-total {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+/* Mensajes informativos */
+.sin-datos, .no-data {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
+  background: #f8f8f8;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+/* Alertas y recomendaciones */
+.alertas-seccion {
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.alerta:last-child {
+  margin-bottom: 0;
+}
+
+.alerta.critica {
+  background: rgba(231, 76, 60, 0.1);
+  border-left: 4px solid #e74c3c;
+}
+
+.alerta.advertencia {
+  background: rgba(243, 156, 18, 0.1);
+  border-left: 4px solid #f39c12;
+}
+
+.alerta.info {
+  background: rgba(52, 152, 219, 0.1);
+  border-left: 4px solid #3498db;
+}
+
+.alerta-icono {
+  font-size: 1.2rem;
+  margin-top: 2px;
+}
+
+.alerta.critica .alerta-icono {
+  color: #e74c3c;
+}
+
+.alerta.advertencia .alerta-icono {
+  color: #f39c12;
+}
+
+.alerta.info .alerta-icono {
+  color: #3498db;
+}
+
+.alerta-contenido h4 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.alerta-contenido p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Badges y etiquetas */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.badge-alta {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.badge-media {
+  background: rgba(243, 156, 18, 0.1);
+  color: #f39c12;
+}
+
+.badge-baja {
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+}
+
+.ganancia-total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2ecc71;
+  background: rgba(46, 204, 113, 0.1);
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+.perdida-total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+/* Tablas - Estilo consistente con el proyecto */
+.tabla-container {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: white;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.detalle-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-family: "Montserrat", sans-serif;
+  background: white;
+}
+
+.detalle-tabla th {
+  background: #2b2727;
+  color: white;
+  font-weight: 600;
+  padding: 15px 12px;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.detalle-tabla td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: middle;
+  background: white;
+  font-size: 0.85rem;
+}
+
+.detalle-tabla tbody tr:hover {
+  background-color: rgba(232, 39, 43, 0.05);
+}
+
+.detalle-tabla tr:last-child td {
+  border-bottom: none;
+}
+
+/* Información de elementos */
+.animal-info,
+.producto-info,
+.subproducto-info,
+.merma-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.animal-info strong,
+.producto-info strong,
+.subproducto-info strong,
+.merma-item strong {
+  font-weight: 600;
+  color: #333;
+}
+
+.animal-info small,
+.producto-info small,
+.merma-item small {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+/* Tipos de merma */
+.tipo-merma {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.tipo-merma.producto {
+  background: rgba(52, 152, 219, 0.1);
+  color: #3498db;
+}
+
+.tipo-merma.subproducto {
+  background: rgba(243, 156, 18, 0.1);
+  color: #f39c12;
+}
+
+.tipo-merma.carne {
+  background: rgba(232, 39, 43, 0.1);
+  color: #e8272b;
+}
+
+/* Márgenes */
+.margen {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.margen.positive {
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+}
+
+.margen.negative {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.margen.neutral {
+  background: rgba(149, 165, 166, 0.1);
+  color: #95a5a6;
+}
+
+/* Sin datos */
+.no-data {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 40px;
+  font-size: 1rem;
+}
+
+/* Alertas */
+.alertas-seccion {
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.alertas-seccion h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+}
+
+.alertas-seccion h3 svg {
+  color: #e8272b;
+}
+
+.alertas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid;
+}
+
+.alerta-danger {
+  background: rgba(231, 76, 60, 0.1);
+  border-left-color: #e74c3c;
+}
+
+.alerta-warning {
+  background: rgba(243, 156, 18, 0.1);
+  border-left-color: #f39c12;
+}
+
+.alerta-success {
+  background: rgba(46, 204, 113, 0.1);
+  border-left-color: #2ecc71;
+}
+
+.alerta svg {
+  font-size: 1.5rem;
+  margin-top: 2px;
+}
+
+.alerta-danger svg {
+  color: #e74c3c;
+}
+
+.alerta-warning svg {
+  color: #f39c12;
+}
+
+.alerta-success svg {
+  color: #2ecc71;
+}
+
+.alerta h4 {
+  margin: 0 0 5px 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.alerta p {
+  margin: 0;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Animaciones */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive - Adaptado del home.css */
+@media (max-width: 768px) {
+  .ganancia-estimada-container {
+    padding: 15px;
+    padding-top: 60px;
+    margin-left: 60px;
+    padding-left: 80px;
+    padding-right: 20px;
+    width: calc(100% - 40px);
+  }
+  
+  body:not([data-navbar-collapsed="true"]) .ganancia-estimada-container {
+    padding-left: 240px;
+    width: calc(100% - 220px);
+  }
+  
+  .resumen-cards {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .resumen-cards {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .seccion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .seccion-header h2 {
+    font-size: 1.3rem;
+  }
+  
+  .detalle-tabla {
+    font-size: 0.8rem;
+  }
+  
+  .detalle-tabla th,
+  .detalle-tabla td {
+    padding: 8px 4px;
+  }
+  
+  .detalle-seccion {
+    padding: 15px;
+  }
+  
+  .alertas-seccion {
+    padding: 15px;
+  }
+  
+  .alerta {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ganancia-estimada-container {
+    padding: 10px;
+    padding-top: 50px;
+    padding-left: 70px;
+    width: calc(100% - 20px);
+  }
+  
+  body:not([data-navbar-collapsed="true"]) .ganancia-estimada-container {
+    padding-left: 80px;
+  }
+  
+  .resumen-cards {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .page-title {
+    font-size: 1.6rem;
+  }
+  
+  .card-content {
+    padding: 15px;
+  }
+  
+  .amount {
+    font-size: 1.3rem;
+  }
+  
+  .detalle-tabla th,
+  .detalle-tabla td {
+    padding: 8px 4px;
+  }
+}
