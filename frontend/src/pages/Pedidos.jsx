@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdOutlineEdit } from "react-icons/md";
 import useGetPedidos from "@hooks/pedidos/useGetPedidos.jsx";
 import useCreatePedido from "@hooks/pedidos/useCreatePedido.jsx";
 import useDeletePedido from "@hooks/pedidos/useDeletePedido.jsx";
 import useEditPedido from "@hooks/pedidos/useEditPedido.jsx";
 import { useErrorHandlerPedido } from "@hooks/pedidos/useErrorHandlerPedido.jsx";
+import useGetNotificaciones from "@hooks/notificacion/useGetNotificaciones.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
@@ -20,12 +21,122 @@ const Pedidos = () => {
   const { remove } = useDeletePedido(fetchPedidos);
   const { edit } = useEditPedido(fetchPedidos);
   const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerPedido();
+  const { notificaciones } = useGetNotificaciones();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentPedido, setCurrentPedido] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [pedidoToView, setPedidoToView] = useState(null);  const openModal = () => setIsModalOpen(true);
+  const [pedidoToView, setPedidoToView] = useState(null);
+  const [notificacionMostrada, setNotificacionMostrada] = useState(false);
+
+  // Efecto para mostrar notificación emergente de pedidos próximos a entregar
+  useEffect(() => {
+    if (notificaciones && notificaciones.length > 0 && !notificacionMostrada) {
+      // Filtrar solo notificaciones de pedidos
+      const pedidoNotificaciones = notificaciones.filter(n => n.tipo === 'pedido_entrega');
+      
+      if (pedidoNotificaciones.length > 0) {
+        // Mostrar notificación solo una vez por sesión
+        const pedidosHoy = pedidoNotificaciones.filter(n => n.mensaje.includes('debe entregarse hoy')).length;
+        const pedidosProximos = pedidoNotificaciones.length - pedidosHoy;
+        
+        let mensaje = '';
+        if (pedidosHoy > 0 && pedidosProximos > 0) {
+          mensaje = `Hay ${pedidosHoy} pedido(s) que deben entregarse hoy y ${pedidosProximos} que deben entregarse próximamente.`;
+        } else if (pedidosHoy > 0) {
+          mensaje = `Hay ${pedidosHoy} pedido(s) que deben entregarse hoy.`;
+        } else {
+          mensaje = `Hay ${pedidosProximos} pedido(s) que deben entregarse próximamente.`;
+        }
+        
+        Swal.fire({
+          title: '¡Atención: Pedidos próximos a entregar!',
+          text: mensaje,
+          icon: 'warning',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Revisar'
+        });
+        
+        setNotificacionMostrada(true);
+      }
+    }
+  }, [notificaciones, notificacionMostrada]);
+
+  // Función para formatear fechas sin desfase de zona horaria
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
+    try {
+      // Si la fecha ya incluye tiempo, usarla tal como está, sino agregar T00:00:00
+      const dateToUse = dateString.includes('T') ? dateString : dateString + 'T00:00:00';
+      const date = new Date(dateToUse);
+      if (isNaN(date.getTime())) {
+        console.log('Fecha inválida recibida:', dateString);
+        return '';
+      }
+      
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return '';
+    }
+  };
+
+  // Verificar si una fecha de entrega está próxima (hoy o mañana) o ya pasó
+  const checkFechaEntrega = (fechaStr) => {
+    if (!fechaStr) return { isProxima: false, expiresInDays: null };
+    
+    try {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0); // Normalizar al inicio del día
+      
+      // Si la fecha ya incluye tiempo, usarla tal como está, sino agregar T00:00:00
+      const dateToUse = fechaStr.includes('T') ? fechaStr : fechaStr + 'T00:00:00';
+      const fechaEntrega = new Date(dateToUse);
+      fechaEntrega.setHours(0, 0, 0, 0); // Normalizar al inicio del día
+      
+      // Calcular la diferencia en días
+      const diferenciaDias = Math.ceil((fechaEntrega - hoy) / (1000 * 60 * 60 * 24));
+      
+      // Si es negativo, ya pasó la fecha
+      if (diferenciaDias < 0) {
+        return { 
+          isProxima: true, 
+          isPasada: true, 
+          expiresInDays: diferenciaDias, 
+          message: `Pasó hace ${Math.abs(diferenciaDias)} día(s)`
+        };
+      }
+      // Si es hoy
+      else if (diferenciaDias === 0) {
+        return { 
+          isProxima: true, 
+          isHoy: true, 
+          expiresInDays: 0,
+          message: `¡Entrega HOY!`
+        };
+      }
+      // Si es mañana o en los próximos días
+      else if (diferenciaDias <= 3) {
+        return { 
+          isProxima: true, 
+          expiresInDays: diferenciaDias,
+          message: diferenciaDias === 1 ? `Entrega mañana` : `Entrega en ${diferenciaDias} días`
+        };
+      }
+      
+      return { isProxima: false, expiresInDays: diferenciaDias };
+    } catch (error) {
+      console.error('Error al verificar fecha de entrega:', error);
+      return { isProxima: false, expiresInDays: null, error: true };
+    }
+  };
+
+  const openModal = () => setIsModalOpen(true);
   
   const closeModal = () => setIsModalOpen(false);
 
@@ -154,7 +265,43 @@ const Pedidos = () => {
     { header: "Cliente", key: "cliente_nombre" },
     { header: "Carnicero", key: "carnicero_nombre" },
     { header: "Teléfono", key: "telefono_cliente" },
-    { header: "Fecha Entrega", key: "fecha_entrega" }
+    { 
+      header: "Fecha Entrega", 
+      key: "fecha_entrega",
+      cell: (row) => {
+        console.log("Fecha entrega en celda:", row.fecha_entrega);
+        
+        // Si no hay fecha de entrega, simplemente mostrar un texto
+        if (!row.fecha_entrega) return 'No especificada';
+        
+        // Usar la función helper para verificar el estado de entrega
+        const { isProxima, isHoy, isPasada } = checkFechaEntrega(row.fecha_entrega);
+        
+        // Formatear la fecha para mostrar
+        const fechaFormateada = formatDate(row.fecha_entrega);
+        
+        // Determinar la clase CSS basada en el estado de entrega
+        let className = '';
+        let prefix = '';
+        
+        if (isPasada) {
+          className = 'vence-expirado';
+          prefix = '⚠️ VENCIDO: ';
+        } else if (isHoy) {
+          className = 'vence-hoy';
+          prefix = '⚠️ HOY: ';
+        } else if (isProxima) {
+          className = 'vence-pronto';
+        }
+        
+        // Devolver el elemento con la clase CSS apropiada
+        return (
+          <span className={className}>
+            {prefix}{fechaFormateada}
+          </span>
+        );
+      }
+    }
   ];
 
   return (

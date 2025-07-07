@@ -445,6 +445,21 @@
     color: #ffffff;
 }
 
+/* Contenedor del menú sin scroll visible */
+.nav-menu {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Ocultar scrollbar completamente en webkit browsers */
+.nav-menu::-webkit-scrollbar {
+    display: none;
+}
+
+
 
 
 

@@ -452,6 +452,7 @@ const Mermas = () => {
           showViewButton={false}
           showCalendarButton={true}
           entidad="mermas"
+          searchableFields={["id", "fechaRegistro", "tipoProductoMerma", "productoItem", "cantidadPerdida", "causa", "personal"]}
           customFormat={(value, key, row) => {
             // Validación para evitar errores si row es undefined
             if (!row) return String(value || 'N/A');

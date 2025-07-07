@@ -32,46 +32,41 @@ const RecepcionStock = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [recepcionToDelete, setRecepcionToDelete] = useState(null);
   const [formatoFecha, setFormatoFecha] = useState("dd/MM/yyyy");
-  const [productosVencimiento, setProductosVencimiento] = useState([]);
   const [notificacionMostrada, setNotificacionMostrada] = useState(false);
 
   useEffect(() => {
     fetchProductos();
   }, []);
-  
-  // Efecto para mostrar las notificaciones de productos próximos a vencer
+
+  // Efecto para mostrar notificación emergente de productos próximos a vencer
   useEffect(() => {
     if (notificaciones && notificaciones.length > 0 && !notificacionMostrada) {
       // Filtrar solo notificaciones de productos por vencer
       const prodNotificaciones = notificaciones.filter(n => n.tipo === 'producto_vencimiento');
       
       if (prodNotificaciones.length > 0) {
-        setProductosVencimiento(prodNotificaciones);
-        
         // Mostrar notificación solo una vez por sesión
-        if (!notificacionMostrada) {
-          // Crear mensaje para Swal
-          const productosHoy = prodNotificaciones.filter(n => n.mensaje.includes('vence hoy')).length;
-          const productosProximos = prodNotificaciones.length - productosHoy;
-          
-          let mensaje = '';
-          if (productosHoy > 0) {
-            mensaje += `Hay ${productosHoy} producto(s) que vencen hoy.\n`;
-          }
-          if (productosProximos > 0) {
-            mensaje += `Hay ${productosProximos} producto(s) que vencerán próximamente.`;
-          }
-          
-          Swal.fire({
-            title: '¡Atención: Productos próximos a vencer!',
-            text: mensaje,
-            icon: 'warning',
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'Revisar'
-          });
-          
-          setNotificacionMostrada(true);
+        const productosHoy = prodNotificaciones.filter(n => n.mensaje.includes('vence hoy')).length;
+        const productosProximos = prodNotificaciones.length - productosHoy;
+        
+        let mensaje = '';
+        if (productosHoy > 0 && productosProximos > 0) {
+          mensaje = `Hay ${productosHoy} producto(s) que vencen hoy y ${productosProximos} que vencerán próximamente.`;
+        } else if (productosHoy > 0) {
+          mensaje = `Hay ${productosHoy} producto(s) que vencen hoy.`;
+        } else {
+          mensaje = `Hay ${productosProximos} producto(s) que vencerán próximamente.`;
         }
+        
+        Swal.fire({
+          title: '¡Atención: Productos próximos a vencer!',
+          text: mensaje,
+          icon: 'warning',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Revisar'
+        });
+        
+        setNotificacionMostrada(true);
       }
     }
   }, [notificaciones, notificacionMostrada]);
@@ -81,14 +76,18 @@ const RecepcionStock = () => {
     
     // Evitar errores con fechas inválidas
     try {
-      const date = new Date(dateString);
+      // Si la fecha ya incluye tiempo, usarla tal como está, sino agregar T00:00:00
+      const dateToUse = dateString.includes('T') ? dateString : dateString + 'T00:00:00';
+      const date = new Date(dateToUse);
       if (isNaN(date.getTime())) {
         console.log('Fecha inválida recibida:', dateString);
         return '';
       }
       
-      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-      return date.toLocaleDateString('es-ES', options);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
     } catch (error) {
       console.error('Error al formatear fecha:', error);
       return '';
@@ -103,7 +102,9 @@ const RecepcionStock = () => {
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0); // Normalizar al inicio del día
       
-      const fechaVenc = new Date(fechaStr);
+      // Si la fecha ya incluye tiempo, usarla tal como está, sino agregar T00:00:00
+      const dateToUse = fechaStr.includes('T') ? fechaStr : fechaStr + 'T00:00:00';
+      const fechaVenc = new Date(dateToUse);
       fechaVenc.setHours(0, 0, 0, 0); // Normalizar al inicio del día
       
       // Calcular la diferencia en días
@@ -143,6 +144,17 @@ const RecepcionStock = () => {
     }
   }, []);
 
+  // Función para formatear precios sin decimales innecesarios
+  const formatPrice = (value) => {
+    const num = Number(value || 0);
+    // Si es un número entero, no mostrar decimales
+    if (num % 1 === 0) {
+      return `$${num}`;
+    }
+    // Si tiene decimales, mostrar hasta 2 decimales
+    return `$${num.toFixed(2)}`;
+  };
+
   // Configuración de columnas para la tabla
   const columns = [
     { 
@@ -179,7 +191,7 @@ const RecepcionStock = () => {
       cell: (row) => {
         const cantidad = Number(row.cantidad || 0);
         const costoUnitario = Number(row.costoUnitario || 0);
-        return `$${(cantidad * costoUnitario).toFixed(2)}`;
+        return formatPrice(cantidad * costoUnitario);
       }
     },
     { 
@@ -366,75 +378,8 @@ const RecepcionStock = () => {
     },
   ];
 
-  const renderProductosAVencer = () => {
-    if (productosVencimiento.length === 0) return null;
-    
-    // Separar notificaciones por tipo: vencidos, vence hoy, y próximos a vencer
-    const vencidos = productosVencimiento.filter(n => n.mensaje.includes('venció'));
-    const venceHoy = productosVencimiento.filter(n => n.mensaje.includes('vence hoy'));
-    const proximos = productosVencimiento.filter(n => 
-      !n.mensaje.includes('venció') && !n.mensaje.includes('vence hoy')
-    );
-    
-    return (
-      <div className="productos-vencimiento-alerta">
-        <h3>
-          <i className="fas fa-exclamation-triangle"></i> 
-          Productos por vencimiento ({productosVencimiento.length})
-        </h3>
-        
-        <ul className="productos-vencimiento-lista">
-          {vencidos.length > 0 && (
-            <li className="vencimiento-categoria">
-              <strong>Productos vencidos ({vencidos.length})</strong>
-            </li>
-          )}
-          {vencidos.map((notif, index) => (
-            <li 
-              key={`vencido-${index}`} 
-              className="producto-vencimiento-item vence-expirado"
-            >
-              {notif.mensaje}
-            </li>
-          ))}
-          
-          {venceHoy.length > 0 && (
-            <li className="vencimiento-categoria">
-              <strong>Vencen hoy ({venceHoy.length})</strong>
-            </li>
-          )}
-          {venceHoy.map((notif, index) => (
-            <li 
-              key={`hoy-${index}`} 
-              className="producto-vencimiento-item vence-hoy"
-            >
-              {notif.mensaje}
-            </li>
-          ))}
-          
-          {proximos.length > 0 && (
-            <li className="vencimiento-categoria">
-              <strong>Próximos a vencer ({proximos.length})</strong>
-            </li>
-          )}
-          {proximos.map((notif, index) => (
-            <li 
-              key={`proximo-${index}`} 
-              className="producto-vencimiento-item vence-pronto"
-            >
-              {notif.mensaje}
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
   return (
     <div className={styles["categoria-container"]}>
-      {/* Panel de alertas de vencimiento */}
-      {productosVencimiento.length > 0 && renderProductosAVencer()}
-      
       {loading ? (
         <div className="loading-container">
           <p>Cargando datos...</p>
@@ -570,7 +515,6 @@ const RecepcionStock = () => {
                 min={new Date().toISOString().split('T')[0]}
                 required
               />
-              <small className="campo-ayuda">Formato: YYYY-MM-DD</small>
             </div>
           </div>
 
@@ -660,7 +604,6 @@ const RecepcionStock = () => {
                   min={new Date().toISOString().split('T')[0]}
                   required
                 />
-                <small className="campo-ayuda">Formato: YYYY-MM-DD</small>
               </div>
             </div>
 

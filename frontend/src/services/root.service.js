@@ -6,9 +6,6 @@ const API_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:3050/api';
 
 const instance = axios.create({
   baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
   withCredentials: true,
 });
 
@@ -22,8 +19,18 @@ instance.interceptors.request.use(
       console.warn('No se encontró token JWT en cookies. La solicitud podría fallar si la ruta está protegida.');
     }
     
+    // Solo establecer Content-Type si no es FormData
+    if (!(config.data instanceof FormData)) {
+      config.headers['Content-Type'] = 'application/json';
+    } else {
+      // Para FormData, permitir que el navegador establezca el Content-Type automáticamente
+      console.log('📎 [AXIOS] Detectado FormData, permitiendo Content-Type automático');
+    }
+    
     // Mostrar información de la solicitud para depuración
     console.log(`[API Request] ${config.method.toUpperCase()} ${config.url}`);
+    console.log(`[API Request] Content-Type:`, config.headers['Content-Type'] || 'Auto (FormData)');
+    
     return config;
   },
   (error) => {

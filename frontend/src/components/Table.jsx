@@ -33,6 +33,7 @@ const Table = ({
   customFormat = null, // Nueva prop para formatear datos de forma personalizada
   createButtonText = "Crear", // Nueva prop para personalizar el texto del botón crear
   createButtonIcon = <IoAddSharp />, // Nueva prop para personalizar el icono del botón crear
+  searchableFields = [], // Nueva prop para definir campos específicos para búsqueda
 }) => {  const [searchTerm, setSearchTerm] = useState("");  const [filteredData, setFilteredData] = useState(() => {
     // Verificar que hay columnas y data antes de ordenar
     if (columns.length === 0 || data.length === 0) {
@@ -93,8 +94,96 @@ const Table = ({
   };
 
   // Función para buscar en un valor específico
-  const searchInValue = (value, term, columnKey = '') => {
+  const searchInValue = (value, term, columnKey = '', row = null) => {
     if (value == null) return false;
+    
+    // Búsqueda especial para cantidadPerdida (permite buscar número y unidad)
+    if (columnKey === 'cantidadPerdida') {
+      // Si el valor es un número, buscar tanto en el número como en su formato con unidad
+      if (typeof value === 'number' || !isNaN(parseFloat(value))) {
+        const numValue = typeof value === 'number' ? value : parseFloat(value);
+        const numStr = numValue.toString();
+        
+        // Buscar en el número
+        if (numStr.includes(term)) return true;
+        
+        // Determinar la unidad usando la misma lógica que customFormat
+        let unidad = "kg"; // Valor por defecto para carne
+        
+        if (row) {
+          if (row.tipoProductoMerma === "producto" && row.producto) {
+            const tipoMedida = row.producto.tipoMedida || "unidades";
+            unidad = tipoMedida === "kilos" ? "kg" : "unidades";
+          } else if (row.tipoProductoMerma === "subproducto" && row.subproducto) {
+            const tipoMedida = row.subproducto.tipoMedida || "unidades";
+            unidad = tipoMedida === "kilos" ? "kg" : "unidades";
+          }
+        }
+        
+        // Buscar en la versión formateada con unidad (como aparece en la interfaz)
+        const formattedValue = `${numValue.toLocaleString('es-CL')} ${unidad}`;
+        return formattedValue.toLowerCase().includes(term);
+      }
+      // Si el valor ya es string (posiblemente formateado), buscar directamente
+      return String(value).toLowerCase().includes(term);
+    }
+    
+    // Búsqueda especial para fechas
+    if (columnKey === 'fecha' || columnKey === 'fechaVencimiento' || columnKey === 'fechaLlegada' || 
+        columnKey === 'fechaEntrega' || columnKey === 'fechaPedido' || columnKey === 'fechaLimite' ||
+        columnKey.toLowerCase().includes('fecha')) {
+      if (typeof value === 'string') {
+        // Formatear la fecha para búsqueda en formato dd-mm-yyyy
+        try {
+          const dateToUse = value.includes('T') ? value : value + 'T00:00:00';
+          const date = new Date(dateToUse);
+          if (!isNaN(date.getTime())) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const formattedDate = `${day}-${month}-${year}`;
+            
+            // Obtener componentes sin padding para búsquedas más inteligentes
+            const dayWithoutPadding = String(date.getDate());
+            const monthWithoutPadding = String(date.getMonth() + 1);
+            const yearString = String(year);
+            
+            // Si el término es un número, hacer búsqueda más inteligente
+            if (/^\d+$/.test(term)) {
+              // Para un solo dígito (1-9), buscar coincidencias exactas en día/mes o como parte del año
+              if (term.length === 1) {
+                return dayWithoutPadding === term || 
+                       monthWithoutPadding === term || 
+                       yearString.includes(term);
+              }
+              // Para dos dígitos, buscar en día/mes (con o sin padding) o como parte del año
+              else if (term.length === 2) {
+                return day === term || 
+                       month === term || 
+                       dayWithoutPadding === term || 
+                       monthWithoutPadding === term ||
+                       yearString.includes(term);
+              }
+              // Para 4 dígitos, buscar coincidencia exacta con año
+              else if (term.length === 4) {
+                return yearString === term;
+              }
+              // Para otros números, buscar en fecha formateada
+              else {
+                return formattedDate.includes(term);
+              }
+            }
+            
+            // Para términos no numéricos o formatos de fecha, buscar en fecha formateada
+            return formattedDate.includes(term) || value.includes(term);
+          }
+        } catch (error) {
+          // Si falla el formateo, buscar en la cadena original
+          return String(value).toLowerCase().includes(term);
+        }
+      }
+      return String(value).toLowerCase().includes(term);
+    }
     
     // Búsqueda especial para RUTs
     if (columnKey === 'rut' || (typeof value === 'string' && /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-?[0-9kK]?$/.test(value))) {
@@ -108,6 +197,19 @@ const Table = ({
     // Para números
     if (typeof value === 'number') {
       const numStr = value.toString();
+      
+      // Para columnas de costos, precios y cantidades, usar búsqueda más inteligente
+      if (columnKey === 'costoUnitario' || columnKey === 'costoTotal' || 
+          columnKey === 'precio' || columnKey === 'monto' || columnKey === 'cantidad') {
+        // Si el término es completamente numérico
+        if (/^\d+\.?\d*$/.test(term)) {
+          // Buscar como prefijo (más intuitivo para números)
+          // Ejemplo: buscar "200" encuentra "2000" pero no "1200"
+          return numStr.startsWith(term);
+        }
+      }
+      
+      // Para otros casos o términos no numéricos, usar búsqueda por inclusión
       return numStr.includes(term);
     }
 
@@ -146,7 +248,34 @@ const Table = ({
     const filtered = data.filter(row => {
       if (!row) return false;
       
-      // Buscar en todas las columnas definidas
+      // Si hay campos específicos para búsqueda, usar solo esos
+      if (searchableFields.length > 0) {
+        return searchableFields.some(fieldKey => {
+          let value;
+          
+          // Manejar campos virtuales como 'productoItem'
+          if (fieldKey === 'productoItem' && customFormat) {
+            value = customFormat(null, fieldKey, row);
+          }
+          // Manejar propiedades anidadas (como 'personal.nombre')
+          else if (fieldKey.includes('.')) {
+            value = fieldKey.split('.').reduce((obj, key) => obj?.[key], row);
+          }
+          // Manejar campos calculados como 'costoTotal'
+          else if (fieldKey === 'costoTotal') {
+            const cantidad = Number(row.cantidad || 0);
+            const costoUnitario = Number(row.costoUnitario || 0);
+            value = cantidad * costoUnitario;
+          }
+          else {
+            value = row[fieldKey];
+          }
+          
+          return searchInValue(value, term, fieldKey, row);
+        });
+      }
+      
+      // Si no hay campos específicos, buscar en todas las columnas definidas
       return columns.some(col => {
         if (!col.key) return false;
         
@@ -154,6 +283,11 @@ const Table = ({
         // Manejar propiedades anidadas (como 'cliente')
         if (col.key.includes('.')) {
           value = col.key.split('.').reduce((obj, key) => obj?.[key], row);
+        } else if (col.key === 'costoTotal') {
+          // Calcular el costo total para la búsqueda
+          const cantidad = Number(row.cantidad || 0);
+          const costoUnitario = Number(row.costoUnitario || 0);
+          value = cantidad * costoUnitario;
         } else {
           value = row[col.key];
         }        // Si es un monto, convertirlo a string sin el signo $
@@ -161,7 +295,7 @@ const Table = ({
           return value?.toString().includes(term);
         }
 
-        return searchInValue(value, term, col.key);
+        return searchInValue(value, term, col.key, row);
       });
     });
 
@@ -173,8 +307,11 @@ const Table = ({
   const handleDateChange = (date) => {
     setSelectedDate(date);
     if (date) {
-      // Convierte la fecha seleccionada en formato ISO y extrae solo la parte de la fecha
-      const selectedDateString = date.toISOString().split('T')[0];
+      // Usar fecha local para evitar problemas de zona horaria
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const selectedDateString = `${year}-${month}-${day}`;
 
       // Filtra los datos, comparando solo la parte de la fecha (yyyy-MM-dd)
       let filteredByDate = data.filter((row) => {
@@ -189,14 +326,33 @@ const Table = ({
           row.fechaPedido,
           row.fechaLimite,
           row.fecha_entrega,
-          row.fecha
+          row.fecha,
+          row.fechaRegistro
         ];
 
         // Recorre las fechas y verifica si alguna de ellas es válida y coincide con la fecha seleccionada
-        return datesToCheck.some(date => {
-          // Verifica si la fecha es válida antes de convertirla
-          const parsedDate = new Date(date);
-          return !isNaN(parsedDate) && parsedDate.toISOString().split('T')[0] === selectedDateString;
+        return datesToCheck.some(dateValue => {
+          if (!dateValue) return false;
+          
+          // Normalizar la fecha para evitar problemas de zona horaria
+          let compareDate;
+          if (typeof dateValue === 'string') {
+            // Si la fecha incluye tiempo, usarla tal como está, sino agregar T00:00:00
+            const dateToUse = dateValue.includes('T') ? dateValue : dateValue + 'T00:00:00';
+            compareDate = new Date(dateToUse);
+          } else {
+            compareDate = new Date(dateValue);
+          }
+          
+          if (isNaN(compareDate.getTime())) return false;
+          
+          // Extraer componentes de fecha local
+          const compareYear = compareDate.getFullYear();
+          const compareMonth = String(compareDate.getMonth() + 1).padStart(2, '0');
+          const compareDay = String(compareDate.getDate()).padStart(2, '0');
+          const compareDateString = `${compareYear}-${compareMonth}-${compareDay}`;
+          
+          return compareDateString === selectedDateString;
         });
       });      // Ordenar por fecha más reciente primero
       filteredByDate = filteredByDate.sort((a, b) => {

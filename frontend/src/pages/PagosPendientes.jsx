@@ -6,12 +6,14 @@ import useEditPagoPendiente from "@hooks/pagosPendientes/useEditPagoPendiente.js
 import { useErrorHandlerPagoPendiente } from "@hooks/pagosPendientes/useErrorHandlerPagoPendiente.jsx";
 import useGetClientes from "@hooks/clientes/useGetClientes.jsx";
 import useCreateCliente from "@hooks/clientes/useCreateCliente.jsx";
+import useGetNotificaciones from "@hooks/notificacion/useGetNotificaciones.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
 import "@styles/formulariotable.css";
 import "@styles/selectFix.css";
 import "@styles/modalCrear.css";
+import "@styles/utilidades.css";
 import styles from "@styles/categoria.module.css";
 
 // Estilos en línea para el selector de cliente y el modal de confirmación
@@ -41,12 +43,25 @@ const PagosPendientes = () => {
   const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerPagoPendiente();
   const { clientes, loading: loadingClientes, fetchClientes } = useGetClientes();
   const { create: createCliente } = useCreateCliente(fetchClientes);
+  const { notificaciones } = useGetNotificaciones();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isClienteModalOpen, setIsClienteModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [currentPagoPendiente, setCurrentPagoPendiente] = useState(null);
+  const [pagoToView, setPagoToView] = useState(null);
   const [error, setError] = useState(null);
+  const [notificacionMostrada, setNotificacionMostrada] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedEditFile, setSelectedEditFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewError, setPreviewError] = useState(false);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  // Estados específicos para el modal de detalles
+  const [viewPreviewUrl, setViewPreviewUrl] = useState(null);
+  const [viewPreviewError, setViewPreviewError] = useState(false);
+  const [isLoadingViewPreview, setIsLoadingViewPreview] = useState(false);
 
   useEffect(() => {
     // Verificar los permisos del usuario
@@ -75,8 +90,118 @@ const PagosPendientes = () => {
   useEffect(() => {
     console.log("Estado actual de clientes:", clientes);
   }, [clientes]);
+
+  // Efecto para mostrar notificación emergente de pagos pendientes próximos a vencer
+  useEffect(() => {
+    if (notificaciones && notificaciones.length > 0 && !notificacionMostrada) {
+      // Filtrar solo notificaciones de pagos pendientes
+      const pagoNotificaciones = notificaciones.filter(n => n.tipo === 'pago_pendiente');
+      
+      if (pagoNotificaciones.length > 0) {
+        // Mostrar notificación solo una vez por sesión
+        const pagosHoy = pagoNotificaciones.filter(n => n.mensaje.includes('vence hoy')).length;
+        const pagosProximos = pagoNotificaciones.length - pagosHoy;
+        
+        let mensaje = '';
+        if (pagosHoy > 0 && pagosProximos > 0) {
+          mensaje = `Hay ${pagosHoy} pago(s) que vencen hoy y ${pagosProximos} que vencerán próximamente.`;
+        } else if (pagosHoy > 0) {
+          mensaje = `Hay ${pagosHoy} pago(s) que vencen hoy.`;
+        } else {
+          mensaje = `Hay ${pagosProximos} pago(s) que vencerán próximamente.`;
+        }
+        
+        Swal.fire({
+          title: '¡Atención: Pagos pendientes próximos a vencer!',
+          text: mensaje,
+          icon: 'warning',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Revisar'
+        });
+        
+        setNotificacionMostrada(true);
+      }
+    }
+  }, [notificaciones, notificacionMostrada]);
+
+  // Función para formatear fechas sin desfase de zona horaria
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
+    try {
+      // Si la fecha ya incluye tiempo, usarla tal como está, sino agregar T00:00:00
+      const dateToUse = dateString.includes('T') ? dateString : dateString + 'T00:00:00';
+      const date = new Date(dateToUse);
+      if (isNaN(date.getTime())) {
+        console.log('Fecha inválida recibida:', dateString);
+        return '';
+      }
+      
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}-${month}-${year}`;
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return '';
+    }
+  };
+
+  // Verificar si una fecha límite está próxima a vencer (hoy o en los próximos 3 días) o ya venció
+  const checkFechaLimite = (fechaStr) => {
+    if (!fechaStr) return { isProxima: false, expiresInDays: null };
+    
+    try {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0); // Normalizar al inicio del día
+      
+      // Si la fecha ya incluye tiempo, usarla tal como está, sino agregar T00:00:00
+      const dateToUse = fechaStr.includes('T') ? fechaStr : fechaStr + 'T00:00:00';
+      const fechaLimite = new Date(dateToUse);
+      fechaLimite.setHours(0, 0, 0, 0); // Normalizar al inicio del día
+      
+      // Calcular la diferencia en días
+      const diferenciaDias = Math.ceil((fechaLimite - hoy) / (1000 * 60 * 60 * 24));
+      
+      // Si es negativo, ya venció
+      if (diferenciaDias < 0) {
+        return { 
+          isProxima: true, 
+          isPasada: true, 
+          expiresInDays: diferenciaDias, 
+          message: `Venció hace ${Math.abs(diferenciaDias)} día(s)`
+        };
+      }
+      // Si es hoy
+      else if (diferenciaDias === 0) {
+        return { 
+          isProxima: true, 
+          isHoy: true, 
+          expiresInDays: 0,
+          message: `¡Vence HOY!`
+        };
+      }
+      // Si es dentro de 3 días
+      else if (diferenciaDias <= 3) {
+        return { 
+          isProxima: true, 
+          expiresInDays: diferenciaDias,
+          message: `Vence en ${diferenciaDias} día(s)`
+        };
+      }
+      
+      return { isProxima: false, expiresInDays: diferenciaDias };
+    } catch (error) {
+      console.error('Error al verificar fecha límite:', error);
+      return { isProxima: false, expiresInDays: null, error: true };
+    }
+  };
+
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedFile(null); // Limpiar archivo seleccionado al cerrar modal
+  };
   // Función para abrir el modal de cliente con reseteo de campos
   const openClienteModal = () => {
     setIsClienteModalOpen(true);
@@ -105,6 +230,91 @@ const PagosPendientes = () => {
       }
     }, 100);
   };
+
+  // Handlers para archivos
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    console.log('Archivo seleccionado para creación:', file ? `${file.name} (${file.size} bytes)` : 'Ninguno');
+  };
+
+  const handleEditFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedEditFile(file);
+    console.log('Archivo seleccionado para edición:', file ? `${file.name} (${file.size} bytes)` : 'Ninguno');
+  };
+
+  // Función para crear URL con autenticación
+  const createAuthenticatedUrl = async (filename) => {
+    setIsLoadingPreview(true);
+    setPreviewError(false);
+    
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('jwt-auth='))
+        ?.split('=')[1];
+
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(`http://localhost:3050/api/pagos-pendientes/facturas/archivo/${filename}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al cargar el archivo');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setPreviewUrl(url);
+      return url;
+    } catch (error) {
+      console.error('Error al crear URL autenticada:', error);
+      setPreviewError(true);
+      return null;
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
+  // Función para abrir archivo en nueva ventana con autenticación
+  const openFileInNewWindow = async (filename) => {
+    try {
+      const url = await createAuthenticatedUrl(filename);
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        alert('Error al abrir el archivo. Verifica tu autenticación.');
+      }
+    } catch (error) {
+      console.error('Error al abrir archivo:', error);
+      alert('Error al abrir el archivo. Por favor inicia sesión nuevamente.');
+    }
+  };
+
+  // Limpiar URL cuando se cambie el archivo
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  // Efecto para cargar automáticamente la vista previa cuando se abre el modal de edición
+  useEffect(() => {
+    if (isEditModalOpen && currentPagoPendiente && currentPagoPendiente.factura && !selectedEditFile) {
+      // Cargar automáticamente el archivo cuando se abre el modal
+      const filename = currentPagoPendiente.factura.split('/').pop();
+      createAuthenticatedUrl(filename);
+    }
+  }, [isEditModalOpen, currentPagoPendiente, selectedEditFile]);
 
   const handleDeleteModalOpen = (pagoPendiente) => {
     setCurrentPagoPendiente(pagoPendiente);
@@ -144,6 +354,10 @@ const PagosPendientes = () => {
   const handleCreatePagoPendiente = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
+    
+    console.log('📤 Creando pago pendiente...');
+    console.log('📎 Archivo seleccionado:', selectedFile ? `${selectedFile.name} (${selectedFile.size} bytes)` : 'Ninguno');
+
     const newPagoPendiente = {
       monto: formData.get("monto"),
       fechaPedido: formData.get("fechaPedido"),
@@ -159,12 +373,29 @@ const PagosPendientes = () => {
     }
 
     try {
-      // Convertir clienteId a id_cliente para el backend
-      const dataToSend = {
-        ...newPagoPendiente,
-        id_cliente: newPagoPendiente.clienteId
-      };
-      delete dataToSend.clienteId;
+      let dataToSend;
+      
+      if (selectedFile) {
+        // Si hay archivo, usar FormData
+        console.log('📎 Enviando con FormData (incluye archivo)');
+        dataToSend = new FormData();
+        dataToSend.append('monto', newPagoPendiente.monto);
+        dataToSend.append('fechaPedido', newPagoPendiente.fechaPedido);
+        dataToSend.append('fechaLimite', newPagoPendiente.fechaLimite);
+        dataToSend.append('estado', newPagoPendiente.estado);
+        dataToSend.append('id_cliente', newPagoPendiente.clienteId);
+        dataToSend.append('factura', selectedFile);
+      } else {
+        // Si no hay archivo, usar JSON simple
+        console.log('📋 Enviando como JSON (sin archivo)');
+        dataToSend = {
+          monto: newPagoPendiente.monto,
+          fechaPedido: newPagoPendiente.fechaPedido,
+          fechaLimite: newPagoPendiente.fechaLimite,
+          estado: newPagoPendiente.estado,
+          id_cliente: newPagoPendiente.clienteId
+        };
+      }
       
       await create(dataToSend);
       closeModal();
@@ -189,6 +420,10 @@ const PagosPendientes = () => {
   const handleEditPagoPendiente = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
+    
+    console.log('📝 Editando pago pendiente...');
+    console.log('📎 Archivo seleccionado para edición:', selectedEditFile ? `${selectedEditFile.name} (${selectedEditFile.size} bytes)` : 'Ninguno');
+
     const updatedPagoPendiente = {
       monto: formData.get("monto"),
       fechaPedido: formData.get("fechaPedido"),
@@ -204,16 +439,41 @@ const PagosPendientes = () => {
     }
 
     try {
-      // Convertir clienteId a id_cliente para el backend
-      const dataToSend = {
-        ...updatedPagoPendiente,
-        id_cliente: updatedPagoPendiente.clienteId
-      };
-      delete dataToSend.clienteId;
+      let dataToSend;
+      
+      if (selectedEditFile) {
+        // Si hay archivo nuevo, usar FormData
+        console.log('📎 Enviando con FormData (incluye archivo nuevo)');
+        dataToSend = new FormData();
+        dataToSend.append('monto', updatedPagoPendiente.monto);
+        dataToSend.append('fechaPedido', updatedPagoPendiente.fechaPedido);
+        dataToSend.append('fechaLimite', updatedPagoPendiente.fechaLimite);
+        dataToSend.append('estado', updatedPagoPendiente.estado);
+        dataToSend.append('id_cliente', updatedPagoPendiente.clienteId);
+        dataToSend.append('factura', selectedEditFile);
+      } else {
+        // Si no hay archivo nuevo, usar JSON simple (mantener factura existente)
+        console.log('📋 Enviando como JSON (sin archivo nuevo)');
+        dataToSend = {
+          monto: updatedPagoPendiente.monto,
+          fechaPedido: updatedPagoPendiente.fechaPedido,
+          fechaLimite: updatedPagoPendiente.fechaLimite,
+          estado: updatedPagoPendiente.estado,
+          id_cliente: updatedPagoPendiente.clienteId
+        };
+      }
       
       await edit(currentPagoPendiente.id, dataToSend);
       setIsEditModalOpen(false);
       setCurrentPagoPendiente(null);
+      setSelectedEditFile(null); // Limpiar archivo seleccionado
+      // Limpiar estados de vista previa
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setPreviewUrl(null);
+      setPreviewError(false);
+      setIsLoadingPreview(false);
       
       // Mostrar alerta de éxito
       Swal.fire({
@@ -326,18 +586,129 @@ const PagosPendientes = () => {
     }
   };
 
+  // Función para crear URL con autenticación específica para modal de detalles
+  const createViewAuthenticatedUrl = async (filename) => {
+    setIsLoadingViewPreview(true);
+    setViewPreviewError(false);
+    
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('jwt-auth='))
+        ?.split('=')[1];
+
+      if (!token) {
+        throw new Error('No hay token de autenticación');
+      }
+
+      const response = await fetch(`http://localhost:3050/api/pagos-pendientes/facturas/archivo/${filename}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al cargar el archivo');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setViewPreviewUrl(url);
+      return url;
+    } catch (error) {
+      console.error('Error al crear URL autenticada para detalles:', error);
+      setViewPreviewError(true);
+      return null;
+    } finally {
+      setIsLoadingViewPreview(false);
+    }
+  };
+
+  // Funciones para manejar el modal de detalles
+  const handleViewClick = (pagoPendiente) => {
+    setPagoToView(pagoPendiente);
+    setIsViewModalOpen(true);
+  };
+
+  const handleViewModalClose = () => {
+    setIsViewModalOpen(false);
+    setPagoToView(null);
+    // Limpiar estados de vista previa del modal de detalles
+    if (viewPreviewUrl) {
+      URL.revokeObjectURL(viewPreviewUrl);
+    }
+    setViewPreviewUrl(null);
+    setViewPreviewError(false);
+    setIsLoadingViewPreview(false);
+  };
+
+  // Efecto para cargar automáticamente la vista previa cuando se abre el modal de detalles
+  useEffect(() => {
+    if (isViewModalOpen && pagoToView && pagoToView.factura) {
+      // Cargar automáticamente el archivo cuando se abre el modal de detalles
+      const filename = pagoToView.factura.split('/').pop();
+      createViewAuthenticatedUrl(filename);
+    }
+  }, [isViewModalOpen, pagoToView]);
+
+  // Limpiar URL del modal de detalles cuando se cambie
+  useEffect(() => {
+    return () => {
+      if (viewPreviewUrl) {
+        URL.revokeObjectURL(viewPreviewUrl);
+      }
+    };
+  }, [viewPreviewUrl]);
+
   if (loading || loadingClientes) return <p>Cargando datos...</p>;
 
   const columns = [
     { header: "Monto", key: "monto" },
     { header: "Fecha Pedido", key: "fechaPedido" },
-    { header: "Fecha Límite", key: "fechaLimite" },
+    { 
+      header: "Fecha Límite", 
+      key: "fechaLimite",
+      cell: (row) => {
+        console.log("Fecha límite en celda:", row.fechaLimite);
+        
+        // Si no hay fecha límite, simplemente mostrar un texto
+        if (!row.fechaLimite) return 'No especificada';
+        
+        // Usar la función helper para verificar el estado de vencimiento
+        const { isProxima, isHoy, isPasada } = checkFechaLimite(row.fechaLimite);
+        
+        // Formatear la fecha para mostrar
+        const fechaFormateada = formatDate(row.fechaLimite);
+        
+        // Determinar la clase CSS basada en el estado de vencimiento
+        let className = '';
+        let prefix = '';
+        
+        if (isPasada) {
+          className = 'vence-expirado';
+          prefix = '⚠️ VENCIDO: ';
+        } else if (isHoy) {
+          className = 'vence-hoy';
+          prefix = '⚠️ HOY: ';
+        } else if (isProxima) {
+          className = 'vence-pronto';
+        }
+        
+        // Devolver el elemento con la clase CSS apropiada
+        return (
+          <span className={className}>
+            {prefix}{fechaFormateada}
+          </span>
+        );
+      }
+    },
     { header: "Estado", key: "estado" },
     { header: "Cliente", key: "cliente" }
   ];  // Función para formatear los datos de forma personalizada
   const customFormat = (value, key) => {
-    // Formateo de fechas
-    if (key === 'fechaPedido' || key === 'fechaLimite') {
+    // Formateo de fechas (solo fechaPedido, ya que fechaLimite se maneja en la columna)
+    if (key === 'fechaPedido') {
       if (!value) return 'No disponible';
       
       // Si ya es una fecha en formato YYYY-MM-DD, convertir a DD/MM/YYYY
@@ -464,11 +835,16 @@ const PagosPendientes = () => {
             onCreate={openModal}
             onEdit={(pagoPendiente) => {
               setCurrentPagoPendiente(pagoPendiente);
+              setSelectedEditFile(null); // Limpiar archivo seleccionado al abrir modal de edición
+              setPreviewUrl(null); // Limpiar URL de vista previa
+              setPreviewError(false); // Resetear error de vista previa
+              setIsLoadingPreview(false); // Resetear estado de carga
               setIsEditModalOpen(true);
             }}
             onDelete={handleDeleteModalOpen}
+            onView={handleViewClick}
             showEditAllButton={false}
-            showViewButton={false}
+            showViewButton={true}
             entidad="pagosPendientes"
             customFormat={customFormat}
           />
@@ -615,9 +991,15 @@ const PagosPendientes = () => {
                     type="file"
                     id="factura"
                     name="factura"
-                    accept=".pdf,.png,.jpg"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onChange={handleFileChange}
                     className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'factura') ? 'input-error' : ''}`}
                   />
+                  {selectedFile && (
+                    <div style={{ marginTop: '5px', fontSize: '0.9em', color: '#28a745' }}>
+                      Archivo seleccionado: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+                    </div>
+                  )}
                   {createError && createError.errors?.map((error, index) => (
                     error.field === 'factura' && (
                       <div key={index} className="error-message">
@@ -632,7 +1014,17 @@ const PagosPendientes = () => {
 
           {/* Modal de Edición */}          <Modal
             isOpen={isEditModalOpen}
-            onRequestClose={() => setIsEditModalOpen(false)}
+            onRequestClose={() => {
+              setIsEditModalOpen(false);
+              setSelectedEditFile(null);
+              // Limpiar estados de vista previa
+              if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+              }
+              setPreviewUrl(null);
+              setPreviewError(false);
+              setIsLoadingPreview(false);
+            }}
             contentLabel="Editar Pago Pendiente"
             ariaHideApp={false}
             className="modal-crear"
@@ -643,7 +1035,16 @@ const PagosPendientes = () => {
               <form onSubmit={handleEditPagoPendiente} className="modal-crear-formulario">
                 <div className="modal-crear-header">
                   <h2 className="modal-crear-titulo">Editar Pago Pendiente</h2>
-                  <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
+                  <button type="button" onClick={() => {
+                    setIsEditModalOpen(false);
+                    // Limpiar estados de vista previa
+                    if (previewUrl) {
+                      URL.revokeObjectURL(previewUrl);
+                    }
+                    setPreviewUrl(null);
+                    setPreviewError(false);
+                    setIsLoadingPreview(false);
+                  }} className="modal-crear-cerrar">×</button>
                   <button type="submit" className="modal-boton-crear">Guardar</button>
                 </div>                <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Monto:</label>
@@ -772,16 +1173,118 @@ const PagosPendientes = () => {
                   <div className="input-container">
                     <input
                       type="file"
-                      id="factura"
+                      id="facturaEdit"
                       name="factura"
-                      accept=".pdf,.png,.jpg"
+                      accept=".pdf,.png,.jpg,.jpeg"
+                      onChange={handleEditFileChange}
                       className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'factura') ? 'input-error' : ''}`}
                     />
-                    {currentPagoPendiente.factura && (
-                      <div style={{ marginTop: '5px', fontSize: '0.9em', color: '#666' }}>
+                    {currentPagoPendiente.factura && !selectedEditFile && (
+                      <div style={{ marginTop: '5px', fontSize: '0.9em', color: '#665' }}>
                         Archivo actual: {currentPagoPendiente.factura.split('/').pop()}
+                        {/* Visor de PDF/Imagen mejorado con autenticación */}
+                        <div style={{ marginTop: '10px', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
+                          <div style={{ backgroundColor: '#f8f9fa', padding: '8px', fontSize: '0.8em', color: '#666', borderBottom: '1px solid #ddd' }}>
+                            Factura
+                          </div>
+                          <div style={{ padding: '15px', textAlign: 'center', backgroundColor: '#f8f9fa' }}>
+                            {isLoadingPreview ? (
+                              <div style={{ color: '#665' }}>
+                                ⏳ Cargando vista previa...
+                              </div>
+                            ) : previewError ? (
+                              <div style={{ color: '#665' }}>
+                                ⚠️ Error al cargar la vista previa
+                                <br />
+                                <button
+                                  type="button"
+                                  onClick={() => openFileInNewWindow(currentPagoPendiente.factura.split('/').pop())}
+                                  style={{
+                                    backgroundColor: '#007bff',
+                                    color: 'white',
+                                    border: 'none',
+                                    padding: '6px 12px',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontSize: '0.8em',
+                                    marginTop: '10px'
+                                  }}
+                                >
+                                  📥 Descargar archivo
+                                </button>
+                              </div>
+                            ) : (
+                              <div>
+                                {currentPagoPendiente.factura.toLowerCase().endsWith('.pdf') ? (
+                                  <div>
+                                    {previewUrl ? (
+                                      <iframe
+                                        src={previewUrl}
+                                        style={{ 
+                                          width: '100%', 
+                                          height: '400px', 
+                                          border: '1px solid #ddd',
+                                          borderRadius: '4px'
+                                        }}
+                                        title="Vista previa del PDF"
+                                      />
+                                    ) : (
+                                      <div style={{ 
+                                        textAlign: 'center', 
+                                        padding: '20px',
+                                        color: '#666',
+                                        backgroundColor: '#f8f9fa',
+                                        border: '1px solid #ddd',
+                                        borderRadius: '4px'
+                                      }}>
+                                        📄 Cargando PDF...
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div>
+                                    {previewUrl ? (
+                                      <img
+                                        src={previewUrl}
+                                        alt="Vista previa de la imagen"
+                                        style={{ 
+                                          width: '100%', 
+                                          maxHeight: '300px', 
+                                          objectFit: 'contain',
+                                          display: 'block',
+                                          backgroundColor: '#f8f9fa',
+                                          border: '1px solid #ddd',
+                                          borderRadius: '4px'
+                                        }}
+                                        onError={() => setPreviewError(true)}
+                                      />
+                                    ) : (
+                                      <div style={{ 
+                                        textAlign: 'center', 
+                                        padding: '20px',
+                                        color: '#666',
+                                        backgroundColor: '#f8f9fa',
+                                        border: '1px solid #ddd',
+                                        borderRadius: '4px'
+                                      }}>
+                                        🖼️ Cargando imagen...
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
+                    {selectedEditFile && (
+                      <div style={{ marginTop: '5px', fontSize: '0.9em', color: '#28a745' }}>
+                        Nuevo archivo: {selectedEditFile.name} ({(selectedEditFile.size / 1024).toFixed(1)} KB)
+                      </div>
+                    )}
+                    <div style={{ marginTop: '5px', fontSize: '0.8em', color: '#888' }}>
+                    </div>
                     {editError && editError.errors?.map((error, index) => (
                       error.field === 'factura' && (
                         <div key={index} className="error-message">
@@ -1114,6 +1617,174 @@ const PagosPendientes = () => {
                 </div>
               </div>
             </form>
+          </Modal>
+
+          {/* Modal de Detalles */}
+          <Modal
+            isOpen={isViewModalOpen}
+            onRequestClose={handleViewModalClose}
+            contentLabel="Ver Detalles de Factura"
+            ariaHideApp={false}
+            className="modal-detalles"
+            overlayClassName="modal-overlay"
+            closeTimeoutMS={300}
+          >
+            <div className="modal-crear-formulario">
+              <div className="modal-detalles-header">
+                <h2 className="modal-detalles-titulo">
+                  Factura del Pago - {pagoToView && pagoToView.cliente ? (
+                    clientes?.find(c => c.id === pagoToView.cliente.id)?.tipoCliente === "Empresa" 
+                      ? clientes?.find(c => c.id === pagoToView.cliente.id)?.razonSocial 
+                      : `${clientes?.find(c => c.id === pagoToView.cliente.id)?.nombres} ${clientes?.find(c => c.id === pagoToView.cliente.id)?.apellidos}`
+                  ) : "Cliente no disponible"}
+                </h2>
+                <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
+              </div>
+              
+              {pagoToView && (
+                <div className="modal-detalles-contenido">
+                  {pagoToView.factura ? (
+                    <div style={{ padding: '0' }}>
+                      {/* Encabezado gris estilo imagen */}
+                      <div style={{
+                        backgroundColor: '#e6e6e6',
+                        padding: '10px 15px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: '#333',
+                        borderBottom: '1px solid #ccc',
+                        textAlign: 'left'
+                      }}>
+                        Factura
+                      </div>
+                      
+                      {/* Contenedor del visor */}
+                      <div style={{
+                        backgroundColor: '#f5f5f5',
+                        minHeight: '750px',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}>
+                        {isLoadingViewPreview ? (
+                          <div style={{ 
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '750px',
+                            color: '#666',
+                            fontSize: '1.1em'
+                          }}>
+                            <div>
+                              <div style={{ marginBottom: '10px', textAlign: 'center' }}>🔄</div>
+                              Cargando vista previa...
+                            </div>
+                          </div>
+                        ) : viewPreviewError ? (
+                          <div style={{ 
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '750px',
+                            color: '#dc3545',
+                            flexDirection: 'column'
+                          }}>
+                            <div style={{ marginBottom: '15px', fontSize: '2em' }}>❌</div>
+                            <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
+                              Error al cargar el archivo
+                            </div>
+                            <div style={{ fontSize: '0.9em', color: '#721c24' }}>
+                              Verifica tu conexión y permisos
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            {pagoToView.factura.toLowerCase().endsWith('.pdf') ? (
+                              <div style={{ flex: 1 }}>
+                                {viewPreviewUrl ? (
+                                  <iframe
+                                    src={viewPreviewUrl}
+                                    style={{ 
+                                      width: '100%', 
+                                      height: '720px', 
+                                      border: 'none',
+                                      backgroundColor: 'white'
+                                    }}
+                                    title="Vista previa del PDF"
+                                  />
+                                ) : (
+                                  <div style={{ 
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    height: '720px',
+                                    color: '#666',
+                                    backgroundColor: 'white'
+                                  }}>
+                                    <div>
+                                      <div style={{ marginBottom: '10px', fontSize: '2em', textAlign: 'center' }}>📄</div>
+                                      Cargando PDF...
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div style={{ 
+                                flex: 1, 
+                                display: 'flex', 
+                                justifyContent: 'center', 
+                                alignItems: 'center',
+                                padding: '20px',
+                                backgroundColor: 'white'
+                              }}>
+                                {viewPreviewUrl ? (
+                                  <img
+                                    src={viewPreviewUrl}
+                                    alt="Vista previa de la imagen"
+                                    style={{ 
+                                      maxWidth: '100%', 
+                                      maxHeight: '680px', 
+                                      objectFit: 'contain',
+                                      border: 'none'
+                                    }}
+                                    onError={() => setViewPreviewError(true)}
+                                  />
+                                ) : (
+                                  <div style={{ 
+                                    color: '#666',
+                                    textAlign: 'center'
+                                  }}>
+                                    <div style={{ marginBottom: '10px', fontSize: '2em' }}>🖼️</div>
+                                    Cargando imagen...
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ 
+                      textAlign: 'center', 
+                      padding: '60px 20px',
+                      color: '#6c757d',
+                      backgroundColor: '#f8f9fa',
+                      margin: '20px',
+                      borderRadius: '8px',
+                      border: '2px dashed #dee2e6'
+                    }}>
+                      <div style={{ marginBottom: '15px', fontSize: '3em' }}>📄</div>
+                      <div style={{ fontSize: '1.2em', fontWeight: 'bold', marginBottom: '8px' }}>
+                        Sin factura adjunta
+                      </div>
+                      <div style={{ fontSize: '0.9em' }}>
+                        Este pago pendiente no tiene una factura asociada
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </Modal>
         </>
       )}
