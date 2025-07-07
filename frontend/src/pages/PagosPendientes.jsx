@@ -259,7 +259,7 @@ const PagosPendientes = () => {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(`http://localhost:3050/api/pagos-pendientes/facturas/archivo/${filename}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/pagos-pendientes/facturas/archivo/${filename}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -601,7 +601,7 @@ const PagosPendientes = () => {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch(`http://localhost:3050/api/pagos-pendientes/facturas/archivo/${filename}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/pagos-pendientes/facturas/archivo/${filename}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },

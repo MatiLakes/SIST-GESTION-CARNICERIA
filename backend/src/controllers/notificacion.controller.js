@@ -71,25 +71,25 @@ function diasHastaVencimiento(fecha) {
 export const notificacionController = {
   async obtenerNotificaciones(req, res) {
     try {
-      // Buscar pagos pendientes próximos a vencer (ejemplo: próximos 3 días)
+      // Buscar pagos pendientes próximos a vencer (hoy y mañana)
       const pagoPendienteRepository = AppDataSource.getRepository(PagoPendiente);
       const hoy = new Date();
-      const tresDiasDespues = new Date();
-      tresDiasDespues.setDate(hoy.getDate() + 1);
+      const mañana = new Date();
+      mañana.setDate(hoy.getDate() + 1);
 
       const pagosProximos = await pagoPendienteRepository.find({
         where: {
           estado: "Pendiente",
-          fechaLimite: Between(hoy, tresDiasDespues)
+          fechaLimite: Between(hoy, mañana)
         },
         relations: ["cliente"]
       });
 
-      // Buscar pedidos próximos a entregar (próximos 3 días)
+      // Buscar pedidos próximos a entregar (hoy y mañana)
       const pedidoRepository = AppDataSource.getRepository(Pedido);
       const pedidosProximos = await pedidoRepository.find({
         where: {
-          fecha_entrega: Between(hoy, tresDiasDespues)
+          fecha_entrega: Between(hoy, mañana)
         }
       });
       
@@ -105,8 +105,60 @@ export const notificacionController = {
         relations: ["producto"]
       });
 
+      // Generar notificaciones de pagos pendientes
+      const notificacionesPagos = pagosProximos.map(pago => {
+        const diasHasta = diasHastaVencimiento(pago.fechaLimite);
+        
+        // Obtener el nombre del cliente con múltiples opciones
+        let nombreCliente = 'Cliente sin nombre';
+        if (pago.cliente) {
+          // Para personas: combinar nombres y apellidos
+          if (pago.cliente.nombres && pago.cliente.nombres.trim()) {
+            const nombres = pago.cliente.nombres.trim();
+            const apellidos = pago.cliente.apellidos ? pago.cliente.apellidos.trim() : '';
+            nombreCliente = apellidos ? `${nombres} ${apellidos}` : nombres;
+          } 
+          // Para empresas: usar razón social
+          else if (pago.cliente.razonSocial && pago.cliente.razonSocial.trim()) {
+            nombreCliente = pago.cliente.razonSocial.trim();
+          } 
+          // Como último recurso: usar RUT
+          else if (pago.cliente.rut && pago.cliente.rut.trim()) {
+            nombreCliente = pago.cliente.rut.trim();
+          } 
+          // Si no hay nada: usar ID
+          else {
+            nombreCliente = `Cliente ID: ${pago.cliente.id}`;
+          }
+        } else {
+          nombreCliente = `Pago ID: ${pago.id}`;
+        }
+        
+        let mensaje;
+        
+        if (diasHasta === 0) {
+          mensaje = `El pago de ${nombreCliente} vence hoy`;
+        } else if (diasHasta === 1) {
+          mensaje = `El pago de ${nombreCliente} vence mañana`;
+        } else {
+          mensaje = `El pago de ${nombreCliente} vence el ${formatearFechaLocal(pago.fechaLimite)}`;
+        }
+        
+        return {
+          tipo: "pago_pendiente",
+          mensaje: mensaje,
+          entityType: "PagoPendiente",
+          entityId: pago.id,
+          fechaLimite: formatearFechaLocal(pago.fechaLimite),
+          leida: false,
+          creadaEn: new Date(),
+          prioridad: diasHasta === 0 ? 1 : (diasHasta === 1 ? 2 : 3),
+          fechaOrden: pago.fechaLimite
+        };
+      });
+
       // Notificaciones de pedidos próximos a entregar
-      let notificacionesPedidos = pedidosProximos.map(pedido => {
+      const notificacionesPedidos = pedidosProximos.map(pedido => {
         const diasHasta = diasHastaVencimiento(pedido.fecha_entrega);
         let mensaje;
         
@@ -126,28 +178,29 @@ export const notificacionController = {
           fechaEntrega: formatearFechaLocal(pedido.fecha_entrega),
           leida: false,
           creadaEn: new Date(),
+          prioridad: diasHasta === 0 ? 1 : (diasHasta === 1 ? 2 : 3),
+          fechaOrden: pedido.fecha_entrega
         };
       });
 
-      // Ordenar: primero los pedidos que vencen hoy
-      notificacionesPedidos = [
-        ...notificacionesPedidos.filter(n => esHoy(pedidosProximos.find(p => p.id === n.entityId)?.fecha_entrega)),
-        ...notificacionesPedidos.filter(n => !esHoy(pedidosProximos.find(p => p.id === n.entityId)?.fecha_entrega))
-      ];
-
-      // Notificaciones de productos próximos a vencer
+      // Notificaciones de productos próximos a vencer (solo RecepcionStock a 3 días)
       const notificacionesProductos = productosProximosVencer.map(recepcion => {
         const dias = diasHastaVencimiento(recepcion.fechaVencimiento);
         let mensaje;
+        let prioridad;
         
         if (dias < 0) {
           mensaje = `El producto ${recepcion.producto?.nombre || 'Producto'} venció hace ${Math.abs(dias)} día(s)`;
+          prioridad = 1; // Vencido = máxima prioridad
         } else if (dias === 0) {
           mensaje = `El producto ${recepcion.producto?.nombre || 'Producto'} vence hoy`;
+          prioridad = 1;
         } else if (dias === 1) {
           mensaje = `El producto ${recepcion.producto?.nombre || 'Producto'} vence mañana`;
+          prioridad = 2;
         } else {
           mensaje = `El producto ${recepcion.producto?.nombre || 'Producto'} vence en ${dias} días`;
+          prioridad = 3;
         }
         
         return {
@@ -161,49 +214,45 @@ export const notificacionController = {
           productoNombre: recepcion.producto?.nombre,
           leida: false,
           creadaEn: new Date(),
+          prioridad: prioridad,
+          fechaOrden: recepcion.fechaVencimiento
         };
       });
-      
-      // Ordenar: primero los productos que vencen hoy
-      const productosPrioritarios = notificacionesProductos.filter(n => 
-        esHoy(productosProximosVencer.find(p => p.id === n.entityId)?.fechaVencimiento)
-      );
-      const productosNoHoy = notificacionesProductos.filter(n => 
-        !esHoy(productosProximosVencer.find(p => p.id === n.entityId)?.fechaVencimiento)
-      );
-      
-      const notificacionesProductosOrdenadas = [...productosPrioritarios, ...productosNoHoy];
 
-      // Generar notificaciones en memoria (no guardar en BD, solo devolver)
-      // Unir notificaciones de pagos, pedidos y productos
-      const notificaciones = [
-        ...pagosProximos.map(pago => {
-          const diasHasta = diasHastaVencimiento(pago.fechaLimite);
-          let mensaje;
-          
-          if (diasHasta === 0) {
-            mensaje = `El pago de ${pago.cliente?.razonSocial || pago.cliente?.nombre || 'Cliente'} vence hoy`;
-          } else if (diasHasta === 1) {
-            mensaje = `El pago de ${pago.cliente?.razonSocial || pago.cliente?.nombre || 'Cliente'} vence mañana`;
-          } else {
-            mensaje = `El pago de ${pago.cliente?.razonSocial || pago.cliente?.nombre || 'Cliente'} vence el ${formatearFechaLocal(pago.fechaLimite)}`;
-          }
-          
-          return {
-            tipo: "pago_pendiente",
-            mensaje: mensaje,
-            entityType: "PagoPendiente",
-            entityId: pago.id,
-            fechaLimite: formatearFechaLocal(pago.fechaLimite),
-            leida: false,
-            creadaEn: new Date(),
-          };
-        }),
+      // Combinar todas las notificaciones
+      const todasNotificaciones = [
+        ...notificacionesPagos,
         ...notificacionesPedidos,
-        ...notificacionesProductosOrdenadas
+        ...notificacionesProductos
       ];
 
-      handleSuccess(res, 200, "Notificaciones generadas correctamente.", notificaciones);
+      // Ordenar por prioridad y luego por tipo (pagos primero dentro de cada prioridad)
+      todasNotificaciones.sort((a, b) => {
+        // Primero ordenar por prioridad (1=hoy, 2=mañana, 3=3días)
+        if (a.prioridad !== b.prioridad) {
+          return a.prioridad - b.prioridad;
+        }
+        
+        // Dentro de la misma prioridad, pagos pendientes van primero
+        const tipoOrden = {
+          "pago_pendiente": 1,
+          "pedido_entrega": 2,
+          "producto_vencimiento": 3
+        };
+        
+        if (tipoOrden[a.tipo] !== tipoOrden[b.tipo]) {
+          return tipoOrden[a.tipo] - tipoOrden[b.tipo];
+        }
+        
+        // Si son pagos pendientes del mismo día, ordenar por fecha de vencimiento
+        if (a.tipo === "pago_pendiente" && b.tipo === "pago_pendiente" && a.fechaOrden && b.fechaOrden) {
+          return new Date(a.fechaOrden) - new Date(b.fechaOrden);
+        }
+        
+        return 0;
+      });
+
+      handleSuccess(res, 200, "Notificaciones generadas correctamente.", todasNotificaciones);
     } catch (error) {
       handleErrorServer(res, 500, error.message);
     }
