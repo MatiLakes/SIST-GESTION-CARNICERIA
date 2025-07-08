@@ -554,3 +554,38 @@
   display: block;
 }
 
+.error-summary {
+  background-color: #ffebee;
+  border: 1px solid #e57373;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.error-summary h4 {
+  color: #c62828;
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.error-summary ul {
+  margin: 0;
+  padding-left: 16px;
+  list-style-type: disc;
+}
+
+.error-summary li {
+  color: #d32f2f;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.error-summary li:last-child {
+  margin-bottom: 0;
+}
+
+.input-container {
+  position: relative;
+}
+

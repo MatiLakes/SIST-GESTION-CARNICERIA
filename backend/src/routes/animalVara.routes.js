@@ -1,5 +1,7 @@
 "use strict";
 import { Router } from "express";
+import { authenticateJwt } from "../middlewares/authentication.middleware.js";
+import { isAdmin } from "../middlewares/authorization.middleware.js";
 import {
   createAnimalVara,
   deleteAnimalVara,
@@ -10,6 +12,8 @@ import {
 } from "../controllers/animalVara.controller.js";
 
 const router = Router();
+
+router.use(authenticateJwt).use(isAdmin);
 
 
 router.post("/", createAnimalVara);                  

@@ -104,19 +104,21 @@ const validateNroAccionCorrectiva = (nroAccionCorrectiva, vbCumplimiento) => {
 
   // Validación condicional basada en vbCumplimiento
   if (vbCumplimiento === "C") {
-    const accionesC = ["ACC N°1", "ACC N°2", "ACC N°3", "ACC N°4", "ACC N°5", "ACC N°6", "ACC N°7"];
-    if (!accionesC.includes(nroAccionCorrectiva)) {
+    // Cuando CUMPLE (C), la acción correctiva debe ser "No Aplica"
+    if (nroAccionCorrectiva !== "No Aplica") {
       return {
         status: "Client error",
-        message: "Para cumplimiento 'C', la acción correctiva debe ser una ACC del N°1 al N°7.",
+        message: "Para cumplimiento 'C', la acción correctiva debe ser 'No Aplica'.",
         details: {}
       };
     }
   } else if (vbCumplimiento === "NC") {
-    if (nroAccionCorrectiva !== "No Aplica") {
+    // Cuando NO CUMPLE (NC), la acción correctiva debe ser una ACC del N°1 al N°7
+    const accionesNC = ["ACC N°1", "ACC N°2", "ACC N°3", "ACC N°4", "ACC N°5", "ACC N°6", "ACC N°7"];
+    if (!accionesNC.includes(nroAccionCorrectiva)) {
       return {
         status: "Client error",
-        message: "Para no cumplimiento 'NC', la acción correctiva debe ser 'No Aplica'.",
+        message: "Para no cumplimiento 'NC', la acción correctiva debe ser una ACC del N°1 al N°7.",
         details: {}
       };
     }

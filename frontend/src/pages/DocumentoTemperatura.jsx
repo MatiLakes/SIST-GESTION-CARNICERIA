@@ -4,6 +4,7 @@ import useCreateDocumentoTemperatura from "@hooks/documentoTemperatura/useCreate
 import useEditDocumentoTemperatura from "@hooks/documentoTemperatura/useEditDocumentoTemperatura";
 import useDeleteDocumentoTemperatura from "@hooks/documentoTemperatura/useDeleteDocumentoTemperatura";
 import useGetPersonal from "@hooks/personal/useGetPersonal";
+import { useErrorHandlerDocumentoTemperatura } from "@hooks/documentoTemperatura/useErrorHandlerDocumentoTemperatura";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
@@ -20,6 +21,7 @@ const DocumentoTemperatura = () => {
   const { create } = useCreateDocumentoTemperatura(fetchDocumentos);
   const { edit } = useEditDocumentoTemperatura(fetchDocumentos);
   const { remove } = useDeleteDocumentoTemperatura(fetchDocumentos);
+  const { createError, editError, handleCreateError, handleEditError, clearCreateError, clearEditError, getFieldErrors } = useErrorHandlerDocumentoTemperatura();
   
   // Estados para manejar modales
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,12 +42,46 @@ const DocumentoTemperatura = () => {
     { hora: horaActual, equipo: "Equipo", temperatura: "", funciona: true, motivo: "", AccionCorrectiva: "", responsableId: "" }
   ]);
 
-  // Para debugging
-  useEffect(() => {
-    console.log("Documentos actualizados:", documentos);
-    console.log("Estado de carga:", loading);
-    console.log("Error (si existe):", error);
-  }, [documentos, loading, error]);
+  // Función helper para renderizar un campo con errores
+  const renderFieldWithErrors = (fieldName, children, errorState) => {
+    const fieldErrors = getFieldErrors(errorState, fieldName);
+    const hasError = fieldErrors.length > 0;
+    
+    return (
+      <div className="input-container">
+        {React.cloneElement(children, {
+          className: `${children.props.className || 'formulario-input'} ${hasError ? 'input-error' : ''}`
+        })}
+        {fieldErrors.map((error, index) => (
+          <div key={index} className="error-message">
+            {error.message}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Función para formatear fechas correctamente evitando problemas de zona horaria
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    
+    try {
+      // Si la fecha ya incluye tiempo, usarla tal como está, sino agregar T00:00:00
+      const dateToUse = dateString.includes('T') ? dateString : dateString + 'T00:00:00';
+      const date = new Date(dateToUse);
+      if (isNaN(date.getTime())) {
+        return '';
+      }
+      
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (error) {
+      console.error('Error al formatear fecha:', error);
+      return '';
+    }
+  };
   // Función para añadir un nuevo registro
   const addRegistro = () => {
     const fechaActual = new Date();
@@ -92,48 +128,70 @@ const DocumentoTemperatura = () => {
       registros: registros.map(reg => ({
         hora: reg.hora,
         equipo: reg.equipo,
-        temperatura: parseFloat(reg.temperatura),
+        temperatura: reg.temperatura, // Mantener como string para validación
         funciona: reg.funciona,
         motivo: reg.motivo,
         AccionCorrectiva: reg.AccionCorrectiva,
-        responsableId: parseInt(reg.responsableId)
+        responsableId: reg.responsableId // Mantener como string para validación
       }))
     };
 
-    try {
-      if (isEdit && currentDocumento) {
-        await edit(currentDocumento.id, data);
-        Swal.fire({
-          icon: "success",
-          title: "Éxito",
-          text: "Registro actualizado correctamente",
-        });
-        setIsEditModalOpen(false);
-      } else {
-        await create(data);
-        Swal.fire({
-          icon: "success",
-          title: "Éxito",
-          text: "Registro creado correctamente",
-        });
-        setIsModalOpen(false);
-      }      
-      // Limpiamos el formulario y configuramos los dos registros predeterminados
-      const fechaActual = new Date();
-      const horaActual = `${fechaActual.getHours().toString().padStart(2, '0')}:${fechaActual.getMinutes().toString().padStart(2, '0')}`;
-      
-      setRegistros([
-        { hora: horaActual, equipo: "Cámara de Mantención", temperatura: "", funciona: true, motivo: "", AccionCorrectiva: "", responsableId: "" },
-        { hora: horaActual, equipo: "Equipo", temperatura: "", funciona: true, motivo: "", AccionCorrectiva: "", responsableId: "" }
-      ]);
+    // Usar el hook de validación de errores
+    const hasErrors = isEdit 
+      ? handleEditError(data, personal, documentos, currentDocumento?.id)
+      : handleCreateError(data, personal, documentos);
 
-    } catch (error) {
-      console.error("Error al guardar:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Ocurrió un error al guardar los datos",
-      });
+    // Debug temporal - puedes remover esto después
+    if (!hasErrors) {
+      try {
+        // Preparar datos para el backend con conversiones numéricas
+        const backendData = {
+          fecha: data.fecha,
+          registros: data.registros.map(reg => ({
+            hora: reg.hora,
+            equipo: reg.equipo,
+            temperatura: parseFloat(reg.temperatura),
+            funciona: reg.funciona,
+            motivo: reg.motivo,
+            AccionCorrectiva: reg.AccionCorrectiva,
+            responsableId: parseInt(reg.responsableId)
+          }))
+        };
+
+        if (isEdit && currentDocumento) {
+          await edit(currentDocumento.id, backendData);
+          Swal.fire({
+            icon: "success",
+            title: "Éxito",
+            text: "Registro actualizado correctamente",
+          });
+          setIsEditModalOpen(false);
+        } else {
+          await create(backendData);
+          Swal.fire({
+            icon: "success",
+            title: "Éxito",
+            text: "Registro creado correctamente",
+          });
+          setIsModalOpen(false);
+        }      
+        // Limpiamos el formulario y configuramos los dos registros predeterminados
+        const fechaActual = new Date();
+        const horaActual = `${fechaActual.getHours().toString().padStart(2, '0')}:${fechaActual.getMinutes().toString().padStart(2, '0')}`;
+        
+        setRegistros([
+          { hora: horaActual, equipo: "Cámara de Mantención", temperatura: "", funciona: true, motivo: "", AccionCorrectiva: "", responsableId: "" },
+          { hora: horaActual, equipo: "Equipo", temperatura: "", funciona: true, motivo: "", AccionCorrectiva: "", responsableId: "" }
+        ]);
+
+      } catch (error) {
+        console.error("Error al guardar:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Ocurrió un error al guardar los datos",
+        });
+      }
     }
   };
   // Función para preparar la creación de un nuevo documento
@@ -145,6 +203,7 @@ const DocumentoTemperatura = () => {
       { hora: horaActual, equipo: "Cámara de Mantención", temperatura: "", funciona: true, motivo: "", AccionCorrectiva: "", responsableId: "" },
       { hora: horaActual, equipo: "Equipo 2", temperatura: "", funciona: true, motivo: "", AccionCorrectiva: "", responsableId: "" }
     ]);
+    clearCreateError(); // Limpiar errores previos
     setIsModalOpen(true);
   };
 
@@ -164,6 +223,7 @@ const DocumentoTemperatura = () => {
     }));
     
     setRegistros(registrosEdit);
+    clearEditError(); // Limpiar errores previos
     setIsEditModalOpen(true);
   };
 
@@ -203,10 +263,7 @@ const DocumentoTemperatura = () => {
     {
       header: "Fecha",
       key: "fecha",
-      cell: (row) => {
-        const fecha = new Date(row.fecha);
-        return fecha.toLocaleDateString();
-      },
+      cell: (row) => row.fecha ? formatDate(row.fecha) : '',
     },
     {
       header: "Cantidad de Registros",
@@ -237,7 +294,9 @@ const DocumentoTemperatura = () => {
         showCreateButton={true}
         showEditButton={true}
         showDeleteButton={true}
+        showSearchInput={false}
         entidad="documentos"
+        searchableFields={["fecha"]}
       />
 
       {/* Modal para crear nuevo documento */}
@@ -250,7 +309,7 @@ const DocumentoTemperatura = () => {
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}
       >
-        <form onSubmit={handleSubmit} className="modal-crear-formulario">
+        <form onSubmit={handleSubmit} className="modal-crear-formulario" noValidate>
           <div className="modal-crear-header">
             <h2 className="modal-crear-titulo">Nuevo Registro de Temperatura</h2>
             <button type="button" onClick={() => setIsModalOpen(false)} className="modal-crear-cerrar">×</button>
@@ -259,12 +318,19 @@ const DocumentoTemperatura = () => {
           
           <div className="formulario-grupo">
             <label className="formulario-etiqueta">Fecha:</label>
-            <input
-              type="date"
-              name="fecha"
-              required
-              className="formulario-input"
-            />
+            <div className="input-container">
+              <input
+                type="date"
+                name="fecha"
+                max={new Date().toISOString().split('T')[0]} // No permitir fechas futuras
+                className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'fecha') ? 'input-error' : ''}`}
+              />
+              {createError && createError.errors?.filter(error => error.field === 'fecha').map((error, index) => (
+                <div key={index} className="error-message">
+                  {error.message}
+                </div>
+              ))}
+            </div>
           </div>
 
           <h3 className="registro-titulo">Registros de Temperatura</h3>
@@ -287,55 +353,69 @@ const DocumentoTemperatura = () => {
               <div className="registro-grid">
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Hora:</label>
-                  <input
-                    type="time"
-                    value={registro.hora}
-                    onChange={(e) => handleRegistroChange(index, "hora", e.target.value)}
-                    required
-                    className="formulario-input"
-                  />
+                  {renderFieldWithErrors(
+                    `registros.${index}.hora`,
+                    <input
+                      type="time"
+                      value={registro.hora}
+                      onChange={(e) => handleRegistroChange(index, "hora", e.target.value)}
+                      className="formulario-input"
+                    />,
+                    createError
+                  )}
                 </div>
                 
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Equipo:</label>
-                  <input
-                    type="text"
-                    value={registro.equipo}
-                    onChange={(e) => handleRegistroChange(index, "equipo", e.target.value)}
-                    required
-                    className="formulario-input"
-                    placeholder="Nombre del equipo"
-                  />
+                  {renderFieldWithErrors(
+                    `registros.${index}.equipo`,
+                    <input
+                      type="text"
+                      value={registro.equipo}
+                      onChange={(e) => handleRegistroChange(index, "equipo", e.target.value)}
+                      className="formulario-input"
+                      placeholder="Nombre del equipo"
+                    />,
+                    createError
+                  )}
                 </div>
                 
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Temperatura (°C):</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={registro.temperatura}
-                    onChange={(e) => handleRegistroChange(index, "temperatura", e.target.value)}
-                    required
-                    className="formulario-input"
-                    placeholder="0.0"
-                  />
+                  {renderFieldWithErrors(
+                    `registros.${index}.temperatura`,
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="-100"
+                      max="100"
+                      value={registro.temperatura}
+                      onChange={(e) => handleRegistroChange(index, "temperatura", e.target.value)}
+                      className="formulario-input"
+                      placeholder="Entre -100 y 100"
+                    />,
+                    createError
+                  )}
                 </div>
                 
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Responsable:</label>
-                  <select
-                    value={registro.responsableId}
-                    onChange={(e) => handleRegistroChange(index, "responsableId", e.target.value)}
-                    required
-                    className="formulario-input"
-                  >
-                    <option value="">Seleccionar responsable</option>
-                    {personal?.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.nombre}
-                      </option>
-                    ))}
-                  </select>
+                  {renderFieldWithErrors(
+                    `registros.${index}.responsableId`,
+                    <select
+                      value={registro.responsableId}
+                      onChange={(e) => handleRegistroChange(index, "responsableId", e.target.value)}
+                      className="formulario-input"
+                    >
+                      <option value="">Seleccionar responsable</option>
+                      {personal?.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.nombre}
+                        </option>
+                      ))}
+                    </select>,
+                    createError
+                  )}
                 </div>
                 
                 <div className="checkbox-grupo">
@@ -355,26 +435,32 @@ const DocumentoTemperatura = () => {
                   <>
                     <div className="formulario-grupo full-width">
                       <label className="formulario-etiqueta">Motivo:</label>
-                      <input
-                        type="text"
-                        value={registro.motivo}
-                        onChange={(e) => handleRegistroChange(index, "motivo", e.target.value)}
-                        className="formulario-input"
-                        placeholder="Motivo del problema"
-                        required={!registro.funciona}
-                      />
+                      {renderFieldWithErrors(
+                        `registros.${index}.motivo`,
+                        <input
+                          type="text"
+                          value={registro.motivo}
+                          onChange={(e) => handleRegistroChange(index, "motivo", e.target.value)}
+                          className="formulario-input"
+                          placeholder="Motivo del problema"
+                        />,
+                        createError
+                      )}
                     </div>
                     
                     <div className="formulario-grupo full-width">
                       <label className="formulario-etiqueta">Acción Correctiva:</label>
-                      <input
-                        type="text"
-                        value={registro.AccionCorrectiva}
-                        onChange={(e) => handleRegistroChange(index, "AccionCorrectiva", e.target.value)}
-                        className="formulario-input"
-                        placeholder="Acción correctiva tomada"
-                        required={!registro.funciona}
-                      />
+                      {renderFieldWithErrors(
+                        `registros.${index}.AccionCorrectiva`,
+                        <input
+                          type="text"
+                          value={registro.AccionCorrectiva}
+                          onChange={(e) => handleRegistroChange(index, "AccionCorrectiva", e.target.value)}
+                          className="formulario-input"
+                          placeholder="Acción correctiva tomada"
+                        />,
+                        createError
+                      )}
                     </div>
                   </>
                 )}
@@ -402,7 +488,7 @@ const DocumentoTemperatura = () => {
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}
       >
-        <form onSubmit={(e) => handleSubmit(e, true)} className="modal-crear-formulario">
+        <form onSubmit={(e) => handleSubmit(e, true)} className="modal-crear-formulario" noValidate>
           <div className="modal-crear-header">
             <h2 className="modal-crear-titulo">Editar Registro de Temperatura</h2>
             <button type="button" onClick={() => setIsEditModalOpen(false)} className="modal-crear-cerrar">×</button>
@@ -411,13 +497,20 @@ const DocumentoTemperatura = () => {
           
           <div className="formulario-grupo">
             <label className="formulario-etiqueta">Fecha:</label>
-            <input
-              type="date"
-              name="fecha"
-              defaultValue={currentDocumento?.fecha ? new Date(currentDocumento.fecha).toISOString().split("T")[0] : ""}
-              required
-              className="formulario-input"
-            />
+            <div className="input-container">
+              <input
+                type="date"
+                name="fecha"
+                defaultValue={currentDocumento?.fecha ? currentDocumento.fecha.split('T')[0] : ""}
+                max={new Date().toISOString().split('T')[0]} // No permitir fechas futuras
+                className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'fecha') ? 'input-error' : ''}`}
+              />
+              {editError && editError.errors?.filter(error => error.field === 'fecha').map((error, index) => (
+                <div key={index} className="error-message">
+                  {error.message}
+                </div>
+              ))}
+            </div>
           </div>
 
           <h3 className="registro-titulo">Registros de Temperatura</h3>
@@ -440,55 +533,69 @@ const DocumentoTemperatura = () => {
               <div className="registro-grid">
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Hora:</label>
-                  <input
-                    type="time"
-                    value={registro.hora}
-                    onChange={(e) => handleRegistroChange(index, "hora", e.target.value)}
-                    required
-                    className="formulario-input"
-                  />
+                  {renderFieldWithErrors(
+                    `registros.${index}.hora`,
+                    <input
+                      type="time"
+                      value={registro.hora}
+                      onChange={(e) => handleRegistroChange(index, "hora", e.target.value)}
+                      className="formulario-input"
+                    />,
+                    editError
+                  )}
                 </div>
                 
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Equipo:</label>
-                  <input
-                    type="text"
-                    value={registro.equipo}
-                    onChange={(e) => handleRegistroChange(index, "equipo", e.target.value)}
-                    required
-                    className="formulario-input"
-                    placeholder="Nombre del equipo"
-                  />
+                  {renderFieldWithErrors(
+                    `registros.${index}.equipo`,
+                    <input
+                      type="text"
+                      value={registro.equipo}
+                      onChange={(e) => handleRegistroChange(index, "equipo", e.target.value)}
+                      className="formulario-input"
+                      placeholder="Nombre del equipo"
+                    />,
+                    editError
+                  )}
                 </div>
                 
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Temperatura (°C):</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={registro.temperatura}
-                    onChange={(e) => handleRegistroChange(index, "temperatura", e.target.value)}
-                    required
-                    className="formulario-input"
-                    placeholder="0.0"
-                  />
+                  {renderFieldWithErrors(
+                    `registros.${index}.temperatura`,
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="-100"
+                      max="100"
+                      value={registro.temperatura}
+                      onChange={(e) => handleRegistroChange(index, "temperatura", e.target.value)}
+                      className="formulario-input"
+                      placeholder="Entre -100 y 100"
+                    />,
+                    editError
+                  )}
                 </div>
                 
                 <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Responsable:</label>
-                  <select
-                    value={registro.responsableId}
-                    onChange={(e) => handleRegistroChange(index, "responsableId", e.target.value)}
-                    required
-                    className="formulario-input"
-                  >
-                    <option value="">Seleccionar responsable</option>
-                    {personal?.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.nombre}
-                      </option>
-                    ))}
-                  </select>
+                  {renderFieldWithErrors(
+                    `registros.${index}.responsableId`,
+                    <select
+                      value={registro.responsableId}
+                      onChange={(e) => handleRegistroChange(index, "responsableId", e.target.value)}
+                      className="formulario-input"
+                    >
+                      <option value="">Seleccionar responsable</option>
+                      {personal?.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.nombre}
+                        </option>
+                      ))}
+                    </select>,
+                    editError
+                  )}
                 </div>
                 
                 <div className="checkbox-grupo">
@@ -508,26 +615,32 @@ const DocumentoTemperatura = () => {
                   <>
                     <div className="formulario-grupo full-width">
                       <label className="formulario-etiqueta">Motivo:</label>
-                      <input
-                        type="text"
-                        value={registro.motivo}
-                        onChange={(e) => handleRegistroChange(index, "motivo", e.target.value)}
-                        className="formulario-input"
-                        placeholder="Motivo del problema"
-                        required={!registro.funciona}
-                      />
+                      {renderFieldWithErrors(
+                        `registros.${index}.motivo`,
+                        <input
+                          type="text"
+                          value={registro.motivo}
+                          onChange={(e) => handleRegistroChange(index, "motivo", e.target.value)}
+                          className="formulario-input"
+                          placeholder="Motivo del problema"
+                        />,
+                        editError
+                      )}
                     </div>
                     
                     <div className="formulario-grupo full-width">
                       <label className="formulario-etiqueta">Acción Correctiva:</label>
-                      <input
-                        type="text"
-                        value={registro.AccionCorrectiva}
-                        onChange={(e) => handleRegistroChange(index, "AccionCorrectiva", e.target.value)}
-                        className="formulario-input"
-                        placeholder="Acción correctiva tomada"
-                        required={!registro.funciona}
-                      />
+                      {renderFieldWithErrors(
+                        `registros.${index}.AccionCorrectiva`,
+                        <input
+                          type="text"
+                          value={registro.AccionCorrectiva}
+                          onChange={(e) => handleRegistroChange(index, "AccionCorrectiva", e.target.value)}
+                          className="formulario-input"
+                          placeholder="Acción correctiva tomada"
+                        />,
+                        editError
+                      )}
                     </div>
                   </>
                 )}
@@ -567,7 +680,7 @@ const DocumentoTemperatura = () => {
                 <div className="datos-grid">
                   <div className="datos-fila">
                     <span className="datos-etiqueta">Fecha:</span>
-                    <span className="datos-valor">{new Date(documentoToDelete.fecha).toLocaleDateString()}</span>
+                    <span className="datos-valor">{formatDate(documentoToDelete.fecha)}</span>
                   </div>
                   <div className="datos-fila">
                     <span className="datos-etiqueta">Registros:</span>
@@ -627,7 +740,7 @@ const DocumentoTemperatura = () => {
                 <div className="datos-grid">
                   <div className="datos-fila">
                     <span className="datos-etiqueta">Fecha:</span>
-                    <span className="datos-valor">{new Date(documentoToView.fecha).toLocaleDateString()}</span>
+                    <span className="datos-valor">{formatDate(documentoToView.fecha)}</span>
                   </div>
                   <div className="datos-fila">
                     <span className="datos-etiqueta">Número de registros:</span>

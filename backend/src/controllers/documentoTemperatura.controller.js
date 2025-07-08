@@ -1,11 +1,27 @@
 import { documentoTemperaturaService } from "../services/documentoTemperatura.service.js";
 import { handleErrorClient, handleSuccess } from "../handlers/responseHandlers.js";
+import { documentoTemperaturaValidation } from "../validations/documentoTemperatura.validation.js";
 
 export const documentoTemperaturaController = {
   async crear(req, res) {
-    const [doc, error] = await documentoTemperaturaService.crear(req.body);
-    if (error) return handleErrorClient(res, 400, error);
-    return handleSuccess(res, 201, "Documento de temperatura creado", doc);
+    try {
+      console.log("=== DATOS RECIBIDOS EN EL CONTROLADOR ===");
+      console.log("Body completo:", JSON.stringify(req.body, null, 2));
+      console.log("=== FIN DATOS RECIBIDOS ===");
+
+      // Validar los datos de entrada
+      const { error: validationError } = documentoTemperaturaValidation().validate(req.body);
+      if (validationError) {
+        return handleErrorClient(res, 400, validationError.details[0].message);
+      }
+      
+      const [doc, error] = await documentoTemperaturaService.crear(req.body);
+      if (error) return handleErrorClient(res, 400, error);
+      return handleSuccess(res, 201, "Documento de temperatura creado", doc);
+    } catch (error) {
+      console.error("Error en crear documento temperatura:", error);
+      return handleErrorClient(res, 500, "Error interno del servidor");
+    }
   },
 
   async obtenerTodos(req, res) {
@@ -21,10 +37,22 @@ export const documentoTemperaturaController = {
     return handleSuccess(res, 200, "Documento eliminado");
   },
     async actualizar(req, res) {
-    const { id } = req.params;
-    const [doc, error] = await documentoTemperaturaService.actualizar(Number(id), req.body);
-    if (error) return handleErrorClient(res, 400, error);
-    return handleSuccess(res, 200, "Documento actualizado", doc);
+    try {
+      const { id } = req.params;
+
+      // Validar los datos de entrada
+      const { error: validationError } = documentoTemperaturaValidation().validate(req.body);
+      if (validationError) {
+        return handleErrorClient(res, 400, validationError.details[0].message);
+      }
+
+      const [doc, error] = await documentoTemperaturaService.actualizar(Number(id), req.body);
+      if (error) return handleErrorClient(res, 400, error);
+      return handleSuccess(res, 200, "Documento actualizado", doc);
+    } catch (error) {
+      console.error("Error en actualizar documento temperatura:", error);
+      return handleErrorClient(res, 500, "Error interno del servidor");
+    }
   }
 
 };

@@ -29,6 +29,7 @@ const Table = ({
   showViewButton = true,
   showCalendarButton = true, // Prop para controlar la visibilidad del botón de calendario
   showExcelButton = true, // Nueva prop para controlar la visibilidad del botón de exportar a Excel
+  showSearchInput = true, // Nueva prop para controlar la visibilidad del campo de búsqueda
   entidad = "", // Nueva prop para identificar la entidad
   customFormat = null, // Nueva prop para formatear datos de forma personalizada
   createButtonText = "Crear", // Nueva prop para personalizar el texto del botón crear
@@ -491,13 +492,15 @@ const Table = ({
       <div className="table-container">
         <h1 className="table-titulo">{headerTitle}</h1>
         <div className="search-and-create-container">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearch}
-            placeholder="Buscar"
-            className="search-input"
-          />
+          {showSearchInput && (
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearch}
+              placeholder="Buscar"
+              className="search-input"
+            />
+          )}
           <div className="date-filter-container">
             {showCalendarButton && (
               <button
