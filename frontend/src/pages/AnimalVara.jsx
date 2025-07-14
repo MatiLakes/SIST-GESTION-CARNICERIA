@@ -161,7 +161,7 @@ const handleEditSubmit = (e) => {
                 showEditAllButton={false}
                 showViewButton={false}
                 showCalendarButton={true}
-                showExcelButton={true}
+                showExcelButton={false}
                 entidad="animal-vara"
                 customFormat={(value, key) => {
                     if (key === "precioTotalVara" && (typeof value === "number" || !isNaN(parseFloat(value)))) {

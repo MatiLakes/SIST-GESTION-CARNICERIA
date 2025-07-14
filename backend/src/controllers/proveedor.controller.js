@@ -4,7 +4,8 @@ import {
   deleteProveedorService,
   getAllProveedoresService,
   getProveedorByIdService,
-  updateProveedorService
+  updateProveedorService,
+  generarExcelProveedores
 } from "../services/proveedor.service.js";
 import { proveedorValidation } from "../validations/proveedor.validation.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
@@ -71,6 +72,23 @@ export async function getProveedorById(req, res) {
 
     if (errorService) return handleErrorClient(res, 404, errorService);
     handleSuccess(res, 200, "Proveedor obtenido con éxito.", proveedor);
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
+  }
+}
+
+// Exportar proveedores a Excel
+export async function exportarExcelProveedores(req, res) {
+  try {
+    const workbook = await generarExcelProveedores();
+
+    // Configurar la respuesta para enviar el archivo Excel
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", "attachment; filename=proveedores.xlsx");
+
+    // Enviar el archivo
+    await workbook.xlsx.write(res);
+    res.end();
   } catch (error) {
     handleErrorServer(res, 500, error.message);
   }

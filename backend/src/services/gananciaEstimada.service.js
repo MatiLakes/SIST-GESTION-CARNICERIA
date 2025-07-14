@@ -24,26 +24,40 @@ export class GananciaEstimadaService {
 
   /**
    * Calcula la ganancia estimada total
+   * @param {Object} filtroFechas - Objeto con fechaInicio y fechaFin (opcional)
    * @returns {Object} Objeto con el desglose de ganancias y pérdidas
    */
-  async calcularGananciaEstimada() {
+  async calcularGananciaEstimada(filtroFechas = null) {
     try {
+      console.log("🏁 Iniciando cálculo de ganancia estimada en servicio");
+      console.log("📊 Filtro de fechas:", filtroFechas);
+      
       // Calcular ganancias de animales en vara
-      const gananciaAnimalVara = await this.calcularGananciaAnimalVara();
+      console.log("🐄 Calculando ganancias de animales en vara...");
+      const gananciaAnimalVara = await this.calcularGananciaAnimalVara(filtroFechas);
+      console.log("✅ Ganancias animal vara:", gananciaAnimalVara.gananciaTotal);
       
       // Calcular ganancias de productos
-      const gananciaProductos = await this.calcularGananciaProductos();
+      console.log("📦 Calculando ganancias de productos...");
+      const gananciaProductos = await this.calcularGananciaProductos(filtroFechas);
+      console.log("✅ Ganancias productos:", gananciaProductos.gananciaTotal);
       
       // Calcular ganancias de subproductos
-      const gananciaSubproductos = await this.calcularGananciaSubproductos();
+      console.log("🥩 Calculando ganancias de subproductos...");
+      const gananciaSubproductos = await this.calcularGananciaSubproductos(filtroFechas);
+      console.log("✅ Ganancias subproductos:", gananciaSubproductos.gananciaTotal);
       
       // Calcular pérdidas por mermas
-      const perdidasMermas = await this.calcularPerdidasMermas();
+      console.log("⚠️ Calculando pérdidas por mermas...");
+      const perdidasMermas = await this.calcularPerdidasMermas(filtroFechas);
+      console.log("✅ Pérdidas mermas:", perdidasMermas.perdidaTotal);
 
       // Calcular totales
       const totalGanancias = gananciaAnimalVara.gananciaTotal + gananciaProductos.gananciaTotal + gananciaSubproductos.gananciaTotal;
       const totalPerdidas = gananciaAnimalVara.perdidaTotal + gananciaProductos.perdidaTotal + perdidasMermas.perdidaTotal;
       const gananciaEstimadaTotal = totalGanancias - totalPerdidas;
+
+      console.log("📈 Totales calculados:", { totalGanancias, totalPerdidas, gananciaEstimadaTotal });
 
       return {
         detalles: {
@@ -60,6 +74,8 @@ export class GananciaEstimadaService {
         }
       };
     } catch (error) {
+      console.error("💥 Error en calcularGananciaEstimada:", error);
+      console.error("Stack trace:", error.stack);
       throw new Error(`Error al calcular ganancia estimada: ${error.message}`);
     }
   }
@@ -67,19 +83,35 @@ export class GananciaEstimadaService {
   /**
    * Calcula la ganancia de los animales en vara
    * Ganancia = Suma(cantidad_corte * precio_corte) - precio_total_vara
+   * @param {Object} filtroFechas - Objeto con fechaInicio y fechaFin (opcional)
    */
-  async calcularGananciaAnimalVara() {
-    const animalesVara = await this.animalVaraRepository.find({
-      relations: ["tipoAnimal"]
-    });
+  async calcularGananciaAnimalVara(filtroFechas = null) {
+    try {
+      console.log("🐄 Iniciando cálculo de ganancias animal vara");
+      console.log("📅 Filtro fechas:", filtroFechas);
+      
+      let queryBuilder = this.animalVaraRepository.createQueryBuilder('animalVara')
+        .leftJoinAndSelect('animalVara.tipoAnimal', 'tipoAnimal');
+      
+      // Aplicar filtro de fechas si se proporciona
+      if (filtroFechas && filtroFechas.fechaInicio && filtroFechas.fechaFin) {
+        console.log("🔍 Aplicando filtro de fechas para animal vara");
+        queryBuilder = queryBuilder
+          .where('animalVara.fechaLlegada >= :fechaInicio', { fechaInicio: filtroFechas.fechaInicio })
+          .andWhere('animalVara.fechaLlegada <= :fechaFin', { fechaFin: filtroFechas.fechaFin + 'T23:59:59.999Z' });
+      }
 
-    let gananciaTotal = 0;
-    let perdidaTotal = 0;
-    let detalleAnimales = [];
+      console.log("🔍 Ejecutando query animal vara...");
+      const animalesVara = await queryBuilder.getMany();
+      console.log(`📊 Encontrados ${animalesVara.length} animales en vara`);
 
-    for (const animalVara of animalesVara) {
-      const tipoAnimal = animalVara.tipoAnimal;
-      let ingresosPorCortes = 0;
+      let gananciaTotal = 0;
+      let perdidaTotal = 0;
+      let detalleAnimales = [];
+
+      for (const animalVara of animalesVara) {
+        const tipoAnimal = animalVara.tipoAnimal;
+        let ingresosPorCortes = 0;
 
       // Calcular ingresos por todos los cortes
       const cortesYPrecios = [
@@ -141,23 +173,34 @@ export class GananciaEstimadaService {
         ganancia: gananciaAnimal,
         margen: ingresosPorCortes > 0 ? ((gananciaAnimal / ingresosPorCortes) * 100).toFixed(2) : "0.00"
       });
+    }      return {
+        gananciaTotal,
+        perdidaTotal: 0, // Los animales en vara no generan pérdidas directas
+        detalles: detalleAnimales
+      };
+    } catch (error) {
+      console.error("💥 Error en calcularGananciaAnimalVara:", error);
+      throw error;
     }
-
-    return {
-      gananciaTotal,
-      perdidaTotal: 0, // Los animales en vara no generan pérdidas directas
-      detalles: detalleAnimales
-    };
   }
 
   /**
-   * Calcula la ganancia de productos
-   * Ganancia = (cantidad_recepcion * precio_venta) - (cantidad_recepcion * costo_unitario)
+   * Calcula la ganancia de productos en stock
+   * @param {Object} filtroFechas - Objeto con fechaInicio y fechaFin (opcional)
    */
-  async calcularGananciaProductos() {
-    const recepciones = await this.recepcionStockRepository.find({
-      relations: ["producto", "producto.marca"]
-    });
+  async calcularGananciaProductos(filtroFechas = null) {
+    let queryBuilder = this.recepcionStockRepository.createQueryBuilder("recepcion")
+      .leftJoinAndSelect("recepcion.producto", "producto")
+      .leftJoinAndSelect("producto.marca", "marca");
+    
+    // Aplicar filtro de fechas si se proporciona
+    if (filtroFechas && filtroFechas.fechaInicio && filtroFechas.fechaFin) {
+      queryBuilder = queryBuilder
+        .where("recepcion.fecha >= :fechaInicio", { fechaInicio: filtroFechas.fechaInicio })
+        .andWhere("recepcion.fecha <= :fechaFin", { fechaFin: filtroFechas.fechaFin + "T23:59:59.999Z" });
+    }
+
+    const recepciones = await queryBuilder.getMany();
 
     let gananciaTotal = 0;
     let perdidaTotal = 0;
@@ -201,8 +244,21 @@ export class GananciaEstimadaService {
    * Ganancia = cantidad_entregados * precio_subproducto (para cada tipo de subproducto)
    * Los subproductos del mismo tipo y precio se agrupan automáticamente
    */
-  async calcularGananciaSubproductos() {
-    const subproductos = await this.subproductoRepository.find();
+  /**
+   * Calcula la ganancia de subproductos
+   * @param {Object} filtroFechas - Objeto con fechaInicio y fechaFin (opcional)
+   */
+  async calcularGananciaSubproductos(filtroFechas = null) {
+    let queryBuilder = this.subproductoRepository.createQueryBuilder("subproducto");
+    
+    // Aplicar filtro de fechas si se proporciona
+    if (filtroFechas && filtroFechas.fechaInicio && filtroFechas.fechaFin) {
+      queryBuilder = queryBuilder
+        .where("subproducto.fechaFaena >= :fechaInicio", { fechaInicio: filtroFechas.fechaInicio })
+        .andWhere("subproducto.fechaFaena <= :fechaFin", { fechaFin: filtroFechas.fechaFin + "T23:59:59.999Z" });
+    }
+
+    const subproductos = await queryBuilder.getMany();
     
     let gananciaTotal = 0;
     let agrupacionSubproductos = new Map(); // Para agrupar por tipo y precio
@@ -266,10 +322,26 @@ export class GananciaEstimadaService {
    * Calcula las pérdidas por mermas
    * Pérdida = cantidad_perdida * precio_correspondiente
    */
-  async calcularPerdidasMermas() {
-    const mermas = await this.mermaRepository.find({
-      relations: ["producto", "subproducto", "animalCorte", "animalVara", "recepcionStock"]
-    });
+  /**
+   * Calcula las pérdidas por mermas
+   * @param {Object} filtroFechas - Objeto con fechaInicio y fechaFin (opcional)
+   */
+  async calcularPerdidasMermas(filtroFechas = null) {
+    let queryBuilder = this.mermaRepository.createQueryBuilder("merma")
+      .leftJoinAndSelect("merma.producto", "producto")
+      .leftJoinAndSelect("merma.subproducto", "subproducto")
+      .leftJoinAndSelect("merma.animalCorte", "animalCorte")
+      .leftJoinAndSelect("merma.animalVara", "animalVara")
+      .leftJoinAndSelect("merma.recepcionStock", "recepcionStock");
+    
+    // Aplicar filtro de fechas si se proporciona
+    if (filtroFechas && filtroFechas.fechaInicio && filtroFechas.fechaFin) {
+      queryBuilder = queryBuilder
+        .where("merma.fechaRegistro >= :fechaInicio", { fechaInicio: filtroFechas.fechaInicio })
+        .andWhere("merma.fechaRegistro <= :fechaFin", { fechaFin: filtroFechas.fechaFin + "T23:59:59.999Z" });
+    }
+
+    const mermas = await queryBuilder.getMany();
 
     let perdidaTotal = 0;
     let detalleMermas = [];
@@ -496,7 +568,8 @@ export class GananciaEstimadaService {
         tipoMerma: merma.tipoProductoMerma,
         nombreItem: detalleProducto ? 
           (detalleProducto.tipo === "carne" ? merma.tipoCorteCarne : 
-           detalleProducto.tipo === "producto" ? detalleProducto.nombre : 
+           detalleProducto.tipo === "producto" ? 
+             (detalleProducto.variante ? `${detalleProducto.nombre} ${detalleProducto.variante}` : detalleProducto.nombre) : 
            detalleProducto.tipo === "subproducto" ? merma.tipoSubproducto :
            detalleProducto.tipo) : 'Producto no identificado',
         descripcion: merma.detalles || merma.causa,
@@ -519,16 +592,21 @@ export class GananciaEstimadaService {
   /**
    * Obtiene un resumen rápido de la ganancia estimada
    */
-  async obtenerResumenGanancia() {
-    const resultado = await this.calcularGananciaEstimada();
+  /**
+   * Obtiene solo el resumen de ganancia estimada
+   * @param {Object} filtroFechas - Objeto con fechaInicio y fechaFin (opcional)
+   */
+  async obtenerResumenGanancia(filtroFechas = null) {
+    const resultado = await this.calcularGananciaEstimada(filtroFechas);
     return resultado.resumen;
   }
 
   /**
    * Obtiene el detalle completo de ganancias por categoría
+   * @param {Object} filtroFechas - Objeto con fechaInicio y fechaFin (opcional)
    */
-  async obtenerDetalleCompleto() {
-    const resultado = await this.calcularGananciaEstimada();
+  async obtenerDetalleCompleto(filtroFechas = null) {
+    const resultado = await this.calcularGananciaEstimada(filtroFechas);
     return resultado.detalles;
   }
 }

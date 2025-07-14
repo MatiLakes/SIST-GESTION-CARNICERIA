@@ -546,7 +546,7 @@ const VerAnimalListaCorte = () => {
         showCreateButton={true}
         showViewButton={true}
         showCalendarButton={false}
-        showExcelButton={true}
+        showExcelButton={false}
         entidad="animal-corte"
       />      {/* Modal de Creación */}      <Modal
         isOpen={isCreateModalOpen}

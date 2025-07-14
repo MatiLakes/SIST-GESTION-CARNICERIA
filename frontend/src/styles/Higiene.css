@@ -55,10 +55,59 @@
     background-color: #000000;
     color: white;
   }
-  
-  .no-cumple {
+    .no-cumple {
     background-color: #f44336;
     color: white;
   }
-  
+
+  /* Estilos para el cuadro informativo de acciones correctivas */
+  .info-acciones-correctivas {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .acc-item {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: #ffffff;
+    border-left: 3px solid #e8272b;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .acc-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .acc-item strong {
+    color: #495057;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Scrollbar personalizada para el cuadro informativo */
+  .info-acciones-correctivas::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .info-acciones-correctivas::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+  }
+
+  .info-acciones-correctivas::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+  }
+
+  .info-acciones-correctivas::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
   

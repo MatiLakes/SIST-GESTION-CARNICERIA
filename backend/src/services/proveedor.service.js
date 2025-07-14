@@ -1,6 +1,7 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js";
 import Proveedor from "../entity/proveedor.entity.js";
+import ExcelJS from "exceljs";
 
 // Crear proveedor
 export async function createProveedorService(data) {
@@ -115,5 +116,64 @@ export async function getProveedorByIdService(id) {
   } catch (error) {
     console.error("Error al obtener proveedor por ID:", error.message);
     return [null, "Error interno del servidor"];
+  }
+}
+
+// Generar Excel de proveedores
+export async function generarExcelProveedores() {
+  try {
+    const proveedorRepository = AppDataSource.getRepository(Proveedor);
+    
+    // Obtener todos los proveedores
+    const proveedores = await proveedorRepository.find({
+      order: {
+        nombre: "ASC"
+      }
+    });
+
+    // Crear el workbook y la hoja
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Proveedores");
+    
+    // Definir las columnas
+    worksheet.columns = [
+      { header: "ID", key: "id", width: 10 },
+      { header: "RUT", key: "rut", width: 15 },
+      { header: "Nombre", key: "nombre", width: 30 },
+      { header: "Dirección", key: "direccion", width: 35 },
+      { header: "Banco", key: "banco", width: 20 },
+      { header: "Número Cuenta", key: "numeroCuenta", width: 20 },
+      { header: "Tipo Cuenta", key: "tipoCuenta", width: 15 },
+      { header: "Nombre Encargado", key: "nombreEncargado", width: 25 },
+      { header: "Móvil Encargado", key: "movilEncargado", width: 20 },
+    ];
+
+    // Agregar las filas
+    proveedores.forEach((proveedor) => {
+      const movilEncargado = Array.isArray(proveedor.movilEncargado) 
+        ? proveedor.movilEncargado.join(", ") 
+        : proveedor.movilEncargado || 'N/A';
+      
+      worksheet.addRow({
+        id: proveedor.id,
+        rut: proveedor.rut || 'N/A',
+        nombre: proveedor.nombre || 'N/A',
+        direccion: proveedor.direccion || 'N/A',
+        banco: proveedor.banco || 'N/A',
+        numeroCuenta: proveedor.numeroCuenta || 'N/A',
+        tipoCuenta: proveedor.tipoCuenta || 'N/A',
+        nombreEncargado: proveedor.nombreEncargado || 'N/A',
+        movilEncargado: movilEncargado,
+      });
+    });
+
+    // Estilizar la cabecera
+    worksheet.getRow(1).font = { bold: true };
+
+    // Retornar el workbook
+    return workbook;
+  } catch (error) {
+    console.error("Error al generar el Excel de proveedores:", error);
+    throw new Error("No se pudo generar el archivo Excel.");
   }
 }

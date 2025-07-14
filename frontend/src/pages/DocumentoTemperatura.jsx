@@ -295,7 +295,8 @@ const DocumentoTemperatura = () => {
         showEditButton={true}
         showDeleteButton={true}
         showSearchInput={false}
-        entidad="documentos"
+        showExcelButton={false}
+        entidad="documentos-temperatura"
         searchableFields={["fecha"]}
       />
 
@@ -664,48 +665,32 @@ const DocumentoTemperatura = () => {
         onRequestClose={() => setIsDeleteModalOpen(false)}
         contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
-        className="modal-crear"
-        overlayClassName="modal-overlay"
-        style={{ content: { maxWidth: '500px' } }}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <div className="modal-crear-formulario">
-          <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Confirmar Eliminación</h2>
-            <button onClick={() => setIsDeleteModalOpen(false)} className="modal-crear-cerrar">×</button>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este registro de temperatura?</p>
+        {documentoToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Fecha:</strong> {formatDate(documentoToDelete.fecha)}</p>
+            <p><strong>Registros:</strong> {documentoToDelete.registros?.length || 0}</p>
           </div>
-          <div className="modal-detalles-content" style={{ padding: '20px 48px' }}>
-            <p style={{ marginBottom: '20px', textAlign: 'center' }}>¿Está seguro que desea eliminar este registro de temperatura?</p>
-            {documentoToDelete && (
-              <div className="dato-grupo">
-                <div className="datos-grid">
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">Fecha:</span>
-                    <span className="datos-valor">{formatDate(documentoToDelete.fecha)}</span>
-                  </div>
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">Registros:</span>
-                    <span className="datos-valor">{documentoToDelete.registros?.length || 0}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-              <button
-                onClick={handleDelete}
-                className="btn-eliminar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Eliminar
-              </button>
-              <button
-                onClick={() => setIsDeleteModalOpen(false)}
-                className="btn-cancelar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
+        )}
+        <div className="formulario-table-form-actions">
+          <button 
+            onClick={handleDelete}
+            className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
+          >
+            Eliminar
+          </button>
+          <button
+            onClick={() => setIsDeleteModalOpen(false)}
+            className="formulario-table-btn-cancel"
+          >
+            Cancelar
+          </button>
         </div>
       </Modal>
 

@@ -132,6 +132,7 @@ const Subproductos = () => {
         onView={handleViewClick}
         showEditAllButton={false}
         showViewButton={true}
+        showExcelButton={false}
         entidad="subproductos"
       />      {/* Modal para creación */}      <Modal
         isOpen={isModalOpen}

@@ -7,7 +7,8 @@ const documentoRepo = AppDataSource.getRepository(DocumentoTrazabilidad);
 const registroRepo = AppDataSource.getRepository(RegistroTrazabilidad);
 const personalRepo = AppDataSource.getRepository(Personal);
 
-export const documentoTrazabilidadService = {  async crear(data) {
+export const documentoTrazabilidadService = {
+  async crear(data) {
     try {
       const { fecha, registros = [] } = data;
 
@@ -18,7 +19,8 @@ export const documentoTrazabilidadService = {  async crear(data) {
       if (registros && registros.length > 0) {
         for (const reg of registros) {
           const responsable = await personalRepo.findOneBy({ id: reg.responsableId });
-          if (!responsable) throw new Error("Responsable no encontrado");          const nuevoRegistro = registroRepo.create({
+          if (!responsable) throw new Error("Responsable no encontrado");
+          const nuevoRegistro = registroRepo.create({
             hora: reg.hora,
             cantidad: reg.cantidad,
             corte: reg.corte,
@@ -84,11 +86,8 @@ export const documentoTrazabilidadService = {  async crear(data) {
 
         const nuevoRegistro = registroRepo.create({
           hora: reg.hora,
+          cantidad: reg.cantidad,
           corte: reg.corte,
-          temperatura: reg.temperatura,
-          funciona: reg.funciona,
-          motivo: reg.motivo,
-          tiempoEnfriado: reg.tiempoEnfriado,
           documento,
           responsable
         });
@@ -96,7 +95,8 @@ export const documentoTrazabilidadService = {  async crear(data) {
         await registroRepo.save(nuevoRegistro);
       }
 
-      const actualizado = await documentoRepo.findOne({ where: { id }, relations: ["registros", "registros.responsable"] });      return [actualizado, null];
+      const actualizado = await documentoRepo.findOne({ where: { id }, relations: ["registros", "registros.responsable"] });
+      return [actualizado, null];
     } catch (err) {
       console.error("Error al actualizar documento trazabilidad:", err);
       return [null, "Error al actualizar documento trazabilidad"];
@@ -109,7 +109,8 @@ export const documentoTrazabilidadService = {  async crear(data) {
       if (!documento) return [null, "Documento no encontrado"];
 
       const responsable = await personalRepo.findOneBy({ id: data.responsableId });
-      if (!responsable) return [null, "Responsable no encontrado"];      const registro = registroRepo.create({
+      if (!responsable) return [null, "Responsable no encontrado"];
+      const registro = registroRepo.create({
         hora: data.hora,
         cantidad: data.cantidad,
         corte: data.corte,
@@ -146,7 +147,8 @@ export const documentoTrazabilidadService = {  async crear(data) {
         const responsable = await personalRepo.findOneBy({ id: data.responsableId });
         if (!responsable) return [null, "Responsable no encontrado"];
         registro.responsable = responsable;
-      }      registro.hora = data.hora || registro.hora;
+      }
+      registro.hora = data.hora || registro.hora;
       registro.cantidad = data.cantidad !== undefined ? data.cantidad : registro.cantidad;
       registro.corte = data.corte || registro.corte;
 
@@ -166,15 +168,15 @@ export const documentoTrazabilidadService = {  async crear(data) {
 
   async eliminarRegistro(documentoId, registroId) {
     try {
-      const resultado = await registroRepo.delete({ 
-        id: registroId, 
-        documento: { id: documentoId } 
+      const resultado = await registroRepo.delete({
+        id: registroId,
+        documento: { id: documentoId }
       });
-      
+
       if (resultado.affected === 0) {
         return [null, "Registro no encontrado"];
       }
-      
+
       return [true, null];
     } catch (err) {
       console.error("Error al eliminar registro:", err);

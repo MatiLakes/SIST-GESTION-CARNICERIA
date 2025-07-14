@@ -136,12 +136,6 @@ const DocumentoTrazabilidad = () => {
   // Para agregar un nuevo registro a un documento existente
   const [selectedDocumentoId, setSelectedDocumentoId] = useState(null);
 
-  // Registra los datos para diagnosticar el problema
-  useEffect(() => {
-    console.log("Documentos actualizados:", documentos);
-    console.log("Estado de carga:", loading);
-    console.log("Error (si existe):", error);
-  }, [documentos, loading, error]);
   // Handlers para documento
   const handleDocumentoSubmit = async (e, isEdit = false) => {
     e.preventDefault();
@@ -185,8 +179,6 @@ const DocumentoTrazabilidad = () => {
         ]
       };
 
-      console.log("Enviando datos al backend:", JSON.stringify(data, null, 2));
-      
       try {
         await create(data);
         setIsModalOpen(false);
@@ -217,8 +209,6 @@ const DocumentoTrazabilidad = () => {
       responsableId: parseInt(form.responsableId.value)
     };
 
-    console.log("Enviando datos de registro al backend:", JSON.stringify(data, null, 2));
-    
     try {
       if (isEdit && registroId) {
         await editRegistro(documentoId, registroId, data);
@@ -351,7 +341,6 @@ const DocumentoTrazabilidad = () => {
       header: "Cantidad (Kg)", 
       key: "registros", 
       cell: (data) => {
-        console.log("Registro cantidad:", data.registros?.[0]?.cantidad);
         if (data.registros && data.registros.length > 0) {
           const cantidad = data.registros[0].cantidad;
           if (cantidad !== undefined && cantidad !== null) {
@@ -536,7 +525,8 @@ const DocumentoTrazabilidad = () => {
         onView={handleViewClick}
         showEditAllButton={false}
         showViewButton={true}
-        entidad="documentos"
+        showExcelButton={false}
+        entidad="documentos-trazabilidad"
       />
 
       {/* Modal Crear Documento */}
@@ -583,65 +573,37 @@ const DocumentoTrazabilidad = () => {
         onRequestClose={handleDeleteDocumentoModalClose}
         contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
-        className="modal-crear"
-        overlayClassName="modal-overlay"
-        style={{ content: { maxWidth: '500px' } }}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <div className="modal-crear-formulario">
-          <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Confirmar Eliminación</h2>
-            <button onClick={handleDeleteDocumentoModalClose} className="modal-crear-cerrar">×</button>
-          </div>
-          <div className="modal-detalles-content" style={{ padding: '20px 48px' }}>
-            <p style={{ marginBottom: '20px', textAlign: 'center' }}>¿Estás seguro de que deseas eliminar este documento?</p>
-            {documentoToDelete && (
-              <div className="dato-grupo">                <div className="datos-grid">
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">Fecha:</span>
-                    <span className="datos-valor">{documentoToDelete.fecha}</span>
-                  </div>
-                  {documentoToDelete.registros && documentoToDelete.registros.length > 0 && (
-                    <>
-                      <div className="datos-fila">
-                        <span className="datos-etiqueta">Hora:</span>
-                        <span className="datos-valor">{documentoToDelete.registros[0].hora}</span>
-                      </div>
-                      <div className="datos-fila">
-                        <span className="datos-etiqueta">Cantidad (Kg):</span>
-                        <span className="datos-valor">{documentoToDelete.registros[0].cantidad ? Number(documentoToDelete.registros[0].cantidad).toFixed(2) : "-"}</span>
-                      </div>
-                      <div className="datos-fila">
-                        <span className="datos-etiqueta">Corte Molido:</span>
-                        <span className="datos-valor">{documentoToDelete.registros[0].corte}</span>
-                      </div>
-                      {documentoToDelete.registros[0].responsable && (
-                        <div className="datos-fila">
-                          <span className="datos-etiqueta">Responsable:</span>
-                          <span className="datos-valor">{documentoToDelete.registros[0].responsable.nombre}</span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este documento?</p>
+        {documentoToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Fecha:</strong> {documentoToDelete.fecha}</p>
+            {documentoToDelete.registros && documentoToDelete.registros.length > 0 && (
+              <>
+                <p><strong>Cantidad (Kg):</strong> {documentoToDelete.registros[0].cantidad ? Number(documentoToDelete.registros[0].cantidad).toFixed(2) : "-"}</p>
+                <p><strong>Corte Molido:</strong> {documentoToDelete.registros[0].corte}</p>
+              </>
             )}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-              <button
-                onClick={confirmDocumentoDelete}
-                className="btn-eliminar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Eliminar
-              </button>
-              <button
-                onClick={handleDeleteDocumentoModalClose}
-                className="btn-cancelar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Cancelar
-              </button>
-            </div>
           </div>
+        )}
+        <div className="formulario-table-form-actions">
+          <button 
+            onClick={confirmDocumentoDelete}
+            className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
+          >
+            Eliminar
+          </button>
+          <button
+            onClick={handleDeleteDocumentoModalClose}
+            className="formulario-table-btn-cancel"
+          >
+            Cancelar
+          </button>
         </div>
       </Modal>
 
@@ -824,53 +786,35 @@ const DocumentoTrazabilidad = () => {
         onRequestClose={handleDeleteRegistroModalClose}
         contentLabel="Confirmar Eliminación de Registro"
         ariaHideApp={false}
-        className="modal-crear"
-        overlayClassName="modal-overlay"
-        style={{ content: { maxWidth: '500px' } }}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <div className="modal-crear-formulario">
-          <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Confirmar Eliminación</h2>
-            <button onClick={handleDeleteRegistroModalClose} className="modal-crear-cerrar">×</button>
-          </div>
-          <div className="modal-detalles-content" style={{ padding: '20px 48px' }}>
-            <p style={{ marginBottom: '20px', textAlign: 'center' }}>¿Estás seguro de que deseas eliminar este registro?</p>
-            {registroToDelete && (
-              <div className="dato-grupo">
-                <div className="datos-grid">                  <div className="datos-fila">
-                    <span className="datos-etiqueta">Hora:</span>
-                    <span className="datos-valor">{registroToDelete.hora}</span>
-                  </div>
-                  <div className="datos-fila">
-                    <span className="datos-etiqueta">Corte:</span>
-                    <span className="datos-valor">{registroToDelete.corte}</span>
-                  </div>
-                  {registroToDelete.responsable && (
-                    <div className="datos-fila">
-                      <span className="datos-etiqueta">Responsable:</span>
-                      <span className="datos-valor">{registroToDelete.responsable.nombre}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar este registro?</p>
+        {registroToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Hora:</strong> {registroToDelete.hora}</p>
+            <p><strong>Corte:</strong> {registroToDelete.corte}</p>
+            {registroToDelete.responsable && (
+              <p><strong>Responsable:</strong> {registroToDelete.responsable.nombre}</p>
             )}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-              <button
-                onClick={confirmRegistroDelete}
-                className="btn-eliminar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Eliminar
-              </button>
-              <button
-                onClick={handleDeleteRegistroModalClose}
-                className="btn-cancelar"
-                style={{ padding: '8px 16px', minWidth: '100px' }}
-              >
-                Cancelar
-              </button>
-            </div>
           </div>
+        )}
+        <div className="formulario-table-form-actions">
+          <button 
+            onClick={confirmRegistroDelete}
+            className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
+          >
+            Eliminar
+          </button>
+          <button
+            onClick={handleDeleteRegistroModalClose}
+            className="formulario-table-btn-cancel"
+          >
+            Cancelar
+          </button>
         </div>
       </Modal>
     </div>

@@ -451,6 +451,7 @@ const Mermas = () => {
           showEditAllButton={false}
           showViewButton={false}
           showCalendarButton={true}
+          showExcelButton={false}
           entidad="mermas"
           searchableFields={["id", "fechaRegistro", "tipoProductoMerma", "productoItem", "cantidadPerdida", "causa", "personal"]}
           customFormat={(value, key, row) => {
@@ -669,7 +670,9 @@ const Mermas = () => {
                   >
                     <option value="">Seleccione un producto</option>
                     {productos.map(producto => (
-                      <option key={producto.id} value={producto.id}>{producto.nombre}</option>
+                      <option key={producto.id} value={producto.id}>
+                        {producto.nombre}{producto.variante ? ` - ${producto.variante}` : ''}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -933,83 +936,97 @@ const Mermas = () => {
 
             {currentMerma.tipoProductoMerma === "producto" && (
               <>
-                <div>
-                  <label>Producto</label>
-                  <select 
-                    name="producto" 
-                    value={currentMerma.producto ? currentMerma.producto.id : ""} 
-                    onChange={(e) => handleEditSelectChange(e, "producto")} 
-                    required
-                  >
-                    <option value="">Seleccione un producto</option>
-                    {productos.map(producto => (
-                      <option key={producto.id} value={producto.id}>{producto.nombre}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label>Recepción de Stock</label>
-                  <select 
-                    name="recepcionStock" 
-                    value={currentMerma.recepcionStock ? currentMerma.recepcionStock.id : ""} 
-                    onChange={(e) => handleEditSelectChange(e, "recepcionStock")} 
-                    required
-                    disabled={!currentMerma.producto}
-                  >
-                    <option value="">Seleccione una recepción</option>
-                    {recepcionesStock
-                      .filter(recepcion => !currentMerma.producto || (recepcion.producto && recepcion.producto.id === currentMerma.producto.id))
-                      .map(recepcion => (
-                        <option key={recepcion.id} value={recepcion.id}>
-                          Recepción #{recepcion.id} - Fecha: {new Date(recepcion.fecha).toLocaleDateString()}
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Producto:</label>
+                  <div className="input-container">
+                    <select 
+                      name="producto" 
+                      value={currentMerma.producto ? currentMerma.producto.id : ""} 
+                      onChange={(e) => handleEditSelectChange(e, "producto")} 
+                      required
+                      className="formulario-input"
+                    >
+                      <option value="">Seleccione un producto</option>
+                      {productos.map(producto => (
+                        <option key={producto.id} value={producto.id}>
+                          {producto.nombre}{producto.variante ? ` - ${producto.variante}` : ''}
                         </option>
                       ))}
-                  </select>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Recepción de Stock:</label>
+                  <div className="input-container">
+                    <select 
+                      name="recepcionStock" 
+                      value={currentMerma.recepcionStock ? currentMerma.recepcionStock.id : ""} 
+                      onChange={(e) => handleEditSelectChange(e, "recepcionStock")} 
+                      required
+                      disabled={!currentMerma.producto}
+                      className="formulario-input"
+                    >
+                      <option value="">Seleccione una recepción</option>
+                      {recepcionesStock
+                        .filter(recepcion => !currentMerma.producto || (recepcion.producto && recepcion.producto.id === currentMerma.producto.id))
+                        .map(recepcion => (
+                          <option key={recepcion.id} value={recepcion.id}>
+                            Recepción #{recepcion.id} - Fecha: {new Date(recepcion.fecha).toLocaleDateString()}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
                 </div>
               </>
             )}
 
             {currentMerma.tipoProductoMerma === "subproducto" && (
               <>
-                <div>
-                  <label>Subproducto</label>
-                  <select 
-                    name="subproducto" 
-                    value={currentMerma.subproducto ? currentMerma.subproducto.id : ""} 
-                    onChange={(e) => handleEditSelectChange(e, "subproducto")} 
-                    required
-                  >
-                    <option value="">Seleccione un subproducto</option>
-                    {subproductos.map(subproducto => (
-                      <option key={subproducto.id} value={subproducto.id}>
-                        Faena #{subproducto.id} - {new Date(subproducto.fechaFaena).toLocaleDateString()} 
-                        ({subproducto.numeroAnimalesFaenados} animales)
-                      </option>
-                    ))}
-                  </select>
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Subproducto:</label>
+                  <div className="input-container">
+                    <select 
+                      name="subproducto" 
+                      value={currentMerma.subproducto ? currentMerma.subproducto.id : ""} 
+                      onChange={(e) => handleEditSelectChange(e, "subproducto")} 
+                      required
+                      className="formulario-input"
+                    >
+                      <option value="">Seleccione un subproducto</option>
+                      {subproductos.map(subproducto => (
+                        <option key={subproducto.id} value={subproducto.id}>
+                          Faena #{subproducto.id} - {new Date(subproducto.fechaFaena).toLocaleDateString()} 
+                          ({subproducto.numeroAnimalesFaenados} animales)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label>Tipo de Subproducto</label>
-                  <select 
-                    name="tipoSubproducto" 
-                    value={currentMerma.tipoSubproducto || ""} 
-                    onChange={handleEditChange} 
-                    required
-                    disabled={!currentMerma.subproducto}
-                  >
-                    <option value="">Seleccione el tipo</option>
-                    <option value="Guata">Guata</option>
-                    <option value="Corazón">Corazón</option>
-                    <option value="Cabezas">Cabezas</option>
-                    <option value="Lenguas">Lenguas</option>
-                    <option value="Chunchul">Chunchul</option>
-                    <option value="Hígado">Hígado</option>
-                    <option value="Riñón">Riñón</option>
-                    <option value="Patas">Patas</option>
-                    <option value="Charcha">Charcha</option>
-                  </select>
+                <div className="formulario-grupo">
+                  <label className="formulario-etiqueta">Tipo de Subproducto:</label>
+                  <div className="input-container">
+                    <select 
+                      name="tipoSubproducto" 
+                      value={currentMerma.tipoSubproducto || ""} 
+                      onChange={handleEditChange} 
+                      required
+                      disabled={!currentMerma.subproducto}
+                      className="formulario-input"
+                    >
+                      <option value="">Seleccione el tipo</option>
+                      <option value="Guata">Guata</option>
+                      <option value="Corazón">Corazón</option>
+                      <option value="Cabezas">Cabezas</option>
+                      <option value="Lenguas">Lenguas</option>
+                      <option value="Chunchul">Chunchul</option>
+                      <option value="Hígado">Hígado</option>
+                      <option value="Riñón">Riñón</option>
+                      <option value="Patas">Patas</option>
+                      <option value="Charcha">Charcha</option>
+                    </select>
+                  </div>
                 </div>
               </>
             )}

@@ -59,11 +59,52 @@ export const getPagosPendientes = async () => {
 
 export const createPagoPendiente = async (pagoData) => {
   try {
+    console.log('📤 Enviando datos al servidor:', pagoData);
     const response = await axiosInstance.post("/pagos-pendientes", pagoData);
+    console.log('✅ Respuesta del servidor:', response.data);
     return response.data;
   } catch (error) {
-    console.error("Error al crear el pago pendiente:", error);
-    throw error;
+    console.error("❌ Error al crear el pago pendiente:", error);
+    
+    // Extraer información útil del error
+    if (error.response) {
+      console.error("📋 Status:", error.response.status);
+      console.error("📋 Data:", error.response.data);
+      console.error("📋 Headers:", error.response.headers);
+      
+      // Lanzar error con información específica del servidor
+      let errorMessage = "Error desconocido al crear el pago pendiente";
+      
+      if (error.response.data) {
+        // Si el servidor envía un mensaje específico
+        if (typeof error.response.data === 'string') {
+          errorMessage = error.response.data;
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.data.details) {
+          errorMessage = error.response.data.details;
+        } else if (error.response.data.error) {
+          errorMessage = error.response.data.error;
+        }
+      }
+      
+      // Agregar información del status code si es útil
+      if (error.response.status === 400) {
+        errorMessage = `Datos inválidos: ${errorMessage}`;
+      } else if (error.response.status === 401) {
+        errorMessage = "No autorizado. Por favor inicia sesión nuevamente.";
+      } else if (error.response.status === 403) {
+        errorMessage = "No tienes permisos para realizar esta acción.";
+      } else if (error.response.status >= 500) {
+        errorMessage = `Error del servidor: ${errorMessage}`;
+      }
+      
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      throw new Error("No se recibió respuesta del servidor. Verifica tu conexión a internet.");
+    } else {
+      throw new Error(`Error de configuración: ${error.message}`);
+    }
   }
 };
 

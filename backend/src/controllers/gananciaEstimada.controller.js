@@ -14,11 +14,31 @@ import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers
  */
 export const getGananciaEstimadaCompleta = async (req, res) => {
   try {
-    const resultado = await gananciaEstimadaService.calcularGananciaEstimada();
+    console.log("🔍 Iniciando cálculo de ganancia estimada...");
+    const { fechaInicio, fechaFin } = req.query;
+    console.log("📅 Parámetros recibidos:", { fechaInicio, fechaFin });
+    
+    // Validar fechas si se proporcionan
+    if ((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)) {
+      console.log("❌ Error de validación: Faltan fechas");
+      return handleErrorClient(res, 400, "Debe proporcionar ambas fechas (fechaInicio y fechaFin) o ninguna");
+    }
+
+    if (fechaInicio && fechaFin && new Date(fechaInicio) > new Date(fechaFin)) {
+      console.log("❌ Error de validación: Fecha inicio mayor que fecha fin");
+      return handleErrorClient(res, 400, "La fecha de inicio no puede ser mayor a la fecha de fin");
+    }
+
+    const filtroFechas = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : null;
+    console.log("🔧 Filtro aplicado:", filtroFechas);
+    
+    const resultado = await gananciaEstimadaService.calcularGananciaEstimada(filtroFechas);
+    console.log("✅ Cálculo completado exitosamente");
     
     return handleSuccess(res, 200, "Ganancia estimada calculada exitosamente", resultado);
   } catch (error) {
-    console.error("Error al obtener ganancia estimada completa:", error);
+    console.error("💥 Error detallado en controlador:", error);
+    console.error("Stack trace:", error.stack);
     return handleErrorServer(res, 500, "Error interno del servidor al calcular ganancia estimada");
   }
 };
@@ -30,7 +50,19 @@ export const getGananciaEstimadaCompleta = async (req, res) => {
  */
 export const getResumenGanancia = async (req, res) => {
   try {
-    const resumen = await gananciaEstimadaService.obtenerResumenGanancia();
+    const { fechaInicio, fechaFin } = req.query;
+    
+    // Validar fechas si se proporcionan
+    if ((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)) {
+      return handleErrorClient(res, 400, "Debe proporcionar ambas fechas (fechaInicio y fechaFin) o ninguna");
+    }
+
+    if (fechaInicio && fechaFin && new Date(fechaInicio) > new Date(fechaFin)) {
+      return handleErrorClient(res, 400, "La fecha de inicio no puede ser mayor a la fecha de fin");
+    }
+
+    const filtroFechas = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : null;
+    const resumen = await gananciaEstimadaService.obtenerResumenGanancia(filtroFechas);
     
     return handleSuccess(res, 200, "Resumen de ganancia obtenido exitosamente", resumen);
   } catch (error) {
@@ -46,7 +78,19 @@ export const getResumenGanancia = async (req, res) => {
  */
 export const getDetalleGanancias = async (req, res) => {
   try {
-    const detalle = await gananciaEstimadaService.obtenerDetalleCompleto();
+    const { fechaInicio, fechaFin } = req.query;
+    
+    // Validar fechas si se proporcionan
+    if ((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)) {
+      return handleErrorClient(res, 400, "Debe proporcionar ambas fechas (fechaInicio y fechaFin) o ninguna");
+    }
+
+    if (fechaInicio && fechaFin && new Date(fechaInicio) > new Date(fechaFin)) {
+      return handleErrorClient(res, 400, "La fecha de inicio no puede ser mayor a la fecha de fin");
+    }
+
+    const filtroFechas = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : null;
+    const detalle = await gananciaEstimadaService.obtenerDetalleCompleto(filtroFechas);
     
     return handleSuccess(res, 200, "Detalle de ganancias obtenido exitosamente", detalle);
   } catch (error) {
@@ -62,7 +106,15 @@ export const getDetalleGanancias = async (req, res) => {
  */
 export const getGananciasAnimalVara = async (req, res) => {
   try {
-    const gananciaAnimalVara = await gananciaEstimadaService.calcularGananciaAnimalVara();
+    const { fechaInicio, fechaFin } = req.query;
+    
+    // Validar fechas si se proporcionan
+    if ((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)) {
+      return handleErrorClient(res, 400, "Debe proporcionar ambas fechas (fechaInicio y fechaFin) o ninguna");
+    }
+
+    const filtroFechas = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : null;
+    const gananciaAnimalVara = await gananciaEstimadaService.calcularGananciaAnimalVara(filtroFechas);
     
     return handleSuccess(res, 200, "Ganancias de animal vara obtenidas exitosamente", gananciaAnimalVara);
   } catch (error) {
@@ -78,7 +130,15 @@ export const getGananciasAnimalVara = async (req, res) => {
  */
 export const getGananciasProductos = async (req, res) => {
   try {
-    const gananciaProductos = await gananciaEstimadaService.calcularGananciaProductos();
+    const { fechaInicio, fechaFin } = req.query;
+    
+    // Validar fechas si se proporcionan
+    if ((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)) {
+      return handleErrorClient(res, 400, "Debe proporcionar ambas fechas (fechaInicio y fechaFin) o ninguna");
+    }
+
+    const filtroFechas = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : null;
+    const gananciaProductos = await gananciaEstimadaService.calcularGananciaProductos(filtroFechas);
     
     return handleSuccess(res, 200, "Ganancias de productos obtenidas exitosamente", gananciaProductos);
   } catch (error) {
@@ -94,7 +154,15 @@ export const getGananciasProductos = async (req, res) => {
  */
 export const getGananciasSubproductos = async (req, res) => {
   try {
-    const gananciaSubproductos = await gananciaEstimadaService.calcularGananciaSubproductos();
+    const { fechaInicio, fechaFin } = req.query;
+    
+    // Validar fechas si se proporcionan
+    if ((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)) {
+      return handleErrorClient(res, 400, "Debe proporcionar ambas fechas (fechaInicio y fechaFin) o ninguna");
+    }
+
+    const filtroFechas = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : null;
+    const gananciaSubproductos = await gananciaEstimadaService.calcularGananciaSubproductos(filtroFechas);
     
     return handleSuccess(res, 200, "Ganancias de subproductos obtenidas exitosamente", gananciaSubproductos);
   } catch (error) {
@@ -110,7 +178,15 @@ export const getGananciasSubproductos = async (req, res) => {
  */
 export const getPerdidasMermas = async (req, res) => {
   try {
-    const perdidasMermas = await gananciaEstimadaService.calcularPerdidasMermas();
+    const { fechaInicio, fechaFin } = req.query;
+    
+    // Validar fechas si se proporcionan
+    if ((fechaInicio && !fechaFin) || (!fechaInicio && fechaFin)) {
+      return handleErrorClient(res, 400, "Debe proporcionar ambas fechas (fechaInicio y fechaFin) o ninguna");
+    }
+
+    const filtroFechas = fechaInicio && fechaFin ? { fechaInicio, fechaFin } : null;
+    const perdidasMermas = await gananciaEstimadaService.calcularPerdidasMermas(filtroFechas);
     
     return handleSuccess(res, 200, "Pérdidas por mermas obtenidas exitosamente", perdidasMermas);
   } catch (error) {

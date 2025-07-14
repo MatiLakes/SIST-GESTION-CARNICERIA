@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import "@styles/navbar2.css";
 import { useState, useEffect } from "react";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket, FaFileAlt, FaHardHat, FaTemperatureLow, FaChevronDown, FaChevronUp, FaTrashAlt, FaWarehouse, FaChartLine } from "react-icons/fa";
+import { FaHome, FaTruck, FaListAlt, FaPlus, FaClipboardList, FaBox, FaMoneyBillWave, FaUserFriends, FaShoppingBasket, FaShieldAlt, FaHardHat, FaTemperatureLow, FaChevronDown, FaChevronUp, FaTrashAlt, FaWarehouse, FaChartLine, FaUser, FaHamburger, FaFileAlt, FaDrumstickBite } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { GiMilkCarton } from "react-icons/gi";
 import { GiCow } from "react-icons/gi";
@@ -133,7 +133,7 @@ const Navbar2 = () => {
                 </li>
                 <li>
                   <NavLink to="/animal-vara/vara" className={location.pathname === "/animal-vara/vara" ? "active" : ""}>
-                    <GiCow className="nav-icon" />
+                    <FaShoppingBasket className="nav-icon" />
                     <span>Vara</span>
                   </NavLink>
                 </li>
@@ -152,7 +152,7 @@ const Navbar2 = () => {
                 {/* Menú de Contactos se agregará aquí */}
                 <li>
                   <NavLink to="/productos" className={location.pathname === "/productos" ? "active" : ""}>
-                    <FaBox className="nav-icon" />
+                    <FaDrumstickBite className="nav-icon" />
                     <span>Productos</span>
                   </NavLink>
                 </li>
@@ -180,7 +180,7 @@ const Navbar2 = () => {
                   <>
                     <li className="submenu-item">
                       <NavLink to="/control-higiene" className={location.pathname === "/control-higiene" ? "active" : ""}>
-                        <FaFileAlt className="nav-icon" />
+                        <FaShieldAlt className="nav-icon" />
                         <span>Control Higiene</span>
                       </NavLink>
                     </li>
@@ -192,7 +192,7 @@ const Navbar2 = () => {
                     </li>
                     <li className="submenu-item">
                       <NavLink to="/control-trazabilidad" className={location.pathname === "/control-trazabilidad" ? "active" : ""}>
-                        <FaFileAlt className="nav-icon" />
+                        <FaHamburger className="nav-icon" />
                         <span>Registro Carne Molida</span>
                       </NavLink>
                     </li>
@@ -224,7 +224,7 @@ const Navbar2 = () => {
                   <>
                     <li className="submenu-item contactos-submenu">
                       <NavLink to="/clientes" className={location.pathname === "/clientes" ? "active" : ""}>
-                        <FaUserFriends className="nav-icon" />
+                        <FaUser className="nav-icon" />
                         <span>Clientes</span>
                       </NavLink>
                     </li>
@@ -268,7 +268,7 @@ const Navbar2 = () => {
                   <>
                     <li className="submenu-item">
                       <NavLink to="/recepcion-stock" className={location.pathname === "/recepcion-stock" ? "active" : ""}>
-                        <FaBox className="nav-icon" />
+                        <FaTruck className="nav-icon" />
                         <span>Recepción Stock</span>
                       </NavLink>
                     </li>
@@ -297,7 +297,7 @@ const Navbar2 = () => {
 
                 <li>
                   <NavLink to="/subproductos" className={location.pathname === "/subproductos" ? "active" : ""}>
-                    <FaShoppingBasket  className="nav-icon" />
+                    <GiCow className="nav-icon" />
                     <span>Subproductos</span>
                   </NavLink>
                 </li>

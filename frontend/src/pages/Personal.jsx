@@ -147,6 +147,7 @@ const Personal = () => {
         showEditAllButton={false}
         showViewButton={false}
         showCalendarButton={false}
+        showExcelButton={false}
         entidad="personal"
       />      
 

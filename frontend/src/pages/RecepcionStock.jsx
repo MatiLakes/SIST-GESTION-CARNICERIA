@@ -23,7 +23,7 @@ const RecepcionStock = () => {
   const { create } = useCreateRecepcionStock(fetchRecepciones);
   const { remove } = useDeleteRecepcionStock(fetchRecepciones);
   const { edit } = useEditRecepcionStock(fetchRecepciones);
-  const { createError, editError, handleCreateError, handleEditError } = useErrorHandlerRecepcionStock();
+  const { createErrors, editErrors, handleCreateError, handleEditError, clearCreateErrors, clearEditErrors } = useErrorHandlerRecepcionStock();
   const { notificaciones } = useGetNotificaciones();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,6 +33,14 @@ const RecepcionStock = () => {
   const [recepcionToDelete, setRecepcionToDelete] = useState(null);
   const [formatoFecha, setFormatoFecha] = useState("dd/MM/yyyy");
   const [notificacionMostrada, setNotificacionMostrada] = useState(false);
+  
+  // Estado para el formulario de crear
+  const [newRecepcion, setNewRecepcion] = useState({
+    productoId: '',
+    cantidad: '',
+    costoUnitario: '',
+    fechaVencimiento: ''
+  });
 
   useEffect(() => {
     fetchProductos();
@@ -239,11 +247,22 @@ const RecepcionStock = () => {
   ];
 
   // Funciones para abrir/cerrar modales
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    // Reset form when opening modal
+    setNewRecepcion({
+      productoId: '',
+      cantidad: '',
+      costoUnitario: '',
+      fechaVencimiento: ''
+    });
+    clearCreateErrors();
+    setIsModalOpen(true);
+  };
   const closeModal = () => setIsModalOpen(false);
 
   const openEditModal = (recepcion) => {
     setCurrentRecepcion(recepcion);
+    clearEditErrors();
     setIsEditModalOpen(true);
   };
   const closeEditModal = () => setIsEditModalOpen(false);
@@ -256,6 +275,23 @@ const RecepcionStock = () => {
   const handleDeleteModalClose = () => {
     setIsDeleteModalOpen(false);
     setRecepcionToDelete(null);
+  };
+
+  // Handlers para los formularios
+  const handleCreateChange = (e) => {
+    const { name, value } = e.target;
+    setNewRecepcion(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentRecepcion(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   // Función para confirmar eliminación
@@ -285,25 +321,21 @@ const RecepcionStock = () => {
   // Función para crear una nueva recepción de stock
   const handleCreateRecepcion = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
     
-    // Asegurarse de que la fecha tenga el formato correcto ISO
-    const fechaVencimiento = formData.get("fechaVencimiento");
-    console.log("Fecha de vencimiento recibida del formulario:", fechaVencimiento);
-    
-    const newRecepcion = {
-      productoId: parseInt(formData.get("productoId"), 10),
-      cantidad: parseInt(formData.get("cantidad"), 10),
-      costoUnitario: parseFloat(formData.get("costoUnitario")),
-      fechaVencimiento: fechaVencimiento // Ya viene en formato YYYY-MM-DD del input type="date"
+    // Crear el objeto con los datos del estado
+    const newRecepcionData = {
+      productoId: parseInt(newRecepcion.productoId, 10),
+      cantidad: parseFloat(newRecepcion.cantidad),
+      costoUnitario: parseInt(newRecepcion.costoUnitario, 10),
+      fechaVencimiento: newRecepcion.fechaVencimiento
     };
 
     // Usar el hook de validación de errores
-    const hasErrors = handleCreateError(newRecepcion);
+    const hasErrors = handleCreateError(newRecepcionData);
     
     if (!hasErrors) {
       try {
-        await create(newRecepcion);
+        await create(newRecepcionData);
         closeModal();
         Swal.fire({
           icon: "success",
@@ -326,17 +358,13 @@ const RecepcionStock = () => {
   // Función para editar una recepción de stock existente
   const handleEditRecepcion = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
 
-    // Obtener la fecha de vencimiento y registrarla para depuración
-    const fechaVencimiento = formData.get("fechaVencimiento");
-    console.log("Fecha de vencimiento (edición):", fechaVencimiento);
-
+    // Crear el objeto con los datos del estado actualizado
     const updatedRecepcion = {
-      productoId: parseInt(formData.get("productoId"), 10),
-      cantidad: parseInt(formData.get("cantidad"), 10),
-      costoUnitario: parseFloat(formData.get("costoUnitario")),
-      fechaVencimiento: fechaVencimiento // Ya viene en formato YYYY-MM-DD del input type="date"
+      productoId: parseInt(currentRecepcion.productoId, 10),
+      cantidad: parseFloat(currentRecepcion.cantidad),
+      costoUnitario: parseInt(currentRecepcion.costoUnitario, 10),
+      fechaVencimiento: currentRecepcion.fechaVencimiento
     };
 
     // Usar el hook de validación de errores
@@ -395,6 +423,7 @@ const RecepcionStock = () => {
             showEditAllButton={false}
             showViewButton={false}
             showCalendarButton={true}
+            showExcelButton={true}
             entidad="recepcion-stock"
             customFormat={(value, key, row) => {
               if (key === "costoUnitario") {
@@ -449,7 +478,7 @@ const RecepcionStock = () => {
         overlayClassName="modal-overlay"
         closeTimeoutMS={300}
       >
-        <form onSubmit={handleCreateRecepcion} className="modal-crear-formulario">
+        <form onSubmit={handleCreateRecepcion} className="modal-crear-formulario" noValidate>
           <div className="modal-crear-header">
             <h2 className="modal-crear-titulo">Crear Nueva Recepción de Stock</h2>
             <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
@@ -462,7 +491,8 @@ const RecepcionStock = () => {
               <select
                 name="productoId"
                 id="productoId"
-                required
+                value={newRecepcion.productoId}
+                onChange={handleCreateChange}
                 className="formulario-input"
               >
                 <option value="">Seleccione un producto</option>
@@ -472,6 +502,9 @@ const RecepcionStock = () => {
                   </option>
                 ))}
               </select>
+              {createErrors.productoId && (
+                <span className="error-message">{createErrors.productoId}</span>
+              )}
             </div>
           </div>
 
@@ -483,9 +516,13 @@ const RecepcionStock = () => {
                 name="cantidad"
                 id="cantidad"
                 className="formulario-input"
-                min="1"
-                required
+                value={newRecepcion.cantidad}
+                onChange={handleCreateChange}
+                placeholder="Ingrese la cantidad"
               />
+              {createErrors.cantidad && (
+                <span className="error-message">{createErrors.cantidad}</span>
+              )}
             </div>
           </div>
 
@@ -494,13 +531,16 @@ const RecepcionStock = () => {
             <div className="input-container">
               <input
                 type="number"
-                step="0.01"
                 name="costoUnitario"
                 id="costoUnitario"
                 className="formulario-input"
-                min="0.01"
-                required
+                value={newRecepcion.costoUnitario}
+                onChange={handleCreateChange}
+                placeholder="Ingrese el costo unitario"
               />
+              {createErrors.costoUnitario && (
+                <span className="error-message">{createErrors.costoUnitario}</span>
+              )}
             </div>
           </div>
 
@@ -512,13 +552,15 @@ const RecepcionStock = () => {
                 name="fechaVencimiento"
                 id="fechaVencimiento"
                 className="formulario-input"
-                min={new Date().toISOString().split('T')[0]}
-                required
+                value={newRecepcion.fechaVencimiento}
+                onChange={handleCreateChange}
               />
+              {createErrors.fechaVencimiento && (
+                <span className="error-message">{createErrors.fechaVencimiento}</span>
+              )}
             </div>
           </div>
 
-          {createError && <p className="error-mensaje">{createError}</p>}
         </form>
       </Modal>
 
@@ -533,7 +575,7 @@ const RecepcionStock = () => {
         closeTimeoutMS={300}
       >
         {currentRecepcion && (
-          <form onSubmit={handleEditRecepcion} className="modal-crear-formulario">
+          <form onSubmit={handleEditRecepcion} className="modal-crear-formulario" noValidate>
             <div className="modal-crear-header">
               <h2 className="modal-crear-titulo">Editar Recepción de Stock</h2>
               <button type="button" onClick={closeEditModal} className="modal-crear-cerrar">×</button>
@@ -546,8 +588,8 @@ const RecepcionStock = () => {
                 <select
                   name="productoId"
                   id="productoId"
-                  defaultValue={currentRecepcion.producto.id}
-                  required
+                  value={currentRecepcion.producto?.id || ''}
+                  onChange={handleEditChange}
                   className="formulario-input"
                 >
                   <option value="">Seleccione un producto</option>
@@ -557,6 +599,9 @@ const RecepcionStock = () => {
                     </option>
                   ))}
                 </select>
+                {editErrors.productoId && (
+                  <span className="error-message">{editErrors.productoId}</span>
+                )}
               </div>
             </div>
 
@@ -568,10 +613,13 @@ const RecepcionStock = () => {
                   name="cantidad"
                   id="cantidad"
                   className="formulario-input"
-                  min="1"
-                  defaultValue={currentRecepcion.cantidad}
-                  required
+                  value={currentRecepcion.cantidad}
+                  onChange={handleEditChange}
+                  placeholder="Ingrese la cantidad"
                 />
+                {editErrors.cantidad && (
+                  <span className="error-message">{editErrors.cantidad}</span>
+                )}
               </div>
             </div>
 
@@ -580,14 +628,16 @@ const RecepcionStock = () => {
               <div className="input-container">
                 <input
                   type="number"
-                  step="0.01"
                   name="costoUnitario"
                   id="costoUnitario"
                   className="formulario-input"
-                  min="0.01"
-                  defaultValue={currentRecepcion.costoUnitario}
-                  required
+                  value={currentRecepcion.costoUnitario}
+                  onChange={handleEditChange}
+                  placeholder="Ingrese el costo unitario"
                 />
+                {editErrors.costoUnitario && (
+                  <span className="error-message">{editErrors.costoUnitario}</span>
+                )}
               </div>
             </div>
 
@@ -599,11 +649,13 @@ const RecepcionStock = () => {
                   name="fechaVencimiento"
                   id="fechaVencimiento"
                   className="formulario-input"
-                  defaultValue={currentRecepcion.fechaVencimiento ? 
+                  value={currentRecepcion.fechaVencimiento ? 
                     new Date(currentRecepcion.fechaVencimiento).toISOString().split('T')[0] : ''}
-                  min={new Date().toISOString().split('T')[0]}
-                  required
+                  onChange={handleEditChange}
                 />
+                {editErrors.fechaVencimiento && (
+                  <span className="error-message">{editErrors.fechaVencimiento}</span>
+                )}
               </div>
             </div>
 

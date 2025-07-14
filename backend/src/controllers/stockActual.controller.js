@@ -13,5 +13,24 @@ export const stockActualController = {
     } catch (error) {
       handleErrorServer(res, 500, error.message);
     }
+  },
+};
+
+export const exportarExcelStockActual = async (req, res) => {
+  try {
+    const workbook = await stockActualService.generarExcelStockActual();
+
+    // Configurar la respuesta para enviar el archivo Excel
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=stock-actual.xlsx");
+
+    // Enviar el archivo
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    handleErrorServer(res, 500, error.message);
   }
 };

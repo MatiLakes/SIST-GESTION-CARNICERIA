@@ -48,54 +48,154 @@ body[data-navbar-collapsed="true"] .ganancia-estimada-container {
   justify-content: center;
   padding: 60px;
   color: #666;
-  font-family: "Montserrat", sans-serif;
 }
 
-.loading-spinner {
-  font-size: 2rem;
-  color: #e8272b;
-  animation: spin 1s linear infinite;
-  margin-bottom: 15px;
+/* Filtro por período */
+.filtro-periodo {
+  margin-bottom: 30px;
 }
 
-.ganancia-error {
+.filtro-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  border-left: 4px solid #e8272b;
+}
+
+.filtro-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 60px;
-  color: #666;
-  font-family: "Montserrat", sans-serif;
-  background: #f8f8f8;
-  border-radius: 10px;
-  margin: 20px;
-}
-
-.error-icon {
-  font-size: 3rem;
-  color: #e8272b;
   margin-bottom: 20px;
 }
 
-.btn-retry {
-  background-color: #e8272b;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 600;
-  font-family: "Montserrat", sans-serif;
-  transition: all 0.2s ease;
+.filtro-header h3 {
+  color: #333;
+  font-size: 1.3rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filtro-activo {
+  background: #e8f5e8;
+  color: #2d5a2d;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 15px;
+  border: 1px solid #a8d8a8;
 }
 
-.btn-retry:hover {
-  background-color: #c01e22;
+.filtro-inputs {
+  display: flex;
+  gap: 20px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.fecha-input {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fecha-input label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.fecha-input input[type="date"] {
+  padding: 10px 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  min-width: 160px;
+  color: #333 !important;
+  font-weight: 600;
+  background-color: white;
+}
+
+/* Mejorar visibilidad del texto en inputs de fecha para navegadores WebKit */
+.fecha-input input[type="date"]::-webkit-datetime-edit {
+  color: #333;
+  font-weight: 600;
+}
+
+.fecha-input input[type="date"]::-webkit-datetime-edit-text {
+  color: #333;
+  font-weight: 600;
+}
+
+.fecha-input input[type="date"]::-webkit-datetime-edit-month-field,
+.fecha-input input[type="date"]::-webkit-datetime-edit-day-field,
+.fecha-input input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #333 !important;
+  font-weight: 600;
+}
+
+.fecha-input input[type="date"]:focus {
+  border-color: #e8272b;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(232, 39, 43, 0.1);
+}
+
+.filtro-actions {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  margin-top: -5px;
+}
+
+.btn-aplicar-filtro,
+.btn-limpiar-filtro {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  height: 44px;
+}
+
+.btn-aplicar-filtro {
+  background: #e8272b;
+  color: white;
+}
+
+.btn-aplicar-filtro:hover:not(:disabled) {
+  background: #c41e22;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(232, 39, 43, 0.3);
+}
+
+.btn-aplicar-filtro:disabled {
+  background: #333;
+  color: white;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-limpiar-filtro {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-limpiar-filtro:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
 }
 
 /* Resumen principal - Adaptado del dashboard */
@@ -425,6 +525,25 @@ body[data-navbar-collapsed="true"] .ganancia-estimada-container {
   border-bottom: none;
 }
 
+/* Estilos para fechas en las tablas */
+.detalle-tabla .fecha-cell {
+  color: #2c3e50 !important;
+  font-weight: 600;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 8px 12px !important;
+}
+
+.detalle-tabla .fecha-cell .fa-calendar-alt {
+  color: #e8272b;
+  margin-right: 8px;
+  font-size: 0.9rem;
+}
+
+.detalle-tabla .fecha-cell:hover {
+  background-color: #e9ecef;
+}
+
 /* Información de elementos */
 .animal-info,
 .producto-info,
@@ -586,6 +705,47 @@ body[data-navbar-collapsed="true"] .ganancia-estimada-container {
   margin: 0;
   color: #666;
   line-height: 1.4;
+}
+
+/* Sección del filtro por período */
+.filtro-periodo {
+  margin-bottom: 30px;
+}
+
+.filtro-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  border-left: 4px solid #e8272b;
+}
+
+.filtro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.filtro-header h3 {
+  color: #333;
+  font-size: 1.3rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filtro-activo {
+  background: #e8f5e8;
+  color: #2d5a2d;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #a8d8a8;
 }
 
 /* Animaciones */

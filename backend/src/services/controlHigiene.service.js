@@ -2,31 +2,69 @@ import { AppDataSource } from "../config/configDb.js";
 import ControlHigiene from "../entity/ControlHigiene.entity.js";
 import Personal from "../entity/Personal.entity.js";
 
-export const controlHigieneService = {  async crearRegistro(data) {
+export const controlHigieneService = {
+  async crearRegistro(data) {
     try {
+      console.log("Datos recibidos para crear registro:", JSON.stringify(data, null, 2));
+      
+      // Validar que personalId existe
+      if (!data.personalId) {
+        console.error("Error: personalId no proporcionado");
+        return [null, "El ID del personal es obligatorio"];
+      }
+
       const personalRepo = AppDataSource.getRepository(Personal);
       const controlRepo = AppDataSource.getRepository(ControlHigiene);
 
+      console.log("Buscando personal con ID:", data.personalId);
       const persona = await personalRepo.findOneBy({ id: data.personalId });
-      if (!persona) return [null, "Personal no encontrado"];
+      if (!persona) {
+        console.error(`Personal con ID ${data.personalId} no encontrado`);
+        return [null, "Personal no encontrado"];
+      }
+
+      console.log("Personal encontrado:", JSON.stringify(persona, null, 2));
+
+      // Crear una copia de los datos sin personalId para evitar conflictos
+      const { personalId, ...registroData } = data;
 
       const nuevo = controlRepo.create({
-        ...data,
+        ...registroData,
         personal: persona
       });
 
+      console.log("Registro a guardar:", JSON.stringify(nuevo, null, 2));
+
       await controlRepo.save(nuevo);
+      
       // Reload the entity to ensure relations are properly loaded
       const saved = await controlRepo.findOne({
         where: { id: nuevo.id },
         relations: ["personal"]
       });
+      
+      console.log("Registro guardado exitosamente:", JSON.stringify(saved, null, 2));
       return [saved, null];
     } catch (err) {
-      console.error("Error al guardar el control:", err);
-      return [null, "Error al guardar el control"];
+      console.error("Error detallado al guardar el control:", err);
+      console.error("Stack trace:", err.stack);
+      
+      // Devolver mensaje más específico basado en el tipo de error
+      if (err.code === '23503') {
+        return [null, "Error de integridad: Personal no válido"];
+      }
+      if (err.code === '23502') {
+        return [null, "Error: Faltan campos obligatorios"];
+      }
+      if (err.name === 'QueryFailedError') {
+        return [null, `Error en la consulta: ${err.message}`];
+      }
+      
+      return [null, `Error al guardar el control: ${err.message}`];
     }
-  },  async obtenerRegistros() {
+  },
+
+  async obtenerRegistros() {
     try {
       const repo = AppDataSource.getRepository(ControlHigiene);
       const lista = await repo.find({
@@ -48,6 +86,7 @@ export const controlHigieneService = {  async crearRegistro(data) {
       return [null, "Error al obtener registros"];
     }
   },
+
   async modificarRegistro(id, data) {
   try {
     const repo = AppDataSource.getRepository(ControlHigiene);
@@ -97,6 +136,4 @@ async eliminarRegistro(id) {
   } catch (err) {
     return [null, "Error al eliminar el registro"];
   }
-}
-
-}
+}}

@@ -1,10 +1,25 @@
 import Joi from "joi";
 
-export const controlHigieneValidation = () => Joi.object({    fecha: Joi.date()
-      .max('now')
+export const controlHigieneValidation = () => Joi.object({
+    personalId: Joi.number()
+      .integer()
+      .positive()
       .required()
       .messages({
-        "date.base": "La fecha debe ser una fecha válida.",
+        "number.base": "El ID del personal debe ser un número.",
+        "number.integer": "El ID del personal debe ser un número entero.",
+        "number.positive": "El ID del personal debe ser un número positivo.",
+        "any.required": "El ID del personal es obligatorio.",
+      }),
+
+    fecha: Joi.alternatives()
+      .try(
+        Joi.date().max('now'),
+        Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).message('La fecha debe estar en formato YYYY-MM-DD')
+      )
+      .required()
+      .messages({
+        "alternatives.match": "La fecha debe ser una fecha válida en formato YYYY-MM-DD o un objeto Date.",
         "date.max": "La fecha no puede ser posterior a la fecha actual.",
         "any.required": "La fecha es obligatoria.",
       }),
@@ -65,22 +80,11 @@ export const controlHigieneValidation = () => Joi.object({    fecha: Joi.date()
         "string.base": "La observación debe ser una cadena de texto.",
         "string.max": "La observación no puede tener más de 500 caracteres.",
       }),    nroAccionCorrectiva: Joi.string()
+      .valid("ACC N°1", "ACC N°2", "ACC N°3", "ACC N°4", "ACC N°5", "ACC N°6", "ACC N°7", "No Aplica")
       .required()
-      .when('vbCumplimiento', {
-        is: 'C',
-        then: Joi.string()
-          .valid("ACC N°1", "ACC N°2", "ACC N°3", "ACC N°4", "ACC N°5", "ACC N°6", "ACC N°7")
-          .messages({
-            "any.only": "Para cumplimiento 'C', la acción correctiva debe ser una ACC del N°1 al N°7",
-          }),
-        otherwise: Joi.string()
-          .valid("No Aplica")
-          .messages({
-            "any.only": "Para no cumplimiento 'NC', la acción correctiva debe ser 'No Aplica'",
-          })
-      })
       .messages({
         "string.base": "El número de acción correctiva debe ser una cadena de texto.",
+        "any.only": "La acción correctiva debe ser una de las opciones válidas: ACC N°1 a ACC N°7 o 'No Aplica'",
         "any.required": "El número de acción correctiva es obligatorio.",
       }),
 

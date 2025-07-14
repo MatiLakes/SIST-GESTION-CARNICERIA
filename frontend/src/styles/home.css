@@ -152,7 +152,13 @@
 .card-icon {
   font-size: 3rem;
   margin-bottom: 15px;
-  color: #e8272b; /* Color rojo del logo de Goval */
+  color: #e8272b !important; /* Color rojo del logo de Goval con !important para asegurar que se aplique */
+}
+
+/* Asegurar que todos los iconos de React Icons tengan el color correcto */
+.card-content svg {
+  color: #e8272b !important;
+  fill: #e8272b !important;
 }
 
 .card-description {

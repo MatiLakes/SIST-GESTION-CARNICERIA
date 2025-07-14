@@ -8,7 +8,10 @@ import {
   FaBalanceScale,
   FaSpinner,
   FaCalendarAlt,
-  FaInfoCircle
+  FaInfoCircle,
+  FaSearch,
+  FaSyncAlt,
+  FaFilter
 } from 'react-icons/fa';
 import { GiCow, GiMeat } from 'react-icons/gi';
 import { MdInventory } from 'react-icons/md';
@@ -17,16 +20,33 @@ const GananciaEstimada = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [datosCompletos, setDatosCompletos] = useState(null);
+  
+  // Estados para el filtro de fechas
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+  const [filtroActivo, setFiltroActivo] = useState(false);
 
   useEffect(() => {
     cargarDatosCompletos();
   }, []);
 
-  const cargarDatosCompletos = async () => {
+  const cargarDatosCompletos = async (filtros = null) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await gananciaEstimadaService.obtenerGananciaCompleta();
+      
+      let response;
+      if (filtros && filtros.fechaInicio && filtros.fechaFin) {
+        response = await gananciaEstimadaService.obtenerGananciaCompletaConFiltro(
+          filtros.fechaInicio, 
+          filtros.fechaFin
+        );
+        setFiltroActivo(true);
+      } else {
+        response = await gananciaEstimadaService.obtenerGananciaCompleta();
+        setFiltroActivo(false);
+      }
+      
       setDatosCompletos(response.data);
     } catch (err) {
       setError(err.message);
@@ -34,6 +54,26 @@ const GananciaEstimada = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const aplicarFiltro = () => {
+    if (!fechaInicio || !fechaFin) {
+      setError('Debe seleccionar ambas fechas para aplicar el filtro');
+      return;
+    }
+    
+    if (new Date(fechaInicio) > new Date(fechaFin)) {
+      setError('La fecha de inicio no puede ser mayor a la fecha de fin');
+      return;
+    }
+    
+    cargarDatosCompletos({ fechaInicio, fechaFin });
+  };
+
+  const limpiarFiltro = () => {
+    setFechaInicio('');
+    setFechaFin('');
+    cargarDatosCompletos();
   };
 
   const formatCurrency = (amount) => {
@@ -71,6 +111,62 @@ const GananciaEstimada = () => {
   return (
     <div className="ganancia-estimada-container">
       <h1 className="page-title">Ganancia Estimada</h1>
+
+      {/* Filtro por Período */}
+      <section className="filtro-periodo">
+        <div className="filtro-card">
+          <div className="filtro-header">
+            <h3>
+              <FaFilter /> Filtrar por Período
+            </h3>
+            {filtroActivo && (
+              <span className="filtro-activo">
+                <FaCalendarAlt /> Filtro aplicado: {new Date(fechaInicio).toLocaleDateString()} - {new Date(fechaFin).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+          
+          <div className="filtro-inputs">
+            <div className="fecha-input">
+              <label htmlFor="fechaInicio">Fecha Inicio:</label>
+              <input
+                type="date"
+                id="fechaInicio"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+                max={fechaFin || undefined}
+              />
+            </div>
+            
+            <div className="fecha-input">
+              <label htmlFor="fechaFin">Fecha Fin:</label>
+              <input
+                type="date"
+                id="fechaFin"
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+                min={fechaInicio || undefined}
+              />
+            </div>
+            
+            <div className="filtro-actions">
+              <button 
+                onClick={aplicarFiltro} 
+                className="btn-aplicar-filtro"
+                disabled={!fechaInicio || !fechaFin}
+              >
+                <FaSearch /> Aplicar Filtro
+              </button>
+              
+              {filtroActivo && (
+                <button onClick={limpiarFiltro} className="btn-limpiar-filtro">
+                  <FaSyncAlt /> Ver Todo
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Resumen Principal */}
       <section className="resumen-principal">
@@ -147,7 +243,7 @@ const GananciaEstimada = () => {
                         <small>{animal.tipoAnimal}</small>
                       </div>
                     </td>
-                    <td>
+                    <td className="fecha-cell">
                       <FaCalendarAlt />
                       {new Date(animal.fechaIngreso).toLocaleDateString()}
                     </td>
@@ -345,7 +441,7 @@ const GananciaEstimada = () => {
                     <td className="amount negative">
                       -{formatCurrency(merma.perdidaTotal)}
                     </td>
-                    <td>
+                    <td className="fecha-cell">
                       <FaCalendarAlt />
                       {new Date(merma.fecha).toLocaleDateString()}
                     </td>

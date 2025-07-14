@@ -2,20 +2,29 @@ import { controlHigieneService } from "../services/controlHigiene.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 import { controlHigieneValidation } from "../validations/controlHigiene.validation.js";
 
-export const controlHigieneController = {  async crearRegistro(req, res) {
+export const controlHigieneController = {
+  async crearRegistro(req, res) {
     try {
       const datosRegistro = req.body;
+      console.log("Datos recibidos en el controlador:", JSON.stringify(datosRegistro, null, 2));
       
       // Validar los datos del registro
       const { error } = controlHigieneValidation().validate(datosRegistro);
       if (error) {
+        console.error("Error de validación:", error.details[0].message);
         return handleErrorClient(res, 400, error.details[0].message);
       }
 
       const [registro, err] = await controlHigieneService.crearRegistro(datosRegistro);
-      if (err) return handleErrorClient(res, 400, err);
+      if (err) {
+        console.error("Error del servicio:", err);
+        return handleErrorClient(res, 400, err);
+      }
+      
+      console.log("Registro creado exitosamente:", JSON.stringify(registro, null, 2));
       handleSuccess(res, 201, "Registro creado", registro);
     } catch (error) {
+      console.error("Error inesperado en el controlador:", error);
       handleErrorServer(res, 500, error.message);
     }
   },
@@ -59,4 +68,4 @@ async eliminarRegistro(req, res) {
   }
 }
   
-}
+};

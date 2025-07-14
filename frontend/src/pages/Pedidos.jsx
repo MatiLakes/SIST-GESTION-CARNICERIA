@@ -318,6 +318,7 @@ const Pedidos = () => {
         onView={handleViewClick}
         showEditAllButton={false}
         showViewButton={true}
+        showExcelButton={false}
         entidad="pedidos"
       />      {/* Modal de Creación */}
       <Modal

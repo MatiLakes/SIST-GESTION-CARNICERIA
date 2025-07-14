@@ -1,6 +1,7 @@
 import { AppDataSource } from "../config/configDb.js";
 import RecepcionStock from "../entity/RecepcionStock.entity.js";
 import Producto from "../entity/Producto.entity.js";
+import ExcelJS from "exceljs";
 
 export const recepcionStockService = {
   async crear({ productoId, cantidad, costoUnitario, fechaVencimiento }) {
@@ -101,6 +102,79 @@ async actualizar(id, data) {
   } catch (err) {
     console.error("Error al actualizar:", err);
     return [null, "Error al actualizar registro"];
+  }
+},
+
+async generarExcelRecepcionStock() {
+  try {
+    const repo = AppDataSource.getRepository(RecepcionStock);
+    const recepciones = await repo.find({
+      relations: {
+        producto: true
+      },
+      select: {
+        id: true,
+        cantidad: true,
+        costoUnitario: true,
+        fecha: true,
+        fechaVencimiento: true,
+        producto: {
+          id: true,
+          nombre: true,
+          variante: true
+        }
+      },
+      order: {
+        fecha: "DESC"
+      }
+    });
+
+    // Crear el workbook y la hoja
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Recepciones de Stock");
+    
+    // Definir las columnas
+    worksheet.columns = [
+      { header: "ID", key: "id", width: 10 },
+      { header: "Producto", key: "producto", width: 25 },
+      { header: "Cantidad", key: "cantidad", width: 15 },
+      { header: "Costo Unitario", key: "costoUnitario", width: 15 },
+      { header: "Costo Total", key: "costoTotal", width: 15 },
+      { header: "Fecha", key: "fecha", width: 15 },
+      { header: "Fecha Vencimiento", key: "fechaVencimiento", width: 20 },
+    ];
+
+    // Agregar las filas
+    recepciones.forEach((recepcion) => {
+      const productoNombre = recepcion.producto 
+        ? `${recepcion.producto.nombre}${recepcion.producto.variante ? ` ${recepcion.producto.variante}` : ''}`
+        : 'Producto no disponible';
+      
+      const costoTotal = (recepcion.cantidad || 0) * (recepcion.costoUnitario || 0);
+      
+      worksheet.addRow({
+        id: recepcion.id,
+        producto: productoNombre,
+        cantidad: recepcion.cantidad,
+        costoUnitario: recepcion.costoUnitario,
+        costoTotal: costoTotal,
+        fecha: recepcion.fecha ? new Date(recepcion.fecha).toLocaleDateString('es-CL') : 'N/A',
+        fechaVencimiento: recepcion.fechaVencimiento ? new Date(recepcion.fechaVencimiento).toLocaleDateString('es-CL') : 'N/A',
+      });
+    });
+
+    // Estilizar la cabecera
+    worksheet.getRow(1).font = { bold: true };
+    
+    // Aplicar formato de moneda a las columnas de costo
+    worksheet.getColumn('costoUnitario').numFmt = '"$"#,##0.00';
+    worksheet.getColumn('costoTotal').numFmt = '"$"#,##0.00';
+
+    // Retornar el workbook
+    return workbook;
+  } catch (error) {
+    console.error("Error al generar el Excel de recepciones de stock:", error);
+    throw new Error("No se pudo generar el archivo Excel.");
   }
 }
 

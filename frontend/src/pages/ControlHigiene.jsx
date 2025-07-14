@@ -28,13 +28,6 @@ const ControlHigiene = () => {
   const [controlToDelete, setControlToDelete] = useState(null);
   const [controlToView, setControlToView] = useState(null);
 
-  // Registra los datos para diagnosticar el problema
-  useEffect(() => {
-    console.log("Controles actualizados:", controles);
-    console.log("Estado de carga:", loading);
-    console.log("Error (si existe):", error);
-  }, [controles, loading, error]);
-
   const accOptions = [
     "ACC N°1", "ACC N°2", "ACC N°3", "ACC N°4",
     "ACC N°5", "ACC N°6", "ACC N°7", "No Aplica"
@@ -231,7 +224,36 @@ const ControlHigiene = () => {
               </div>
             ))}
           </div>
-        </div>        <div className="formulario-grupo">
+        </div>
+
+        <div className="formulario-grupo">
+          <label className="formulario-etiqueta">Guía de Acciones Correctivas ACC:</label>
+          <div className="info-acciones-correctivas">
+            <div className="acc-item">
+              <strong>ACC N°1 - Uso accesorios:</strong> En caso de uso de estos objetos, solicitar que se los quite de inmediato y guarde en el casillero.
+            </div>
+            <div className="acc-item">
+              <strong>ACC N°2 - Higiene de manos:</strong> Solicitar al personal el correcto lavado de estas y verificar el estado de higiene nuevamente.
+            </div>
+            <div className="acc-item">
+              <strong>ACC N°3 - Uñas largas:</strong> Solicitar el corte de las uñas en forma inmediata, acudir a JEFE DE LOCAL.
+            </div>
+            <div className="acc-item">
+              <strong>ACC N°4 - Uniforme limpio:</strong> Si el uniforme se encuentra sucio o en mal estado, solicitar el recambio.
+            </div>
+            <div className="acc-item">
+              <strong>ACC N°5 - Uso de mascarilla:</strong> Solicitar el uso de mascarilla en forma inmediata y eventual amonestación en caso de reiteración.
+            </div>
+            <div className="acc-item">
+              <strong>ACC N°6 - Uso de Cofia:</strong> Solicitar el uso de cofia en forma inmediata y eventual amonestación en caso de reiteración.
+            </div>
+            <div className="acc-item">
+              <strong>ACC N°7 - Afeitado:</strong> Se solicita al trabajador el afeitado o con su cubre barba ninja inmediata, se capacita en caso de reiteración.
+            </div>
+          </div>
+        </div>
+
+        <div className="formulario-grupo">
           <label className="formulario-etiqueta">V°B° Cumplimiento:</label>
           <div className="input-container">
             <select
@@ -315,7 +337,8 @@ const ControlHigiene = () => {
         onView={handleViewClick}
         showEditAllButton={false}
         showViewButton={true}
-        entidad="controles"
+        showExcelButton={false}
+        entidad="control-higiene"
       />      <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}

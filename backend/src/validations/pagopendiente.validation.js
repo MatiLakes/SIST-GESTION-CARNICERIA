@@ -4,10 +4,18 @@ import Joi from "joi";
 
 // Función para obtener la fecha actual en zona horaria de Chile
 const getChileanDate = () => {
-    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Santiago" }));
-   today.setDate(today.getDate() - 1); // Restar un día
-    today.setHours(0, 0, 0, 0);
-    return today;
+    // Crear fecha actual
+    const now = new Date();
+    
+    // Convertir a zona horaria de Chile (UTC-3 o UTC-4 dependiendo del horario de verano)
+    const chileanTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Santiago" }));
+    
+    // Establecer a medianoche para comparar solo días
+    chileanTime.setHours(0, 0, 0, 0);
+    
+    console.log('🌎 [DEBUG] Fecha chilena calculada:', chileanTime);
+    
+    return chileanTime;
 };
 
 export const pagoPendienteValidation = {
@@ -23,22 +31,16 @@ export const pagoPendienteValidation = {
             }),
 
         fechaPedido: Joi.date()
+            .required()
             .custom((value, helpers) => {
-                const fechaPedido = new Date(value);
-                const hoy = getChileanDate();
-                
-                // Establecer la fecha a medianoche para comparar solo días
-                fechaPedido.setHours(0, 0, 0, 0);
-                
-                if (fechaPedido.getTime() !== hoy.getTime()) {
-                    return helpers.error('date.strict');
-                }
+                console.log('🔍 [VALIDACION] Validando fechaPedido:', value);
+                console.log('🔍 [VALIDACION] Tipo de dato:', typeof value);
+                console.log('🔍 [VALIDACION] Fecha parseada:', new Date(value));
+                console.log('✅ [VALIDACION] Fecha aceptada sin restricciones');
                 return value;
             })
-            .required()
             .messages({
                 "date.base": "La fecha del pedido debe ser una fecha válida.",
-                "date.strict": "La fecha del pedido debe ser la fecha actual.",
                 "any.required": "La fecha del pedido es obligatoria."
             }),
 
@@ -63,14 +65,7 @@ export const pagoPendienteValidation = {
                 "any.required": "La fecha límite es obligatoria."
             }),
 
-        estado: Joi.string()
-            .valid("Pendiente", "Pagado", "Vencido")
-            .required()
-            .messages({
-                "string.base": "El estado debe ser un texto.",
-                "any.only": "El estado debe ser 'Pendiente', 'Pagado' o 'Vencido'.",
-                "any.required": "El estado es obligatorio."
-            }),
+        // Estado se establece automáticamente como "Pendiente" en el servicio
 
         factura: Joi.string()
             .max(255)
@@ -109,23 +104,8 @@ export const pagoPendienteValidation = {
             }),
 
         fechaPedido: Joi.date()
-            .custom((value, helpers) => {
-                if (!value) return value;
-                
-                const fechaPedido = new Date(value);
-                const hoy = getChileanDate();
-                
-                // Establecer la fecha a medianoche para comparar solo días
-                fechaPedido.setHours(0, 0, 0, 0);
-                
-                if (fechaPedido.getTime() !== hoy.getTime()) {
-                    return helpers.error('date.strict');
-                }
-                return value;
-            })
             .messages({
-                "date.base": "La fecha del pedido debe ser una fecha válida.",
-                "date.strict": "La fecha del pedido debe ser la fecha actual."
+                "date.base": "La fecha del pedido debe ser una fecha válida."
             }),
 
         fechaLimite: Joi.date()
@@ -152,10 +132,10 @@ export const pagoPendienteValidation = {
             }),
 
         estado: Joi.string()
-            .valid("Pendiente", "Pagado", "Vencido")
+            .valid("Pendiente", "Pagado")
             .messages({
                 "string.base": "El estado debe ser un texto.",
-                "any.only": "El estado debe ser 'Pendiente', 'Pagado' o 'Vencido'."
+                "any.only": "El estado debe ser 'Pendiente' o 'Pagado'. El estado 'Vencido' se asigna automáticamente."
             }),
 
         factura: Joi.string()

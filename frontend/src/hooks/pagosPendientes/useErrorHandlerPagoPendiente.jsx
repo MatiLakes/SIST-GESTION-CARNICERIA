@@ -124,11 +124,11 @@ const validateEstado = (estado) => {
     };
   }
 
-  const estadosValidos = ["Pendiente", "Pagado", "Vencido"];
+  const estadosValidos = ["Pendiente", "Pagado"];
   if (!estadosValidos.includes(estado)) {
     return {
       status: "Client error",
-      message: "El estado debe ser 'Pendiente', 'Pagado' o 'Vencido'.",
+      message: "El estado debe ser 'Pendiente' o 'Pagado'. El estado 'Vencido' se asigna automáticamente.",
       details: {}
     };
   }
@@ -236,14 +236,7 @@ export const useErrorHandlerPagoPendiente = () => {
       });
     }
 
-    // Validar estado
-    const estadoError = validateEstado(data.estado);
-    if (estadoError) {
-      errors.push({
-        field: 'estado',
-        message: estadoError.message
-      });
-    }
+    // Estado se establece automáticamente como "Pendiente", no necesita validación
 
     // Validar factura (opcional)
     const facturaError = validateFactura(data.factura);

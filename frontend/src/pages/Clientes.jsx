@@ -373,6 +373,7 @@ const Clientes = () => {  const { clientes, loading, fetchClientes } = useGetCli
             showEditAllButton={false}
             showViewButton={true}
             onView={handleViewModalOpen}
+            showExcelButton={false}
             entidad="clientes"
             customFormat={customFormat}
             showCalendarButton={false}

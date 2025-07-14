@@ -26,6 +26,32 @@ class GananciaEstimadaService {
   }
 
   /**
+   * Obtiene solo el resumen de ganancia estimada con filtro de fechas
+   * @param {string} fechaInicio - Fecha de inicio (YYYY-MM-DD)
+   * @param {string} fechaFin - Fecha de fin (YYYY-MM-DD)
+   * @returns {Promise} Respuesta con el resumen filtrado
+   */
+  async obtenerResumenConFiltro(fechaInicio, fechaFin) {
+    try {
+      console.log('📊 Obteniendo resumen con filtro:', { fechaInicio, fechaFin });
+      const response = await rootService({
+        method: 'GET',
+        url: '/ganancia-estimada/resumen',
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      
+      console.log('✅ Resumen con filtro obtenido:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error al obtener resumen con filtro:', error);
+      throw this.handleError(error, 'Error al obtener el resumen con filtro');
+    }
+  }
+
+  /**
    * Obtiene solo el resumen de ganancia estimada
    * @returns {Promise} Respuesta con el resumen
    */
@@ -146,6 +172,32 @@ class GananciaEstimadaService {
   }
 
   /**
+   * Obtiene el cálculo completo de ganancia estimada con filtro de fechas
+   * @param {string} fechaInicio - Fecha de inicio (YYYY-MM-DD)
+   * @param {string} fechaFin - Fecha de fin (YYYY-MM-DD)
+   * @returns {Promise} Respuesta con el cálculo completo filtrado
+   */
+  async obtenerGananciaCompletaConFiltro(fechaInicio, fechaFin) {
+    try {
+      console.log('📊 Obteniendo ganancia estimada con filtro:', { fechaInicio, fechaFin });
+      const response = await rootService({
+        method: 'GET',
+        url: '/ganancia-estimada',
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      
+      console.log('✅ Ganancia estimada con filtro obtenida:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error al obtener ganancia estimada con filtro:', error);
+      throw this.handleError(error, 'Error al obtener la ganancia estimada con filtro');
+    }
+  }
+
+  /**
    * Maneja los errores de las peticiones HTTP
    * @param {Object} error - Error original
    * @param {string} defaultMessage - Mensaje por defecto
@@ -212,12 +264,12 @@ class GananciaEstimadaService {
   /**
    * Obtiene el color apropiado para mostrar una ganancia
    * @param {number} ganancia - Ganancia a evaluar
-   * @returns {string} Clase CSS o color
+   * @returns {string} Clase CSS o estado
    */
   getGananciaColor(ganancia) {
-    if (ganancia > 0) return 'text-green-600';
-    if (ganancia < 0) return 'text-red-600';
-    return 'text-gray-600';
+    if (ganancia > 0) return 'positive';
+    if (ganancia < 0) return 'negative';
+    return 'neutral';
   }
 }
 

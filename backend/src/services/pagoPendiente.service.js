@@ -21,7 +21,7 @@ export const pagoPendienteService = {
         monto: data.monto,
         fechaPedido: data.fechaPedido,
         fechaLimite: data.fechaLimite,
-        estado: data.estado,
+        estado: "Pendiente", // Estado fijo al crear
         cliente: cliente
       };
 
@@ -54,6 +54,10 @@ export const pagoPendienteService = {
   async obtenerPagosPendientes() {
     try {
       console.log("[PagoPendienteService] Consultando pagos pendientes en la base de datos");
+      
+      // Primero verificar y actualizar pagos vencidos
+      await this.verificarYActualizarVencidos();
+      
       const pagoPendienteRepository = AppDataSource.getRepository(PagoPendiente);
       
       // Verificar que el repositorio esté disponible
@@ -188,5 +192,42 @@ export const pagoPendienteService = {
       console.error("Error en eliminarPagoPendiente:", error);
       return [null, "No se pudo eliminar el pago pendiente."];
     }
-  }
+  },
+
+  async verificarYActualizarVencidos() {
+    try {
+      const pagoPendienteRepository = AppDataSource.getRepository(PagoPendiente);
+      
+      // Obtener la fecha actual
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      
+      // Buscar pagos pendientes con fecha límite pasada
+      const pagosVencidos = await pagoPendienteRepository
+        .createQueryBuilder("pago")
+        .where("pago.estado = :estado", { estado: "Pendiente" })
+        .andWhere("pago.fechaLimite < :fecha", { fecha: hoy })
+        .getMany();
+      
+      if (pagosVencidos.length > 0) {
+        console.log(`📅 Actualizando ${pagosVencidos.length} pagos vencidos`);
+        
+        // Actualizar todos los pagos vencidos
+        await pagoPendienteRepository
+          .createQueryBuilder()
+          .update(PagoPendiente)
+          .set({ estado: "Vencido" })
+          .where("estado = :estado", { estado: "Pendiente" })
+          .andWhere("fechaLimite < :fecha", { fecha: hoy })
+          .execute();
+        
+        console.log(`✅ Se actualizaron ${pagosVencidos.length} pagos a estado 'Vencido'`);
+      }
+      
+      return [pagosVencidos.length, null];
+    } catch (error) {
+      console.error("Error al verificar pagos vencidos:", error);
+      return [null, "Error al verificar pagos vencidos."];
+    }
+  },
 };

@@ -2,7 +2,7 @@ import axiosInstance from "./root.service";
 
 export const descargarExcel = async (entidad) => {
     try {
-        const response = await axiosInstance.get(`http://localhost:3050/api/${entidad}/exportar/excel`, {
+        const response = await axiosInstance.get(`/${entidad}/exportar/excel`, {
             responseType: "blob",
         });
 

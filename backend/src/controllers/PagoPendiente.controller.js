@@ -35,6 +35,8 @@ export const pagoPendienteController = {
         cliente: { id: parseInt(id_cliente) }
       };
 
+      console.log(`📋 [DEBUG] Datos antes de limpiar:`, datosParaValidar);
+
       // Limpiar campos vacíos, null, undefined o objetos vacíos que pueden causar problemas de validación
       Object.keys(datosParaValidar).forEach(key => {
         if (key !== 'cliente') { // No eliminar el objeto cliente requerido
@@ -43,22 +45,31 @@ export const pagoPendienteController = {
               value === undefined || 
               value === '' ||
               (typeof value === 'object' && value !== null && Object.keys(value).length === 0)) {
+            console.log(`📋 [DEBUG] Eliminando campo vacío: ${key} =`, value);
             delete datosParaValidar[key];
           }
         }
       });
 
+      console.log(`📋 [DEBUG] Datos después de limpiar:`, datosParaValidar);
+
       // Solo agregar factura si existe el archivo
       if (req.file) {
         // Normalizar la ruta para usar forward slashes
         datosParaValidar.factura = req.file.path.replace(/\\/g, '/');
+        console.log(`📎 [DEBUG] Archivo agregado a validación:`, datosParaValidar.factura);
       }
+
+      console.log(`📋 [DEBUG] Datos finales para validación:`, JSON.stringify(datosParaValidar, null, 2));
 
       // Validar los datos usando el esquema
       const { error } = pagoPendienteValidation.create.validate(datosParaValidar);
       if (error) {
+        console.error(`❌ [DEBUG] Error de validación:`, error.details[0]);
         return handleErrorClient(res, 400, error.details[0].message);
       }
+
+      console.log(`✅ [DEBUG] Validación exitosa, enviando al servicio...`);
 
       const [pago, err] = await pagoPendienteService.crearPagoPendiente(datosParaValidar);
       if (err) return handleErrorClient(res, 400, err);

@@ -205,5 +205,4 @@ export const documentoTemperaturaService = {
       return [null, "Error al actualizar documento"];
     }
   }
-
 };

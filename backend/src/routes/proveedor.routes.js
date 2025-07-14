@@ -7,7 +7,8 @@ import {
   deleteProveedor,    
   getAllProveedores,       
   getProveedorById,  
-  updateProveedor     
+  updateProveedor,
+  exportarExcelProveedores     
 } from "../controllers/proveedor.controller.js"; 
 
 const router = Router();
@@ -17,7 +18,8 @@ router.use(authenticateJwt).use(isAdmin);
 
 router
   .post("/", createProveedor)           
-  .get("/", getAllProveedores)              
+  .get("/", getAllProveedores)
+  .get("/exportar/excel", exportarExcelProveedores)
   .get("/:id", getProveedorById)             
   .put("/:id", updateProveedor)       
   .delete("/:id", deleteProveedor);      

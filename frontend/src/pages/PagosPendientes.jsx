@@ -359,12 +359,19 @@ const PagosPendientes = () => {
     console.log('📎 Archivo seleccionado:', selectedFile ? `${selectedFile.name} (${selectedFile.size} bytes)` : 'Ninguno');
 
     const newPagoPendiente = {
-      monto: formData.get("monto"),
-      fechaPedido: formData.get("fechaPedido"),
-      fechaLimite: formData.get("fechaLimite"),
-      estado: formData.get("estado"),
-      clienteId: formData.get("id_cliente"),
+      monto: parseFloat(formData.get("monto")), // Convertir a número
+      fechaPedido: formData.get("fechaPedido"), // Fecha en formato YYYY-MM-DD
+      fechaLimite: formData.get("fechaLimite"), // Fecha en formato YYYY-MM-DD
+      // estado: "Pendiente", // ❌ REMOVIDO - El backend lo establece automáticamente
+      clienteId: parseInt(formData.get("id_cliente")), // Convertir a número
     };
+
+    console.log('📋 Datos del pago pendiente:', newPagoPendiente);
+    console.log('📅 Verificando fechas:');
+    console.log('  - fechaPedido:', newPagoPendiente.fechaPedido, '(tipo:', typeof newPagoPendiente.fechaPedido, ')');
+    console.log('  - fechaLimite:', newPagoPendiente.fechaLimite, '(tipo:', typeof newPagoPendiente.fechaLimite, ')');
+    console.log('👤 Cliente ID:', newPagoPendiente.clienteId, '(tipo:', typeof newPagoPendiente.clienteId, ')');
+    console.log('💰 Monto:', newPagoPendiente.monto, '(tipo:', typeof newPagoPendiente.monto, ')');
 
     // Validar antes de enviar
     const hasErrors = handleCreateError(newPagoPendiente);
@@ -379,26 +386,28 @@ const PagosPendientes = () => {
         // Si hay archivo, usar FormData
         console.log('📎 Enviando con FormData (incluye archivo)');
         dataToSend = new FormData();
-        dataToSend.append('monto', newPagoPendiente.monto);
+        dataToSend.append('monto', Number(newPagoPendiente.monto).toString());
         dataToSend.append('fechaPedido', newPagoPendiente.fechaPedido);
         dataToSend.append('fechaLimite', newPagoPendiente.fechaLimite);
-        dataToSend.append('estado', newPagoPendiente.estado);
-        dataToSend.append('id_cliente', newPagoPendiente.clienteId);
+        // dataToSend.append('estado', newPagoPendiente.estado); // ❌ REMOVIDO - Backend lo establece automáticamente
+        dataToSend.append('id_cliente', Number(newPagoPendiente.clienteId).toString()); // Backend espera id_cliente
         dataToSend.append('factura', selectedFile);
       } else {
         // Si no hay archivo, usar JSON simple
         console.log('📋 Enviando como JSON (sin archivo)');
         dataToSend = {
-          monto: newPagoPendiente.monto,
+          monto: Number(newPagoPendiente.monto),
           fechaPedido: newPagoPendiente.fechaPedido,
           fechaLimite: newPagoPendiente.fechaLimite,
-          estado: newPagoPendiente.estado,
-          id_cliente: newPagoPendiente.clienteId
+          // estado: newPagoPendiente.estado, // ❌ REMOVIDO - Backend lo establece automáticamente
+          id_cliente: Number(newPagoPendiente.clienteId) // Backend espera id_cliente como número
         };
       }
       
+      console.log('📤 Enviando datos:', dataToSend);
       await create(dataToSend);
       closeModal();
+      setSelectedFile(null); // Limpiar archivo seleccionado
       // Mostrar alerta de éxito
       Swal.fire({
         title: '¡Éxito!',
@@ -408,10 +417,10 @@ const PagosPendientes = () => {
       });
     } catch (error) {
       console.error("Error al crear el pago pendiente:", error);
-      // Mostrar alerta de error
+      // Mostrar alerta de error con más detalle
       Swal.fire({
         title: 'Error',
-        text: 'No se pudo crear el pago pendiente',
+        text: `No se pudo crear el pago pendiente: ${error.message || 'Error desconocido'}`,
         icon: 'error',
         confirmButtonColor: '#000000',
       });
@@ -845,6 +854,7 @@ const PagosPendientes = () => {
             onView={handleViewClick}
             showEditAllButton={false}
             showViewButton={true}
+            showExcelButton={false}
             entidad="pagosPendientes"
             customFormat={customFormat}
           />
@@ -918,27 +928,6 @@ const PagosPendientes = () => {
                   />
                   {createError && createError.errors?.map((error, index) => (
                     error.field === 'fechaLimite' && (
-                      <div key={index} className="error-message">
-                        {error.message}
-                      </div>
-                    )
-                  ))}
-                </div>
-              </div>              <div className="formulario-grupo">
-                <label className="formulario-etiqueta">Estado:</label>
-                <div className="input-container">
-                  <select 
-                    id="estado"
-                    name="estado"
-                    required
-                    className={`formulario-input ${createError && createError.errors?.some(error => error.field === 'estado') ? 'input-error' : ''}`}
-                  >
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Pagado">Pagado</option>
-                    <option value="Vencido">Vencido</option>
-                  </select>
-                  {createError && createError.errors?.map((error, index) => (
-                    error.field === 'estado' && (
                       <div key={index} className="error-message">
                         {error.message}
                       </div>
@@ -1116,13 +1105,12 @@ const PagosPendientes = () => {
                     <select 
                       id="estado"
                       name="estado"
-                      defaultValue={currentPagoPendiente.estado}
+                      defaultValue={currentPagoPendiente.estado === "Vencido" ? "Pendiente" : currentPagoPendiente.estado}
                       required
                       className={`formulario-input ${editError && editError.errors?.some(error => error.field === 'estado') ? 'input-error' : ''}`}
                     >
                       <option value="Pendiente">Pendiente</option>
                       <option value="Pagado">Pagado</option>
-                      <option value="Vencido">Vencido</option>
                     </select>
                     {editError && editError.errors?.map((error, index) => (
                       error.field === 'estado' && (
@@ -1132,7 +1120,9 @@ const PagosPendientes = () => {
                       )
                     ))}
                   </div>
-                </div>                <div className="formulario-grupo">
+                </div>
+
+                <div className="formulario-grupo">
                   <label className="formulario-etiqueta">Cliente:</label>
                   <div className="input-container">
                     <div className="cliente-selector-container">

@@ -245,7 +245,8 @@ const Proveedores = () => {
         showViewButton={true}
         onView={handleViewClick}
         showCalendarButton={false}
-        entidad="proveedores"
+        showExcelButton={true}
+        entidad="proveedor"
         customFormat={(value, key) => {
           if (key === "movilEncargado" && Array.isArray(value)) {
             return value.join(", ");
