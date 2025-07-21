@@ -15,7 +15,22 @@ const router = Router();
 // Función para limpiar facturas huérfanas automáticamente
 async function limpiarFacturasHuerfanas() {
   try {
-    // Obtener facturas activas de la BD
+    // 1. Verificar que AppDataSource esté inicializado
+    if (!AppDataSource.isInitialized) {
+      return { deleted: 0, errors: 0, message: "DataSource no inicializado" };
+    }
+
+    // 2. Verificar que los metadatos de PagoPendiente existan
+    try {
+      const metadata = AppDataSource.getMetadata(PagoPendiente);
+      if (!metadata) {
+        return { deleted: 0, errors: 0, message: "Metadatos no encontrados" };
+      }
+    } catch (metadataError) {
+      return { deleted: 0, errors: 0, message: "Error accediendo a metadatos" };
+    }
+
+    // 3. Obtener repositorio de forma segura
     const pagoPendienteRepository = AppDataSource.getRepository(PagoPendiente);
     const pagosActivos = await pagoPendienteRepository.find({
       select: ["factura"]
@@ -57,7 +72,6 @@ async function limpiarFacturasHuerfanas() {
         eliminados++;
       } catch (error) {
         errores++;
-        console.error(`❌ Error eliminando ${archivo}:`, error.message);
       }
     }
 
@@ -67,7 +81,6 @@ async function limpiarFacturasHuerfanas() {
 
     return { deleted: eliminados, errors: errores };
   } catch (error) {
-    console.error("❌ Error en auto-limpieza:", error.message);
     return { deleted: 0, errors: 1 };
   }
 }
@@ -81,13 +94,11 @@ setInterval(async () => {
 setTimeout(async () => {
   console.log("🚀 Iniciando auto-limpieza de facturas...");
   await limpiarFacturasHuerfanas();
-}, 5000); // 5 segundos después de que se carguen las rutas
+}, 15000);
 
-// Asegurar que la carpeta de facturas existe
 const uploadsDir = "uploads/facturas";
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log(`📁 Carpeta creada: ${uploadsDir}`);
 }
 
 // Configuración de multer
@@ -152,7 +163,6 @@ router.get("/facturas/archivo/:filename", authenticateJwt, async (req, res) => {
     res.sendFile(filePath);
     
   } catch (error) {
-    console.error("Error sirviendo archivo:", error);
     res.status(500).json({
       success: false,
       message: "Error interno del servidor"
@@ -197,7 +207,6 @@ router.get("/facturas/descargar/:filename", authenticateJwt, async (req, res) =>
     res.sendFile(filePath);
     
   } catch (error) {
-    console.error("Error descargando archivo:", error);
     res.status(500).json({
       success: false,
       message: "Error interno del servidor"
