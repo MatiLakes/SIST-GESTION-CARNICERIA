@@ -15,13 +15,22 @@ if (!process.env.DB_URL) {
 export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DB_URL, // Usa directamente la URL de conexión
-  entities: ["src/entity/**/*.js"], // Define las entidades de TypeORM
+  entities: [
+    process.env.NODE_ENV === "production" 
+      ? "dist/entity/**/*.js"  // Archivos compilados en producción
+      : "src/entity/**/*.js"   // Archivos fuente en desarrollo
+  ],
   synchronize: process.env.NODE_ENV !== "production", // Sincroniza solo en desarrollo
   logging: false, // Desactivar todos los logs de SQL
+  entitySkipConstructor: true, // Mejora la compatibilidad con EntitySchema
 });
 
 export async function connectDB() {
   try {
+    if (AppDataSource.isInitialized) {
+      return;
+    }
+    
     await AppDataSource.initialize();
     console.log("✅ Conexión exitosa a la base de datos!");
   } catch (error) {
