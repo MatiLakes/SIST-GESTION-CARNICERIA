@@ -798,82 +798,84 @@ const PagosPendientes = () => {
   };
 
   return (
-    <div className={styles["categoria-container"]}>
-      {error ? (
-        <div className={styles.errorBox || {
-          border: '1px solid #ff8080', 
-          backgroundColor: '#fff0f0', 
-          padding: '15px',
-          borderRadius: '5px',
-          margin: '15px 0',
-          color: '#d32f2f'
-        }}>
-          <h3>{error.includes("permisos") ? "Error de permisos" : 
-               error.includes("sesión") ? "Sesión expirada" : 
-               "Error al cargar datos"}</h3>
-          <p>{error}</p>
-          {error.includes("permisos") && (
-            <p>Por favor contacta al administrador para obtener los permisos necesarios.
-              <br />Tu rol actual no tiene los privilegios requeridos para esta sección.</p>
-          )}
-          {error.includes("sesión") && (
-            <>
-              <p>Por favor inicia sesión nuevamente para continuar.</p>
-              <button 
-                onClick={() => window.location.href = "/auth"}
-                style={{
-                  backgroundColor: '#000',
-                  color: '#fff',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  marginTop: '10px'
-                }}
-              >
-                Ir a iniciar sesión
-              </button>
-            </>
-          )}
-        </div>
-      ) : (
-        <>          <Table 
-            data={pagosPendientes}
-            columns={columns}
-            headerTitle="Pagos Pendientes"
-            onCreate={openModal}
-            onEdit={(pagoPendiente) => {
-              setCurrentPagoPendiente(pagoPendiente);
-              setSelectedEditFile(null); // Limpiar archivo seleccionado al abrir modal de edición
-              setPreviewUrl(null); // Limpiar URL de vista previa
-              setPreviewError(false); // Resetear error de vista previa
-              setIsLoadingPreview(false); // Resetear estado de carga
-              setIsEditModalOpen(true);
-            }}
-            onDelete={handleDeleteModalOpen}
-            onView={handleViewClick}
-            showEditAllButton={false}
-            showViewButton={true}
-            showExcelButton={false}
-            entidad="pagosPendientes"
-            customFormat={customFormat}
-          />
+  <div className={styles["categoria-container"]}>
+    {error ? (
+      <div className={styles.errorBox || {
+        border: '1px solid #ff8080', 
+        backgroundColor: '#fff0f0', 
+        padding: '15px',
+        borderRadius: '5px',
+        margin: '15px 0',
+        color: '#d32f2f'
+      }}>
+        <h3>{error.includes("permisos") ? "Error de permisos" : 
+             error.includes("sesión") ? "Sesión expirada" : 
+             "Error al cargar datos"}</h3>
+        <p>{error}</p>
+        {error.includes("permisos") && (
+          <p>Por favor contacta al administrador para obtener los permisos necesarios.
+            <br />Tu rol actual no tiene los privilegios requeridos para esta sección.</p>
+        )}
+        {error.includes("sesión") && (
+          <>
+            <p>Por favor inicia sesión nuevamente para continuar.</p>
+            <button 
+              onClick={() => window.location.href = "/auth"}
+              style={{
+                backgroundColor: '#000',
+                color: '#fff',
+                padding: '8px 16px',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                marginTop: '10px'
+              }}
+            >
+              Ir a iniciar sesión
+            </button>
+          </>
+        )}
+      </div>
+    ) : (
+      <>
+        <Table 
+          data={pagosPendientes}
+          columns={columns}
+          headerTitle="Pagos Pendientes"
+          onCreate={openModal}
+          onEdit={(pagoPendiente) => {
+            setCurrentPagoPendiente(pagoPendiente);
+            setSelectedEditFile(null);
+            setPreviewUrl(null);
+            setPreviewError(false);
+            setIsLoadingPreview(false);
+            setIsEditModalOpen(true);
+          }}
+          onDelete={handleDeleteModalOpen}
+          onView={handleViewClick}
+          showEditAllButton={false}
+          showViewButton={true}
+          showExcelButton={false}
+          entidad="pagosPendientes"
+          customFormat={customFormat}
+        />
 
-          {/* Modal de Creación */}          <Modal
-            isOpen={isModalOpen}
-            onRequestClose={closeModal}
-            contentLabel="Crear Pago Pendiente"
-            ariaHideApp={false}
-            className="modal-crear"
-            overlayClassName="modal-overlay"
-            closeTimeoutMS={300}
-          >
-            <form onSubmit={handleCreatePagoPendiente} className="modal-crear-formulario">
-              <div className="modal-crear-header">
-                <h2 className="modal-crear-titulo">Crear Nuevo Pago Pendiente</h2>
-                <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
-                <button type="submit" className="modal-boton-crear">Guardar</button>
-              </div>              <div className="formulario-grupo">
+        {/* Modal de Creación */}
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          contentLabel="Crear Pago Pendiente"
+          ariaHideApp={false}
+          className="modal-crear"
+          overlayClassName="modal-overlay"
+          closeTimeoutMS={300}
+        >
+          <form onSubmit={handleCreatePagoPendiente} className="modal-crear-formulario">
+            <div className="modal-crear-header">
+              <h2 className="modal-crear-titulo">Crear Nuevo Pago Pendiente</h2>
+              <button type="button" onClick={closeModal} className="modal-crear-cerrar">×</button>
+              <button type="submit" className="modal-boton-crear">Guardar</button>
+            </div>              <div className="formulario-grupo">
                 <label className="formulario-etiqueta">Monto:</label>
                 <div className="input-container">
                   <input
@@ -957,13 +959,7 @@ const PagosPendientes = () => {
                         <option disabled>No hay clientes disponibles</option>
                       )}
                     </select>
-                    <button
-                      type="button"
-                      onClick={openClienteModal}
-                      className="modal-boton-anadir"
-                    >
-                      Nuevo Cliente
-                    </button>
+                    {/* Botón "Nuevo Cliente" eliminado */}
                   </div>
                   {createError && createError.errors?.map((error, index) => (
                     error.field === 'clienteId' && (
@@ -1006,7 +1002,6 @@ const PagosPendientes = () => {
             onRequestClose={() => {
               setIsEditModalOpen(false);
               setSelectedEditFile(null);
-              // Limpiar estados de vista previa
               if (previewUrl) {
                 URL.revokeObjectURL(previewUrl);
               }
@@ -1026,7 +1021,6 @@ const PagosPendientes = () => {
                   <h2 className="modal-crear-titulo">Editar Pago Pendiente</h2>
                   <button type="button" onClick={() => {
                     setIsEditModalOpen(false);
-                    // Limpiar estados de vista previa
                     if (previewUrl) {
                       URL.revokeObjectURL(previewUrl);
                     }
@@ -1142,13 +1136,7 @@ const PagosPendientes = () => {
                           </option>
                         ))}
                       </select>
-                      <button
-                        type="button"
-                        onClick={openClienteModal}
-                        className="modal-boton-anadir"
-                      >
-                        Nuevo Cliente
-                      </button>
+                      {/* Botón "Nuevo Cliente" eliminado */}
                     </div>
                     {editError && editError.errors?.map((error, index) => (
                       error.field === 'clienteId' && (

@@ -9,7 +9,6 @@ import useGetNotificaciones from "@hooks/notificacion/useGetNotificaciones.jsx";
 import Table from "../components/Table";
 import Modal from "react-modal";
 import Swal from "sweetalert2";
-import stylesPedido from "@styles/Pedido.module.css";
 import "@styles/formulariotable.css";
 import "@styles/modalDetalles.css";
 import "@styles/modalCrear.css";
