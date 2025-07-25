@@ -1097,33 +1097,40 @@ const Mermas = () => {
         )}
       </Modal>
 
-      {/* Modal para confirmar eliminación */}
+      {/* Modal de Eliminación */}
       <Modal
         isOpen={isDeleteModalOpen}
         onRequestClose={handleDeleteModalClose}
         contentLabel="Confirmar Eliminación"
         ariaHideApp={false}
-        className="modal-confirmar"
-        overlayClassName="modal-overlay"
-        closeTimeoutMS={300}
+        className="formulario-table-modal-form"
+        overlayClassName="formulario-table-overlay"
+        style={{ content: { maxWidth: '400px' } }}
       >
-        <div className="modal-confirmar-contenido">
-          <h2>Confirmar Eliminación</h2>
-          <p>¿Está seguro de que desea eliminar esta merma?</p>
-          <div className="modal-confirmar-botones">
-            <button 
-              onClick={handleDeleteModalClose}
-              className="boton-cancelar"
-            >
-              Cancelar
-            </button>
-            <button 
-              onClick={confirmDelete}
-              className="boton-eliminar"
-            >
-              Eliminar
-            </button>
+        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
+        <p>¿Estás seguro de que deseas eliminar esta merma?</p>
+        {mermaToDelete && (
+          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
+            <p><strong>Tipo:</strong> {mermaToDelete.tipoProductoMerma}</p>
+            <p><strong>Cantidad Perdida:</strong> {mermaToDelete.cantidadPerdida}</p>
+            <p><strong>Causa:</strong> {mermaToDelete.causa}</p>
+            <p><strong>Personal:</strong> {mermaToDelete.personal?.nombre || 'No asignado'}</p>
           </div>
+        )}
+        <div className="formulario-table-form-actions">
+          <button 
+            onClick={confirmDelete}
+            className="formulario-table-btn-confirm"
+            style={{ backgroundColor: '#dc3545' }}
+          >
+            Eliminar
+          </button>
+          <button
+            onClick={handleDeleteModalClose}
+            className="formulario-table-btn-cancel"
+          >
+            Cancelar
+          </button>
         </div>
       </Modal>
 

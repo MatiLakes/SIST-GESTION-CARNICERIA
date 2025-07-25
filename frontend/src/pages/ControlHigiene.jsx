@@ -337,7 +337,7 @@ const ControlHigiene = () => {
         onView={handleViewClick}
         showEditAllButton={false}
         showViewButton={true}
-        showExcelButton={false}
+        showExcelButton={true}
         entidad="control-higiene"
       />      <Modal
         isOpen={isModalOpen}

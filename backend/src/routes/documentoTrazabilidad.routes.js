@@ -9,6 +9,8 @@ router.use(authenticateJwt).use(isAdmin);
 
 router.get("/", documentoTrazabilidadController.obtenerTodos);
 
+router.get("/excel", documentoTrazabilidadController.exportarExcel);
+
 router.post("/", documentoTrazabilidadController.crear);
 
 router.put("/:id", documentoTrazabilidadController.actualizar);

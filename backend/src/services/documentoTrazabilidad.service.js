@@ -2,6 +2,7 @@ import DocumentoTrazabilidad from "../entity/DocumentoTrazabilidad.entity.js";
 import RegistroTrazabilidad from "../entity/RegistroTrazabilidad.entity.js";
 import Personal from "../entity/Personal.entity.js";
 import { AppDataSource } from "../config/configDb.js";
+import ExcelJS from "exceljs";
 
 const documentoRepo = AppDataSource.getRepository(DocumentoTrazabilidad);
 const registroRepo = AppDataSource.getRepository(RegistroTrazabilidad);
@@ -15,21 +16,21 @@ export const documentoTrazabilidadService = {
       const documento = documentoRepo.create({ fecha });
       await documentoRepo.save(documento);
 
-      // Verificar si hay registros para agregar
+      // Solo crear el primer registro si existe
       if (registros && registros.length > 0) {
-        for (const reg of registros) {
-          const responsable = await personalRepo.findOneBy({ id: reg.responsableId });
-          if (!responsable) throw new Error("Responsable no encontrado");
-          const nuevoRegistro = registroRepo.create({
-            hora: reg.hora,
-            cantidad: reg.cantidad,
-            corte: reg.corte,
-            documento,
-            responsable
-          });
+        const reg = registros[0]; // Solo tomar el primer registro
+        const responsable = await personalRepo.findOneBy({ id: reg.responsableId });
+        if (!responsable) throw new Error("Responsable no encontrado");
+        
+        const nuevoRegistro = registroRepo.create({
+          hora: reg.hora,
+          cantidad: reg.cantidad,
+          corte: reg.corte,
+          documento,
+          responsable
+        });
 
-          await registroRepo.save(nuevoRegistro);
-        }
+        await registroRepo.save(nuevoRegistro);
       }
 
       // Retornar el documento con sus relaciones cargadas
@@ -40,7 +41,6 @@ export const documentoTrazabilidadService = {
 
       return [documentoCompleto, null];
     } catch (err) {
-      console.error("Error al crear documento trazabilidad:", err);
       return [null, err.message || "Error al crear documento trazabilidad"];
     }
   },
@@ -53,7 +53,6 @@ export const documentoTrazabilidadService = {
       });
       return [docs, null];
     } catch (err) {
-      console.error("Error al obtener documentos:", err);
       return [null, "Error al obtener documentos"];
     }
   },
@@ -78,9 +77,12 @@ export const documentoTrazabilidadService = {
       documento.fecha = fecha;
       await documentoRepo.save(documento);
 
+      // Eliminar registros existentes
       await registroRepo.delete({ documento: { id } });
 
-      for (const reg of registros) {
+      // Solo crear el primer registro si existe
+      if (registros && registros.length > 0) {
+        const reg = registros[0]; // Solo tomar el primer registro
         const responsable = await personalRepo.findOneBy({ id: reg.responsableId });
         if (!responsable) throw new Error("Responsable no encontrado");
 
@@ -98,38 +100,7 @@ export const documentoTrazabilidadService = {
       const actualizado = await documentoRepo.findOne({ where: { id }, relations: ["registros", "registros.responsable"] });
       return [actualizado, null];
     } catch (err) {
-      console.error("Error al actualizar documento trazabilidad:", err);
       return [null, "Error al actualizar documento trazabilidad"];
-    }
-  },
-
-  async agregarRegistro(documentoId, data) {
-    try {
-      const documento = await documentoRepo.findOneBy({ id: documentoId });
-      if (!documento) return [null, "Documento no encontrado"];
-
-      const responsable = await personalRepo.findOneBy({ id: data.responsableId });
-      if (!responsable) return [null, "Responsable no encontrado"];
-      const registro = registroRepo.create({
-        hora: data.hora,
-        cantidad: data.cantidad,
-        corte: data.corte,
-        documento,
-        responsable
-      });
-
-      await registroRepo.save(registro);
-
-      // Cargar las relaciones para devolver el registro completo
-      const registroCompleto = await registroRepo.findOne({
-        where: { id: registro.id },
-        relations: ["responsable"]
-      });
-
-      return [registroCompleto, null];
-    } catch (err) {
-      console.error("Error al agregar registro:", err);
-      return [null, "Error al agregar registro de trazabilidad"];
     }
   },
 
@@ -161,26 +132,53 @@ export const documentoTrazabilidadService = {
 
       return [registroActualizado, null];
     } catch (err) {
-      console.error("Error al actualizar registro:", err);
       return [null, "Error al actualizar registro de trazabilidad"];
     }
   },
 
-  async eliminarRegistro(documentoId, registroId) {
+  async generarExcelDocumentoTrazabilidad() {
     try {
-      const resultado = await registroRepo.delete({
-        id: registroId,
-        documento: { id: documentoId }
+      const documentos = await documentoRepo.find({
+        relations: ["registros", "registros.responsable"],
+        order: { fecha: "DESC" },
       });
 
-      if (resultado.affected === 0) {
-        return [null, "Registro no encontrado"];
-      }
+      // Crear el workbook y la hoja
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Documentos de Trazabilidad");
 
-      return [true, null];
-    } catch (err) {
-      console.error("Error al eliminar registro:", err);
-      return [null, "Error al eliminar registro de trazabilidad"];
+      // Definir las columnas
+      worksheet.columns = [
+        { header: "ID", key: "id", width: 10 },
+        { header: "Fecha", key: "fecha", width: 15 },
+        { header: "Hora", key: "hora", width: 12 },
+        { header: "Cantidad (Kg)", key: "cantidad", width: 15 },
+        { header: "Corte Molido", key: "corte", width: 20 },
+        { header: "Responsable", key: "responsable", width: 25 },
+      ];
+
+      // Agregar las filas
+      documentos.forEach((documento) => {
+        const registro = documento.registros && documento.registros.length > 0 ? documento.registros[0] : null;
+        
+        worksheet.addRow({
+          id: documento.id,
+          fecha: documento.fecha,
+          hora: registro?.hora || "N/A",
+          cantidad: registro?.cantidad || "N/A",
+          corte: registro?.corte || "N/A",
+          responsable: registro?.responsable?.nombre || "N/A",
+        });
+      });
+
+      // Estilizar la cabecera
+      worksheet.getRow(1).font = { bold: true };
+
+      // Retornar el workbook
+      return workbook;
+    } catch (error) {
+      console.error("Error al generar el Excel de documentos de trazabilidad:", error);
+      throw new Error("No se pudo generar el archivo Excel.");
     }
   }
 };

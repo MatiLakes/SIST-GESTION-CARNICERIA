@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import useGetDocumentos from "@hooks/documentoTrazabilidad/useGetDocumentos";
 import useCreateDocumento from "@hooks/documentoTrazabilidad/useCreateDocumento";
-import useAddRegistro from "@hooks/documentoTrazabilidad/useAddRegistro";
 import useEditDocumento from "@hooks/documentoTrazabilidad/useEditDocumento";
 import useEditRegistro from "@hooks/documentoTrazabilidad/useEditRegistro";
 import useDeleteDocumento from "@hooks/documentoTrazabilidad/useDeleteDocumento";
-import useDeleteRegistro from "@hooks/documentoTrazabilidad/useDeleteRegistro";
 import useGetPersonal from "@hooks/personal/useGetPersonal";
 import Table from "../components/Table";
 import Modal from "react-modal";
@@ -113,27 +111,22 @@ const DocumentoTrazabilidad = () => {
   const { documentos, loading, error, fetchDocumentos } = useGetDocumentos();
   const { personal } = useGetPersonal();
   const { create } = useCreateDocumento(fetchDocumentos);
-  const { addRegistro } = useAddRegistro(fetchDocumentos);
   const { edit } = useEditDocumento(fetchDocumentos);
   const { editRegistro } = useEditRegistro(fetchDocumentos);
   const { remove } = useDeleteDocumento(fetchDocumentos);
-  const { removeRegistro } = useDeleteRegistro(fetchDocumentos);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isAddRegistroModalOpen, setIsAddRegistroModalOpen] = useState(false);
   const [isEditRegistroModalOpen, setIsEditRegistroModalOpen] = useState(false);
-  const [isDeleteRegistroModalOpen, setIsDeleteRegistroModalOpen] = useState(false);
   
   const [currentDocumento, setCurrentDocumento] = useState(null);
   const [documentoToDelete, setDocumentoToDelete] = useState(null);
   const [documentoToView, setDocumentoToView] = useState(null);
   const [currentRegistro, setCurrentRegistro] = useState(null);
-  const [registroToDelete, setRegistroToDelete] = useState(null);
 
-  // Para agregar un nuevo registro a un documento existente
+  // Para editar el registro de un documento existente
   const [selectedDocumentoId, setSelectedDocumentoId] = useState(null);
 
   // Handlers para documento
@@ -202,7 +195,9 @@ const DocumentoTrazabilidad = () => {
   // Handlers para registro
   const handleRegistroSubmit = async (e, documentoId, isEdit = false, registroId = null) => {
     e.preventDefault();
-    const form = e.target;    const data = {
+    const form = e.target;
+
+    const data = {
       hora: form.hora.value,
       cantidad: parseFloat(form.cantidad.value),
       corte: form.corte.value,
@@ -214,17 +209,14 @@ const DocumentoTrazabilidad = () => {
         await editRegistro(documentoId, registroId, data);
         setIsEditRegistroModalOpen(false);
         setCurrentRegistro(null);
-      } else {
-        await addRegistro(documentoId, data);
-        setIsAddRegistroModalOpen(false);
         setSelectedDocumentoId(null);
+        Swal.fire({
+          icon: "success",
+          title: "¡Éxito!",
+          text: "Registro actualizado correctamente",
+          confirmButtonColor: "#000000"
+        });
       }
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: isEdit ? "Registro actualizado correctamente" : "Registro añadido correctamente",
-        confirmButtonColor: "#000000"
-      });
     } catch (err) {
       console.error("Error al guardar registro:", err);
       Swal.fire({
@@ -270,42 +262,6 @@ const DocumentoTrazabilidad = () => {
     }
   };
 
-  // Handlers para borrar registro
-  const handleDeleteRegistroModalOpen = (documentoId, registro) => {
-    setSelectedDocumentoId(documentoId);
-    setRegistroToDelete(registro);
-    setIsDeleteRegistroModalOpen(true);
-  };
-
-  const handleDeleteRegistroModalClose = () => {
-    setIsDeleteRegistroModalOpen(false);
-    setSelectedDocumentoId(null);
-    setRegistroToDelete(null);
-  };
-
-  const confirmRegistroDelete = async () => {
-    if (selectedDocumentoId && registroToDelete) {
-      try {
-        await removeRegistro(selectedDocumentoId, registroToDelete.id);
-        handleDeleteRegistroModalClose();
-        Swal.fire({
-          icon: "success",
-          title: "¡Eliminado!",
-          text: "El registro ha sido eliminado correctamente",
-          confirmButtonColor: "#000000"
-        });
-      } catch (error) {
-        console.error("Error al eliminar registro:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudo eliminar el registro",
-          confirmButtonColor: "#000000"
-        });
-      }
-    }
-  };
-
   // View document details
   const handleViewClick = (documento) => {
     setDocumentoToView(documento);
@@ -315,12 +271,6 @@ const DocumentoTrazabilidad = () => {
   const handleViewModalClose = () => {
     setIsViewModalOpen(false);
     setDocumentoToView(null);
-  };
-
-  // Add registro to documento
-  const handleAddRegistroClick = (documentoId) => {
-    setSelectedDocumentoId(documentoId);
-    setIsAddRegistroModalOpen(true);
   };
 
   // Edit registro 
@@ -518,14 +468,16 @@ const DocumentoTrazabilidad = () => {
         headerTitle="Registro de Carne Molida"
         onCreate={() => setIsModalOpen(true)}
         onEdit={(doc) => {
-          setCurrentDocumento(doc);
-          setIsEditModalOpen(true);
+          // Edit the registro, not the documento
+          if (doc.registros && doc.registros.length > 0) {
+            handleEditRegistroClick(doc.id, doc.registros[0]);
+          }
         }}
         onDelete={handleDeleteDocumentoModalOpen}
         onView={handleViewClick}
         showEditAllButton={false}
         showViewButton={true}
-        showExcelButton={false}
+        showExcelButton={true}
         entidad="documentos-trazabilidad"
       />
 
@@ -624,9 +576,10 @@ const DocumentoTrazabilidad = () => {
               <button onClick={handleViewModalClose} className="modal-detalles-cerrar">×</button>
               <button
                 onClick={() => {
-                  setCurrentDocumento(documentoToView);
-                  setIsEditModalOpen(true);
-                  handleViewModalClose();
+                  if (documentoToView.registros && documentoToView.registros.length > 0) {
+                    handleEditRegistroClick(documentoToView.id, documentoToView.registros[0]);
+                    handleViewModalClose();
+                  }
                 }}
                 className="modal-detalles-editar"
               >
@@ -642,64 +595,34 @@ const DocumentoTrazabilidad = () => {
                   </div>
                 </div>
               </div>              <div className="dato-grupo">                <h3 className="dato-titulo">Detalles de Carne Molida</h3>
-                <div style={{ marginTop: '30px', textAlign: 'right' }}>
-                  <button 
-                    onClick={() => handleAddRegistroClick(documentoToView.id)}
-                    className="modal-boton-crear"
-                  >
-                    Agregar Registro
-                  </button>
-                </div>
                 {documentoToView.registros && documentoToView.registros.length > 0 ? (
-                  <div style={{ marginTop: '25px' }}><div style={customStyles.registrosContainer}>
-                      {documentoToView.registros.map((registro, index) => (
-                        <div key={registro.id} style={customStyles.registroCard}>
+                  <div style={{ marginTop: '25px' }}>                    <div style={customStyles.registrosContainer}>
+                      <div style={customStyles.registroCard}>
                           <div style={customStyles.registroHeader}>
-                            <h4 style={customStyles.registroTitle}>Registro #{index + 1}</h4>
-                            <div style={customStyles.registroActions}>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEditRegistroClick(documentoToView.id, registro);
-                                }}
-                                style={{...customStyles.registroActionBtn, ...customStyles.editBtn}}
-                              >
-                                <MdOutlineEdit size={18} />
-                              </button>
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteRegistroModalOpen(documentoToView.id, registro);
-                                }}
-                                style={{...customStyles.registroActionBtn, ...customStyles.deleteBtn}}
-                              >
-                                <AiTwotoneDelete size={18} />
-                              </button>
-                            </div>
+                            <h4 style={customStyles.registroTitle}>Registro de Carne Molida</h4>
                           </div>
                           <div style={customStyles.registroContent}>
                             <div style={customStyles.registroInfo}>                            <div style={customStyles.registroInfoItem}>
-                                <span style={customStyles.registroLabel}>Hora:</span>
-                                <span style={customStyles.registroValue}>{registro.hora}</span>
-                              </div>
-                              <div style={customStyles.registroInfoItem}>
-                                <span style={customStyles.registroLabel}>Cantidad (Kg):</span>
-                                <span style={customStyles.registroValue}>{registro.cantidad}</span>
-                              </div>
-                              <div style={customStyles.registroInfoItem}>
-                                <span style={customStyles.registroLabel}>Corte:</span>
-                                <span style={customStyles.registroValue}>{registro.corte}</span>
-                              </div>
-                              <div style={customStyles.registroInfoItem}>
-                                <span style={customStyles.registroLabel}>Responsable:</span>
-                                <span style={customStyles.registroValue}>
-                                  {registro.responsable ? registro.responsable.nombre : 'No asignado'}
+                                <span style={customStyles.registroLabel}>Hora:</span>                              <span style={customStyles.registroValue}>{documentoToView.registros[0].hora}</span>
+                            </div>
+                            <div style={customStyles.registroInfoItem}>
+                              <span style={customStyles.registroLabel}>Cantidad (Kg):</span>
+                              <span style={customStyles.registroValue}>{documentoToView.registros[0].cantidad}</span>
+                            </div>
+                            <div style={customStyles.registroInfoItem}>
+                              <span style={customStyles.registroLabel}>Corte:</span>
+                              <span style={customStyles.registroValue}>{documentoToView.registros[0].corte}</span>
+                            </div>
+                            <div style={customStyles.registroInfoItem}>
+                              <span style={customStyles.registroLabel}>Responsable:</span>
+                              <span style={customStyles.registroValue}>
+                                {documentoToView.registros[0].responsable ? documentoToView.registros[0].responsable.nombre : 'No asignado'}
                                 </span>
                               </div>
                             </div>
                           </div>
                         </div>
-                      ))}                    </div>
+                    </div>
                   </div>                ) : (
                   <div style={{ textAlign: 'center', padding: '20px', marginTop: '10px' }}>
                     <p>No hay registros para este documento.</p>
@@ -709,38 +632,6 @@ const DocumentoTrazabilidad = () => {
             </div>
           </div>
         )}
-      </Modal>
-
-      {/* Modal para Agregar Registro */}
-      <Modal
-        isOpen={isAddRegistroModalOpen}
-        onRequestClose={() => {
-          setIsAddRegistroModalOpen(false);
-          setSelectedDocumentoId(null);
-        }}
-        contentLabel="Agregar Registro de Trazabilidad"
-        ariaHideApp={false}
-        className="modal-crear"
-        overlayClassName="modal-overlay"
-        closeTimeoutMS={300}
-      >
-        <form onSubmit={(e) => handleRegistroSubmit(e, selectedDocumentoId, false)} className="modal-crear-formulario">          
-          <div className="modal-crear-header">
-            <h2 className="modal-crear-titulo">Nuevo Registro de Trazabilidad</h2>
-            <button 
-              type="button" 
-              onClick={() => {
-                setIsAddRegistroModalOpen(false);
-                setSelectedDocumentoId(null);
-              }} 
-              className="modal-crear-cerrar"
-            >
-              ×
-            </button>
-            <button type="submit" className="modal-boton-crear">Guardar</button>
-          </div>
-          {renderRegistroFormContent(false)}
-        </form>
       </Modal>
 
       {/* Modal para Editar Registro */}
@@ -778,44 +669,6 @@ const DocumentoTrazabilidad = () => {
           </div>
           {currentRegistro && renderRegistroFormContent(true)}
         </form>
-      </Modal>
-
-      {/* Modal de Eliminación de Registro */}
-      <Modal
-        isOpen={isDeleteRegistroModalOpen}
-        onRequestClose={handleDeleteRegistroModalClose}
-        contentLabel="Confirmar Eliminación de Registro"
-        ariaHideApp={false}
-        className="formulario-table-modal-form"
-        overlayClassName="formulario-table-overlay"
-        style={{ content: { maxWidth: '400px' } }}
-      >
-        <h2 className="formulario-table-modal-title">Confirmar Eliminación</h2>
-        <p>¿Estás seguro de que deseas eliminar este registro?</p>
-        {registroToDelete && (
-          <div style={{ margin: '20px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '5px' }}>
-            <p><strong>Hora:</strong> {registroToDelete.hora}</p>
-            <p><strong>Corte:</strong> {registroToDelete.corte}</p>
-            {registroToDelete.responsable && (
-              <p><strong>Responsable:</strong> {registroToDelete.responsable.nombre}</p>
-            )}
-          </div>
-        )}
-        <div className="formulario-table-form-actions">
-          <button 
-            onClick={confirmRegistroDelete}
-            className="formulario-table-btn-confirm"
-            style={{ backgroundColor: '#dc3545' }}
-          >
-            Eliminar
-          </button>
-          <button
-            onClick={handleDeleteRegistroModalClose}
-            className="formulario-table-btn-cancel"
-          >
-            Cancelar
-          </button>
-        </div>
       </Modal>
     </div>
   );

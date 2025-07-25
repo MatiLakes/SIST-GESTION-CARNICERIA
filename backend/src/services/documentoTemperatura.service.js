@@ -2,6 +2,7 @@ import DocumentoTemperatura from "../entity/DocumentoTemperatura.entity.js";
 import RegistroTemperatura from "../entity/RegistroTemperatura.entity.js";
 import Personal from "../entity/Personal.entity.js";
 import { AppDataSource } from "../config/configDb.js";
+import ExcelJS from "exceljs";
 
 const documentoRepo = AppDataSource.getRepository(DocumentoTemperatura);
 const registroRepo = AppDataSource.getRepository(RegistroTemperatura);
@@ -203,6 +204,95 @@ export const documentoTemperaturaService = {
     } catch (err) {
       console.error("Error al actualizar documento:", err);
       return [null, "Error al actualizar documento"];
+    }
+  },
+
+  async generarExcelDocumentoTemperatura() {
+    try {
+      const documentos = await documentoRepo.find({
+        relations: ["registros", "registros.responsable"],
+        order: { fecha: "DESC" },
+      });
+
+      // Crear el workbook y la hoja
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Control de Temperatura");
+
+      // Definir las columnas
+      worksheet.columns = [
+        { header: "ID Documento", key: "documentoId", width: 12 },
+        { header: "Fecha", key: "fecha", width: 15 },
+        { header: "Registro #", key: "registroNum", width: 12 },
+        { header: "Hora", key: "hora", width: 12 },
+        { header: "Equipo", key: "equipo", width: 25 },
+        { header: "Temperatura (°C)", key: "temperatura", width: 18 },
+        { header: "Funciona", key: "funciona", width: 12 },
+        { header: "Motivo", key: "motivo", width: 30 },
+        { header: "Acción Correctiva", key: "accionCorrectiva", width: 35 },
+        { header: "Responsable", key: "responsable", width: 25 },
+      ];
+
+      // Agregar las filas - cada registro como una fila separada
+      documentos.forEach((documento) => {
+        if (documento.registros && documento.registros.length > 0) {
+          documento.registros.forEach((registro, index) => {
+            worksheet.addRow({
+              documentoId: documento.id,
+              fecha: documento.fecha,
+              registroNum: index + 1,
+              hora: registro.hora,
+              equipo: registro.equipo,
+              temperatura: registro.temperatura,
+              funciona: registro.funciona ? "Sí" : "No",
+              motivo: registro.motivo || "N/A",
+              accionCorrectiva: registro.AccionCorrectiva || "N/A",
+              responsable: registro.responsable?.nombre || "N/A",
+            });
+          });
+        } else {
+          // Si no tiene registros, agregar una fila con la información del documento
+          worksheet.addRow({
+            documentoId: documento.id,
+            fecha: documento.fecha,
+            registroNum: "N/A",
+            hora: "N/A",
+            equipo: "N/A",
+            temperatura: "N/A",
+            funciona: "N/A",
+            motivo: "Sin registros",
+            accionCorrectiva: "N/A",
+            responsable: "N/A",
+          });
+        }
+      });
+
+      // Estilizar la cabecera
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFCCCCCC' }
+      };
+
+      // Aplicar bordes a todas las celdas con datos
+      const rowCount = worksheet.rowCount;
+      for (let i = 1; i <= rowCount; i++) {
+        const row = worksheet.getRow(i);
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+        });
+      }
+
+      // Retornar el workbook
+      return workbook;
+    } catch (error) {
+      console.error("Error al generar el Excel de documentos de temperatura:", error);
+      throw new Error("No se pudo generar el archivo Excel.");
     }
   }
 };

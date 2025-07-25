@@ -8,6 +8,9 @@ const router = Router();
 router.use(authenticateJwt).use(isAdmin);
 
 router.get("/", documentoTemperaturaController.obtenerTodos);
+
+router.get("/excel", documentoTemperaturaController.exportarExcel);
+
 router.post("/", documentoTemperaturaController.crear);
 router.delete("/:id", documentoTemperaturaController.eliminar);
 router.put("/:id", documentoTemperaturaController.actualizar);

@@ -295,7 +295,7 @@ const DocumentoTemperatura = () => {
         showEditButton={true}
         showDeleteButton={true}
         showSearchInput={false}
-        showExcelButton={false}
+        showExcelButton={true}
         entidad="documentos-temperatura"
         searchableFields={["fecha"]}
       />

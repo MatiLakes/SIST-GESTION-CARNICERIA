@@ -1,29 +1,23 @@
 import { AppDataSource } from "../config/configDb.js";
 import ControlHigiene from "../entity/ControlHigiene.entity.js";
 import Personal from "../entity/Personal.entity.js";
+import ExcelJS from "exceljs";
 
 export const controlHigieneService = {
   async crearRegistro(data) {
     try {
-      console.log("Datos recibidos para crear registro:", JSON.stringify(data, null, 2));
-      
       // Validar que personalId existe
       if (!data.personalId) {
-        console.error("Error: personalId no proporcionado");
         return [null, "El ID del personal es obligatorio"];
       }
 
       const personalRepo = AppDataSource.getRepository(Personal);
       const controlRepo = AppDataSource.getRepository(ControlHigiene);
 
-      console.log("Buscando personal con ID:", data.personalId);
       const persona = await personalRepo.findOneBy({ id: data.personalId });
       if (!persona) {
-        console.error(`Personal con ID ${data.personalId} no encontrado`);
         return [null, "Personal no encontrado"];
       }
-
-      console.log("Personal encontrado:", JSON.stringify(persona, null, 2));
 
       // Crear una copia de los datos sin personalId para evitar conflictos
       const { personalId, ...registroData } = data;
@@ -33,8 +27,6 @@ export const controlHigieneService = {
         personal: persona
       });
 
-      console.log("Registro a guardar:", JSON.stringify(nuevo, null, 2));
-
       await controlRepo.save(nuevo);
       
       // Reload the entity to ensure relations are properly loaded
@@ -43,11 +35,8 @@ export const controlHigieneService = {
         relations: ["personal"]
       });
       
-      console.log("Registro guardado exitosamente:", JSON.stringify(saved, null, 2));
       return [saved, null];
     } catch (err) {
-      console.error("Error detallado al guardar el control:", err);
-      console.error("Stack trace:", err.stack);
       
       // Devolver mensaje más específico basado en el tipo de error
       if (err.code === '23503') {
@@ -71,18 +60,8 @@ export const controlHigieneService = {
         relations: ["personal"]
       });
       
-      console.log("Registros obtenidos:", JSON.stringify(lista, null, 2));
-      
-      // Verificar si hay registros con personal nulo o indefinido
-      const registrosConProblemas = lista.filter(reg => !reg.personal);
-      if (registrosConProblemas.length > 0) {
-        console.warn("¡ATENCIÓN! Hay registros con personal nulo:", registrosConProblemas.length);
-        console.warn("Ejemplos:", registrosConProblemas.map(r => r.id));
-      }
-      
       return [lista, null];
     } catch (err) {
-      console.error("Error al obtener registros:", err);
       return [null, "Error al obtener registros"];
     }
   },
@@ -120,7 +99,6 @@ export const controlHigieneService = {
     
     return [updated, null];
   } catch (err) {
-    console.error("Error al modificar el registro:", err);
     return [null, "Error al modificar el registro"];
   }
 },
@@ -136,4 +114,64 @@ async eliminarRegistro(id) {
   } catch (err) {
     return [null, "Error al eliminar el registro"];
   }
-}}
+},
+
+async generarExcelControlHigiene() {
+    try {
+      const repo = AppDataSource.getRepository(ControlHigiene);
+      const registros = await repo.find({
+        relations: ["personal"]
+      });
+
+      // Crear el workbook y la hoja
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Control de Higiene");
+
+      // Definir las columnas
+      worksheet.columns = [
+        { header: "ID", key: "id", width: 10 },
+        { header: "Fecha", key: "fecha", width: 15 },
+        { header: "Personal", key: "personal", width: 20 },
+        { header: "Sección", key: "seccion", width: 15 },
+        { header: "Uso Cofia", key: "usoCofia", width: 12 },
+        { header: "Uso Mascarilla", key: "usoMascarilla", width: 15 },
+        { header: "Higiene Manos", key: "higieneManos", width: 15 },
+        { header: "Uñas Cortas", key: "unasCortas", width: 12 },
+        { header: "Afeitado", key: "afeitado", width: 12 },
+        { header: "Uniforme Limpio", key: "uniformeLimpio", width: 15 },
+        { header: "Sin Accesorios", key: "sinAccesorios", width: 15 },
+        { header: "V°B° Cumplimiento", key: "vbCumplimiento", width: 18 },
+        { header: "N° ACC", key: "nroAccionCorrectiva", width: 12 },
+        { header: "Observación", key: "observacion", width: 30 },
+      ];
+
+      // Agregar las filas
+      registros.forEach((registro) => {
+        worksheet.addRow({
+          id: registro.id,
+          fecha: registro.fecha,
+          personal: registro.personal?.nombre || "N/A",
+          seccion: registro.personal?.seccion || "N/A",
+          usoCofia: registro.usoCofia ? "Sí" : "No",
+          usoMascarilla: registro.usoMascarilla ? "Sí" : "No",
+          higieneManos: registro.higieneManos ? "Sí" : "No",
+          unasCortas: registro.unasCortas ? "Sí" : "No",
+          afeitado: registro.afeitado ? "Sí" : "No",
+          uniformeLimpio: registro.uniformeLimpio ? "Sí" : "No",
+          sinAccesorios: registro.sinAccesorios ? "Sí" : "No",
+          vbCumplimiento: registro.vbCumplimiento,
+          nroAccionCorrectiva: registro.nroAccionCorrectiva,
+          observacion: registro.observacion || "",
+        });
+      });
+
+      // Estilizar la cabecera
+      worksheet.getRow(1).font = { bold: true };
+
+      // Retornar el workbook
+      return workbook;
+    } catch (error) {
+      throw new Error("No se pudo generar el archivo Excel.");
+    }
+  }
+}

@@ -53,5 +53,26 @@ export const documentoTrazabilidadController = {
     );
     if (error) return res.status(400).json({ error });
     res.json({ mensaje: "Registro eliminado correctamente" });
+  },
+
+  async exportarExcel(req, res) {
+    try {
+      const workbook = await documentoTrazabilidadService.generarExcelDocumentoTrazabilidad();
+      
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=documentos_trazabilidad.xlsx"
+      );
+
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.error("Error al exportar Excel:", error);
+      res.status(500).json({ error: "No se pudo generar el archivo Excel" });
+    }
   }
 };

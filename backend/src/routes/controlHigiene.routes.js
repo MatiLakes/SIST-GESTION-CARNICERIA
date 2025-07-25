@@ -8,6 +8,7 @@ router.use(authenticateJwt).use(isAdmin);
 
 router.post("/", controlHigieneController.crearRegistro);
 router.get("/", controlHigieneController.obtenerRegistros);
+router.get("/exportar/excel", controlHigieneController.exportarExcelControlHigiene);
 router.put("/:id", controlHigieneController.modificarRegistro);
 router.delete("/:id", controlHigieneController.eliminarRegistro);
 

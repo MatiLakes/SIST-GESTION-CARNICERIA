@@ -53,6 +53,27 @@ export const documentoTemperaturaController = {
       console.error("Error en actualizar documento temperatura:", error);
       return handleErrorClient(res, 500, "Error interno del servidor");
     }
+  },
+
+  async exportarExcel(req, res) {
+    try {
+      const workbook = await documentoTemperaturaService.generarExcelDocumentoTemperatura();
+      
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=control_temperatura.xlsx"
+      );
+
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.error("Error al exportar Excel:", error);
+      res.status(500).json({ error: "No se pudo generar el archivo Excel" });
+    }
   }
 
 };
