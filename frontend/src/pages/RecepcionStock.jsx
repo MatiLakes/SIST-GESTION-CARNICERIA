@@ -361,7 +361,7 @@ const RecepcionStock = () => {
 
     // Crear el objeto con los datos del estado actualizado
     const updatedRecepcion = {
-      productoId: parseInt(currentRecepcion.productoId, 10),
+      productoId: parseInt(currentRecepcion.producto?.id, 10),
       cantidad: parseFloat(currentRecepcion.cantidad),
       costoUnitario: parseInt(currentRecepcion.costoUnitario, 10),
       fechaVencimiento: currentRecepcion.fechaVencimiento
@@ -585,20 +585,22 @@ const RecepcionStock = () => {
             <div className="formulario-grupo">
               <label className="formulario-etiqueta">Producto:</label>
               <div className="input-container">
-                <select
-                  name="productoId"
-                  id="productoId"
-                  value={currentRecepcion.producto?.id || ''}
-                  onChange={handleEditChange}
+                <input
+                  type="text"
+                  name="productoNombre"
+                  id="productoNombre"
                   className="formulario-input"
-                >
-                  <option value="">Seleccione un producto</option>
-                  {productos.map((producto) => (
-                    <option key={producto.id} value={producto.id}>
-                      {producto.nombre} {producto.variante}
-                    </option>
-                  ))}
-                </select>
+                  value={currentRecepcion.producto ? 
+                    `${currentRecepcion.producto.nombre} ${currentRecepcion.producto.variante || ''}`.trim() : 
+                    'Producto no disponible'}
+                  readOnly
+                  style={{ backgroundColor: '#f8f9fa', color: '#6c757d', cursor: 'not-allowed' }}
+                />
+                <input
+                  type="hidden"
+                  name="productoId"
+                  value={currentRecepcion.producto?.id || ''}
+                />
                 {editErrors.productoId && (
                   <span className="error-message">{editErrors.productoId}</span>
                 )}
