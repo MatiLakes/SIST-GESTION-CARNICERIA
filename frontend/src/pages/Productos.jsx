@@ -321,7 +321,7 @@ const Productos = () => {
         onDelete={handleDeleteModalOpen}
         showEditAllButton={false}
         showViewButton={false}
-        showCalendarButton={true}
+        showCalendarButton={false}
         entidad="productos"
         customFormat={(value, key) => {
           if (key === "precioVenta" && (typeof value === "number" || !isNaN(parseFloat(value)))) {
